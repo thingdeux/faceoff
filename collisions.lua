@@ -8,8 +8,8 @@ function beginContact(a, b, coll)
 	local ball, ball2, level, player, player2 = false
 
 	local function determineCollision(collider)
-		local colliderName = collider:getUserData()
-		if colliderName == "ball" then
+		local colliderName = collider:getUserData()		
+		if colliderName.type == "ball" then			
 			if not ball then
 				ball = collider
 			else
@@ -17,7 +17,7 @@ function beginContact(a, b, coll)
 			end		
 		elseif colliderName == "level" then
 			level = collider
-		elseif colliderName == "player" then
+		elseif colliderName.type == "player" then
 			if not player then
 				player = collider
 			else
@@ -29,6 +29,23 @@ function beginContact(a, b, coll)
 
 	determineCollision(a)
 	determineCollision(b)	
+
+	if ball and player then
+		--This passes the balls class variables to ballObject since this is working with
+		--the Box2D Objects
+		local ballObject = ball:getUserData()
+		local playerObject = player:getUserData()
+
+		if ballObject.isDangerous then
+			--print("Hot Ball")
+		else
+			playerObject.ballCount = playerObject.ballCount + 1
+			ballObject.isBeingHeld = true
+			ballObject:destroyObject()
+			ball:destroy()	
+
+		end
+	end
 end
 
 function endContact(a, b, coll)
@@ -37,5 +54,5 @@ end
 function preSolve(a, b, coll)	
 end
 
-function postSolve(a, b, coll)	
+function postSolve(a, b, coll)
 end

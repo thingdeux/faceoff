@@ -7,35 +7,33 @@ parameters.terminal_velocity = 50
 Entity = Class{
 
 	update = function(self, dt)
-		local function forces(self)
-			self.y = self.y + self.velocity.y
-			self.x = self.x + self.velocity.x
-
-			if not self.isOnGround then
-				--If the entity is off of the ground apply gravity and accelerate by weight
-				if self.velocity.y < parameters.terminal_velocity then
-					self.velocity.y = self.velocity.y + (self.weight + parameters.gravity)*dt
-				end
-			end
-
-			if self.velocity.x > 0 or self.velocity.x < 0 then
-				if self.velocity.x > 0 then
-					self.velocity.x = self.velocity.x + -parameters.windResistance*dt
-				else
-					self.velocity.x = self.velocity.x + parameters.windResistance*dt
-				end
-			end
-		end
-
-		local x,y = self.body:getLinearVelocity()
+		local velocity_x,velocity_y = self.body:getLinearVelocity()
 		
-		if y >= -1 and y <= 1 then
+		if velocity_y >= -1 and velocity_y <= 1 then
 			self.isOnGround = true
 		else
 			self.isOnGround = false
 		end
 
+		--Player Specific Updates
+		if self.type == "player" then
+			self:controller(velocity_x, velocity_y)
+		end
 
+		--Ball Specifi Updates
+		if self.type == "ball" then
+			--local ballvelocity_x,ballvelocity_y = self.body:getLinearVelocity()
+
+			if (velocity_x >= -20 and velocity_x <= 20) and (velocity_y >= -6 and velocity_y <= 6) then
+				self.isDangerous = false
+			else
+				self.isDangerous = true
+			end	
+		end
+		
+	end;
+
+	controller = function(self, velocity_x, velocity_y)
 		if self.type == "player" then
 			if love.keyboard.isDown("up") then
 								
@@ -49,7 +47,7 @@ Entity = Class{
 
 
 			if love.keyboard.isDown("right") then
-				if self.body:getLinearVelocity() < self.maxSpeed then
+				if velocity_x < self.maxSpeed then
 					if self.isOnGround then
 						self.body:applyForce(self.speed, 0)
 					else
@@ -57,7 +55,7 @@ Entity = Class{
 					end
 				end
 			elseif love.keyboard.isDown("left") then
-				if self.body:getLinearVelocity() > -self.maxSpeed then
+				if velocity_x > -self.maxSpeed then
 					if self.isOnGround then
 						self.body:applyForce(-self.speed, 0)
 					else
@@ -65,15 +63,28 @@ Entity = Class{
 					end
 				end
 			end
+
+			if love.keyboard.isDown("e") then
+				if not self.isThrowing and self.ballCount > 0 then					
+					local thrownBall = Ball({self.body:getX() + 30, self.body:getY()})
+					thrownBall.body:applyLinearImpulse(80, 0)
+
+					self.ballCount = self.ballCount - 1
+					--self.isThrowing = true
+
+
+				end
+
+			end		
+				
 		end
-		
-		
-
 	end;
 
-	beginContact = function(self, a, b, coll)
-		print (tostring(self) .. "Collided")
-	end;
 
+	destroyObject = function(self)
+		for i, myvariable in ipairs(self) do
+			i = nil
+		end
+	end;
 
 }

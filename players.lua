@@ -8,7 +8,7 @@ Player = Class{
 		self.friction = 6
 		self.width = 35
 		self.height = 75
-		self.ballCount = 0
+		self.ballCount = 1000
 		self.weight = .1
 		self.isOnGround = false
 		self.type = "player"
@@ -16,7 +16,7 @@ Player = Class{
 		self.body = love.physics.newBody(world, self.x, self.y, "dynamic")
 		self.shape = love.physics.newRectangleShape(self.width, self.height)
 		self.fixture = love.physics.newFixture(self.body, self.shape)
-		self.fixture:setUserData("player")
+		self.fixture:setUserData( self )
 		self.fixture:setFilterData(2, 2, 4)
 
 		--Set the weight/density of the player

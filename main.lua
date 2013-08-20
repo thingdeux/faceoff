@@ -79,13 +79,17 @@ function drawBalls()
 	end
 
 
+
 	if active_balls then
+		
 		for __, ball in ipairs(active_balls) do
+			--local x,y = ball.body:getLinearVelocity()
 			if not ball.isBeingHeld then --If the ball isn't held by a player draw it to the screen
 				--Find the current animation frame for the ball				
 				--love.graphics.circle("fill", ball.body:getX(), ball.body:getY(), ball.shape:getRadius())
-				chooseAnimation(ball)				
-				
+				chooseAnimation(ball)
+				--love.graphics.print(tostring(ball.isDangerous), ball.body:getX(), ball.body:getY() - 20 )				
+				--love.graphics.print("X: " .. tostring(x) .. " Y: " .. tostring(y), ball.body:getX(), ball.body:getY() - 30 )											
 			end
 		end
 	end
@@ -97,9 +101,10 @@ function drawPlayers()
 		--love.graphics.setColor(100,255,255,255)
 		--love.graphics.polygon("fill", player.body:getWorldPoints(player.shape:getPoints()))
 		--love.graphics.print(tostring(player.isOnGround), 20, 40)
-				
+
 		love.graphics.setColor(255,255,255,255)
-		love.graphics.drawq(player_sheet, stationary, player.body:getX() - 40, player.body:getY() - 45, 0, .8, .8)		
+		love.graphics.drawq(player_sheet, stationary, player.body:getX() - 40, player.body:getY() - 45, 0, .8, .8)
+		love.graphics.print(tostring(player.ballCount), player.body:getX(), player.body:getY() - 55)
 
 	end
 end

@@ -4,16 +4,18 @@ Ball = Class{
 		self.y = coords[2]
 		self.velocity = {}
 		self.velocity.x = 0
-		self.velocity.y = 0
+		self.velocity.y = 0		
 		self.size = {}
 		self.size.x = .65
 		self.size.y = .65
 		self.weight = 4
+		self.bounciness = .8 --The higher the bouncier
 		self.isBeingHeld = false
+		self.isOwned = false
+		self.owner = false
+		self.isDangerous = true
 		self.animation = "no_squish"
-		self.type = "ball"
-		self.bounciness = .6
-
+		self.type = "ball"		
 		self.isOnGround = false
 		self.hasOwner = false
 
@@ -44,14 +46,13 @@ Ball = Class{
 		self.fixture:setRestitution(self.bounciness)
 
 		--Identify the type of physics object
-		self.fixture:setUserData("ball")
-
-
-
+		self.fixture:setUserData( self )
 
 		--Insert a reference into the active_entities table
 		table.insert(active_entities, self)
 	end;
+
+	
 
 }
 

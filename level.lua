@@ -13,7 +13,7 @@ level = Class{
 			--make a rectangle with a width of width and a height of height
 			self.shape = love.physics.newRectangleShape(self.width, self.height)
 			--attach shape to body (think, skeleton)
-			self.fixture = love.physics.newFixture(self.body, self.shape)				
+			self.fixture = love.physics.newFixture(self.body, self.shape)			
 		elseif self.type_of_object == "edge" then
 			self.x = coords[1]
 			self.y = coords[2]
@@ -29,7 +29,7 @@ level = Class{
 		self.body:setBullet(false)
 		--Set the level filter mask to 3 so level pieces won't collide with each other
 		self.fixture:setFilterData(3, 3, -3)
-		self.fixture:setUserData("level")
+		self.fixture:setUserData( self )
 
 		if not current_level then
 			current_level = {}
