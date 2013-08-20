@@ -1,0 +1,4 @@
+Entity = Class{
+	init = function(self)
+	
+}
