@@ -19,7 +19,7 @@ Entity = Class{
 
 		--Player Specific Updates
 		if self.type == "player" then
-			self:controller(velocity_x, velocity_y, self.playerNumber)
+			self:controller(velocity_x, velocity_y, self.playerNumber, dt)
 			
 
 			if self.isPullingBackToThrow or self.isThrowing or
@@ -45,7 +45,7 @@ Entity = Class{
 		
 	end;
 
-	controller = function(self, velocity_x, velocity_y, playerNumber)
+	controller = function(self, velocity_x, velocity_y, playerNumber, dt)
 		if self.type == "player" then						
 
 			--Controller handler for when the player jumps
@@ -100,20 +100,11 @@ Entity = Class{
 				self.isThrowing = true
 			end
 
-			if love.mouse.getY() < self.mouseTracker.y then --Mouse moved up
-				self.cursor.tracker.y = self.cursor.tracker.y - 2 		
-			elseif love.mouse.getY() > self.mouseTracker.y then --Mouse moves down
-				self.cursor.tracker.y = self.cursor.tracker.y + 2				
+			if playerNumber == "One" then
+				self:trackMouse(dt)  --Keep this as the very end, updates the mouse location tracker
+			elseif playerNumber == "Two" then
+				self:trackThumbStick(dt)
 			end
-			
-			if love.mouse.getX() > self.mouseTracker.x then ----Mouse moves right			
-				self.cursor.tracker.x = self.cursor.tracker.x + 2
-			elseif love.mouse.getX() < self.mouseTracker.x then --Mouse moves left
-				self.cursor.tracker.x = self.cursor.tracker.x - 2
-			end
-
-
-			self:trackMouse()  --Keep this as the very end, updates the mouse location tracker	
 		end
 	end;
 
@@ -134,16 +125,20 @@ Entity = Class{
 		end
 
 		--Snap the cursor to the player
-		self.cursor.x = self.cursor.tracker.x
-		self.cursor.y = self.cursor.tracker.y
-		
-		debugger:keepUpdated("cursorTrackerX", self.cursor.tracker.x)
-		debugger:keepUpdated("cursorTrackerY", self.cursor.tracker.y)
-	
+		self.cursor.x = self.body:getX()
+		self.cursor.y = self.body:getY()
+					
 		--Use math to ummm...magically point the cursor in the direction of the mouse -- Maaaaaaath
-		--local angle = math.angle(self.cursor.x, self.cursor.y, love.mouse.getX(), love.mouse.getY())
-		--self.cursor.x = self.cursor.x + math.sin(angle)*100
-		--self.cursor.y = self.cursor.y + math.cos(angle)*100
+		if self.playerNumber == "One" then
+			local angle = math.angle(self.cursor.x, self.cursor.y, love.mouse.getX(), love.mouse.getY())
+			self.cursor.x = self.cursor.x + math.sin(angle)*100
+			self.cursor.y = self.cursor.y + math.cos(angle)*100
+		elseif self.playerNumber == "Two" then
+			local angle = math.angle(self.cursor.x, self.cursor.y, self.cursor.x + self.thumbStickTracker.x, self.cursor.y + self.thumbStickTracker.y)
+			self.cursor.x = self.cursor.x + math.sin(angle)*100
+			self.cursor.y = self.cursor.y + math.cos(angle)*100
+		end
+		
 	
 	end;
 
@@ -168,14 +163,16 @@ Right Thumbstick Click = 10
 getHat = D-Pad
 
 
-leftstick, leftstick, triggers, rightstick = love.joystick.getAxes( controller )
+axis designation:
+	1          2         3         4              5
+leftstick, leftstick, triggers, rightstickY, rightstickX = love.joystick.getAxes( controller )
 
 {Stick Directional Numbers}
-      -0.5
+      	-
 
--1		       1
+-		       +
 
-	   0.5
+	   +
 
 
 ]]--

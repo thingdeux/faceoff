@@ -63,6 +63,7 @@ function drawPlayers()
 		love.graphics.drawq(player_sheet, stationary, player.body:getX() - 40, player.body:getY() - 45, player.orientation, .8, .8)
 
 		
+		love.graphics.point(player.cursor.x + player.thumbStickTracker.x, player.cursor.y + player.thumbStickTracker.y)
 
 		love.graphics.print(tostring(player.ballCount), player.body:getX(), player.body:getY() - 55)
 		love.graphics.setColor(color.red)

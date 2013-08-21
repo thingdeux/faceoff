@@ -12,7 +12,7 @@ function love.load()
 
 	--Create a debugger instance
 	debugger = Debugger()	
-	love.mouse.setVisible(true)
+	love.mouse.setVisible(false)
 	love.mouse.setGrab(true)
 	load_colors()
 	load_graphics()	

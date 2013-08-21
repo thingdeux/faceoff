@@ -18,20 +18,25 @@ Player = Class{
 		self.isThrowing = false
 		self.throwForce = {}
 		self.throwForce.current = 40
-		self.throwForce.speed = 75
+		self.throwForce.speed = 200
 		self.throwForce.max = 100
 		self.cursor = {}
 		self.cursor.x = 0
-		self.cursor.y = 0		
+		self.cursor.y = 0
+		self.cursor.speed = 40	
 		self.cursor.angle = 0
-
-		self.cursor.tracker = {}
-		self.cursor.tracker.x = 0
-		self.cursor.tracker.y = 0
 		
 		self.mouseTracker = {}
 		self.mouseTracker.x = 0
 		self.mouseTracker.y = 0
+
+		self.thumbStickTracker = {}
+		self.thumbStickTracker.x = 0
+		self.thumbStickTracker.y = -50
+		
+		self.thumbStickTracker.current = {}		
+		self.thumbStickTracker.current.x = 0
+		self.thumbStickTracker.current.y = 0
 
 		self.type = "player"
 		self.timer = {}
@@ -133,10 +138,95 @@ Player = Class{
 	end;
 
 	trackMouse = function(self)
-		self.mouseTracker.x = love.mouse.getX()					
-		self.mouseTracker.y = love.mouse.getY()		
-		love.mouse.setPosition(512, 384)
+	    x, y = love.mouse.getPosition()
+		self.mouseTracker.x = x					
+		self.mouseTracker.y = y
+
+		self:keepCursorNearPlayer(x,y, "mouse")	
 	end;
+
+	trackThumbStick = function(self, dt)
+		self.thumbStickTracker.current.y = love.joystick.getAxis(1, 4)
+		self.thumbStickTracker.current.x = love.joystick.getAxis(1, 5)
+		
+		if self.thumbStickTracker.current.x >= -0.4 and self.thumbStickTracker.current.x < 0.4 then
+			self.thumbStickTracker.current.x = 0 --Stops things from happening if the stick has just barely been touched
+		end
+
+		if self.thumbStickTracker.current.y >= -0.3 and self.thumbStickTracker.current.y < 0.3 then
+			self.thumbStickTracker.current.y = 0 --Stops things from happening if the stick has just barely been touched
+		end		
+
+		--X Plane movement for thumbstick tracking
+		if self.thumbStickTracker.current.x > 0 and 
+			not self:keepCursorNearPlayer(self.cursor.x + self.thumbStickTracker.x, self.body:getY(), "stick", dt) then
+			self.thumbStickTracker.x = self.thumbStickTracker.x + self.cursor.speed*dt
+		elseif self.thumbStickTracker.current.x < 0 and
+			not self:keepCursorNearPlayer(self.cursor.x + self.thumbStickTracker.x, self.body:getY(), "stick", dt) then
+
+			self.thumbStickTracker.x = self.thumbStickTracker.x - self.cursor.speed*dt
+		end
+
+
+		--Y movement for thumbstick tracking
+		if  self.thumbStickTracker.current.y < 0 and not
+			self:keepCursorNearPlayer(self.body:getX(), self.cursor.y + self.thumbStickTracker.y, "stick", dt) then
+
+			self.thumbStickTracker.y = self.thumbStickTracker.y - self.cursor.speed*dt
+		elseif self.thumbStickTracker.current.y > 0 and not
+			self:keepCursorNearPlayer(self.body:getX(), self.cursor.y + self.thumbStickTracker.y, "stick", dt) then
+			self.thumbStickTracker.y = self.thumbStickTracker.y + self.cursor.speed*dt
+		end
+		
+
+		debugger:keepUpdated("X Axis", self.thumbStickTracker.current.x)
+		debugger:keepUpdated("Y Axis", self.thumbStickTracker.current.y)
+				
+	end;
+
+	keepCursorNearPlayer = function(self, x, y, controlType, dt)
+		if y >= self.body:getY() + 100 then
+			if controlType == "mouse" then
+				love.mouse.setPosition(x, self.body:getY() + 100)
+			elseif controlType == "stick" then				
+				self.thumbStickTracker.y = self.thumbStickTracker.y - self.cursor.speed*dt
+				debugger:insert("Too low")
+				return true
+			end
+		elseif y <= self.body:getY() - 100 then
+			if controlType == "mouse" then
+				love.mouse.setPosition(x, self.body:getY() - 100)
+			elseif controlType == "stick" then				
+				self.thumbStickTracker.y = self.thumbStickTracker.y + self.cursor.speed*dt
+				debugger:insert("Too high")
+				return true
+			end
+		end
+
+		if x <= self.body:getX() - 100 then
+			if controlType == "mouse" then
+				love.mouse.setPosition(self.body:getX() - 100, y)
+			elseif controlType == "stick" then
+				self.thumbStickTracker.x = self.thumbStickTracker.x + self.cursor.speed*dt
+				debugger:insert("Too far right")
+				return true
+			end
+		elseif x >= self.body:getX() + 100 then
+			if controlType == "mouse" then
+				love.mouse.setPosition(self.body:getX() + 100, y)
+			elseif controlType == "stick" then
+				debugger:insert("Too far left")
+				self.thumbStickTracker.x = self.thumbStickTracker.x - self.cursor.speed*dt
+				return true
+			end
+		end
+		
+		--If the cursor tracker isn't pass the threshold.
+		if controlType == "stick" then			
+			return false
+		end
+	end;
+
 }
 
 Player:include(Entity)
