@@ -1,7 +1,8 @@
 Player = Class{
-	init = function(self, coords, size)
+	init = function(self, coords, playerNumber)
 		self.x = coords[1]
 		self.y = coords[2]
+		self.playerNumber = playerNumber		
 		self.maxSpeed = 400
 		self.speed = 250
 		self.jumpForce = 28

@@ -17,7 +17,7 @@ Entity = Class{
 
 		--Player Specific Updates
 		if self.type == "player" then
-			self:controller(velocity_x, velocity_y)
+			self:controller(velocity_x, velocity_y, self.playerNumber)
 		end
 
 		--Ball Specifi Updates
@@ -33,20 +33,21 @@ Entity = Class{
 		
 	end;
 
-	controller = function(self, velocity_x, velocity_y)
+	controller = function(self, velocity_x, velocity_y, playerNumber)
 		if self.type == "player" then
-			if love.keyboard.isDown("up") then
+
+			if (love.keyboard.isDown("w") and playerNumber == "One") and self.isOnGround then
 								
 				if self.isOnGround then
 					self.body:applyLinearImpulse(0, -self.jumpForce)
 				end
 
-			elseif love.keyboard.isDown("down") then
+			elseif love.keyboard.isDown("s") then
 				self.body:applyForce(0, 0)
 			end
 
 
-			if love.keyboard.isDown("right") then
+			if love.keyboard.isDown("d") then
 				if velocity_x < self.maxSpeed then
 					if self.isOnGround then
 						self.body:applyForce(self.speed, 0)
@@ -54,7 +55,7 @@ Entity = Class{
 						self.body:applyForce(self.speed/2, 0)
 					end
 				end
-			elseif love.keyboard.isDown("left") then
+			elseif love.keyboard.isDown("a") then
 				if velocity_x > -self.maxSpeed then
 					if self.isOnGround then
 						self.body:applyForce(-self.speed, 0)
@@ -75,7 +76,7 @@ Entity = Class{
 
 				end
 
-			end		
+			end			
 				
 		end
 	end;

@@ -4,13 +4,16 @@ require("balls")
 require("level")
 require("collisions")
 require("players")
+require("debugger")
 
 function love.load()
-	
+
+	debugger = Debugger()
 	load_graphics()
 	active_entities = {}
-	love.physics.setMeter(64)
 
+	--Set the physics distance calculation
+	love.physics.setMeter(64)
 	--create a world for the bodies to exist in with horizontal gravity of 0 and vertical gravity of 9.81
 	world = love.physics.newWorld(0,9.84*64, true)
 	--create the callback handler for collision
@@ -18,8 +21,18 @@ function love.load()
 
 	load_level("basic")
 
-	Player({80, 200})	
+	Player({80, 200}, "One")
 
+	--If a joystick is enabled, two characters will spawn
+	if checkForJoystick() == "One Joystick" then
+		Player({380, 200}, "Two")
+		debugger:insert("One Joystick Detected")		
+	elseif checkForJoystick() == "Two Joystick" then
+		debugger:insert("Two Joysticks Detected")
+	else
+		debugger:insert("No Joysticks Detected")
+	end
+	
 	Ball({400,100})
 	--Ball({400,70})
 	--Ball({500,150})
@@ -37,6 +50,8 @@ function love.update(dt)
 		entity:update(dt)
 	end
 
+	--Update the debugger instance
+	debugger:update()
 end
 
 function love.keypressed(key)
@@ -50,6 +65,7 @@ function love.keypressed(key)
 end
 
 function love.draw()
+	drawDebugInfo()
 	drawBackground()
 	drawLevel()
 	drawPlayers()
@@ -124,6 +140,14 @@ end
 function drawBackground()
 end
 
+function drawDebugInfo()
+	local position = 10
+	for __, info in pairs(active_debugging_text) do
+		love.graphics.print(tostring(info), 20, position)
+		position = position + 10
+	end
+end
+
 function load_graphics()
 	ball_sheet = love.graphics.newImage("/assets/ball.png")
 	bottom_squish = love.graphics.newQuad(0, 0, 20, 20, 64, 64)
@@ -164,4 +188,17 @@ function load_level(name)
 
 
 	end
+end
+
+
+function checkForJoystick()
+	
+	if love.joystick.isOpen(1) and not love.joystick.isOpen(2) then
+		return "One Joystick"
+	elseif love.joystick.isOpen(1) and love.joystick.isOpen(2) then
+		return "Two Joystick"
+	else
+		return "No Joystick"
+	end
+	
 end
