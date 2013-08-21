@@ -48,7 +48,8 @@ end
 
 
 
-function love.update(dt)
+function love.update(dt)	
+
 	--Update the physics world
 	world:update(dt)
 

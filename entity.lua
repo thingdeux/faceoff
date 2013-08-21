@@ -7,6 +7,8 @@ parameters.terminal_velocity = 50
 Entity = Class{
 
 	update = function(self, dt)
+
+		--Pass the players x/y velocity to a local variable for checking below
 		local velocity_x,velocity_y = self.body:getLinearVelocity()
 		
 		if velocity_y >= -1 and velocity_y <= 1 then
@@ -20,7 +22,8 @@ Entity = Class{
 			self:controller(velocity_x, velocity_y, self.playerNumber)
 
 			if self.isPullingBackToThrow or self.isThrowing then
-				self:animate("throw")				
+				self:throw(dt) --Throw has to come before animate				
+				self:animate(dt)	
 			end
 		end
 
@@ -31,7 +34,9 @@ Entity = Class{
 			if (velocity_x >= -20 and velocity_x <= 20) and (velocity_y >= -6 and velocity_y <= 6) then
 				self.isDangerous = false
 			else
-				self.isDangerous = true
+				if self.isOwned then --If the ball has an owner(ie: has been thrown)
+					self.isDangerous = true
+				end
 			end	
 		end
 		
@@ -60,7 +65,8 @@ Entity = Class{
 					if self.isOnGround then
 						self.body:applyForce(self.speed, 0)
 					else
-						self.body:applyForce(self.speed/2, 0)
+						--If player is in the air then they can only move themselves at half the speed
+						self.body:applyForce(self.speed, 0)
 					end
 				end
 
@@ -71,24 +77,20 @@ Entity = Class{
 					if self.isOnGround then
 						self.body:applyForce(-self.speed, 0)
 					else
-						self.body:applyForce(-self.speed/2, 0)
+						--If player is in the air then they can only move themselves at half the speed
+						self.body:applyForce(-self.speed, 0)
 					end
 				end
 			end
 
 			--Controller handler for when the player presses the throw button
-			if (love.keyboard.isDown("lshift") and playerNumber =="One") or 
+			if (love.keyboard.isDown(" ") and playerNumber =="One") or 
 				(love.joystick.isDown(1, 3) and playerNumber == "Two") then
 				
 				--If player presses the throw button, start reeling back to throw
 				if not self.isThrowing and not self.isPullingBackToThrow and self.ballCount > 0 then
 					--Set the player to be realing back their arm ready to throw
-					self.isPullingBackToThrow = true
-					--Spawn a ball and put it next to the player (in their hand)								
-					self.activeBall = Ball({self.body:getX() + 30, self.body:getY()})
-					--Set the ball to being owned by the current player
-					self.activeBall.isOwned = true
-					self.activeBall.owner = self		
+					self.isPullingBackToThrow = true					
 				end
 			elseif self.isPullingBackToThrow then				
 				self.isPullingBackToThrow = false			
@@ -105,25 +107,15 @@ Entity = Class{
 		end
 	end;
 
+	--Deal with animations
 	animate = function(self)
-		if self.isPullingBackToThrow then
-			--Stop the ball from simulating while the player holds it in their hand
-			self.activeBall.body:setAwake (false)
+		
+		--While the player is reeling back
+		if self.isPullingBackToThrow then			
 			--Keep the ball moving with the player while the player is holding it
-			self.activeBall.body:setPosition(self.body:getX() + 30, self.body:getY())						
+			self.activeBall.body:setPosition(self.body:getX() + 30  - (self.throwForce.current - 50), self.body:getY())				
 		end
-
-		if self.isThrowing and not self.timer.throwing then			
-			self.activeBall.body:applyLinearImpulse(80, 0)
-			self.ballCount = self.ballCount - 1
-			self.timer.throwing = love.timer.getTime() + .4		
-		elseif self.isThrowing and self.timer.throwing then
-			if love.timer.getTime() > self.timer.throwing then
-				self.isThrowing = false
-				self.timer.throwing = nil
-				self.activeBall = nil
-			end
-		end
+		
 	end;
 
 }

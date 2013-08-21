@@ -35,16 +35,20 @@ function beginContact(a, b, coll)
 		--the Box2D Objects
 		local ballObject = ball:getUserData()
 		local playerObject = player:getUserData()
+		
+		if ballObject.isOwned and ballObject.owner == playerObject and not
+		   playerObject.isPullingBackToThrow and not playerObject.isThrowing then
+			playerObject:pickupBall(ballObject)
 
-		if ballObject.isDangerous then
-			--print("Hot Ball")
+		--If the ball is dangerous (ie: thrown by another player)
+		elseif ballObject.isDangerous then
+
 		else
-			playerObject.ballCount = playerObject.ballCount + 1
-			ballObject.isBeingHeld = true
-			ballObject:destroyObject()
-			ball:destroy()	
-
+			if not ballObject.isOwned then
+				playerObject:pickupBall(ballObject)		
+			end
 		end
+
 	end
 end
 

@@ -16,7 +16,7 @@ Ball = Class{
 		self.isOwned = false
 		self.owner = false
 
-		self.isDangerous = true
+		self.isDangerous = false
 		self.animation = "no_squish"
 		self.type = "ball"		
 		self.isOnGround = false		
@@ -26,7 +26,7 @@ Ball = Class{
 			active_balls = {}
 			table.insert(active_balls, self)			
 		else
-			table.insert(active_balls, self)			
+			table.insert(active_balls, self)	
 		end	
 		
 		 --place the body in the center of the world and make it dynamic, so it can move around
@@ -38,10 +38,8 @@ Ball = Class{
 
 
 		
-		--Set the balls density
+		--fixture parameters
 		self.fixture:setDensity(self.weight)
-		self.body:resetMassData()
-
 		--Set the balls friction
 		self.fixture:setFriction(self.friction)		
 		--Set a filter mask so balls will not collide with each other
@@ -50,11 +48,9 @@ Ball = Class{
 		self.fixture:setRestitution(self.bounciness)
 		--Identify the type of physics object
 		self.fixture:setUserData( self )
-		
 
-		
-
-		
+		--body parameters
+		self.body:resetMassData()
 
 		--Insert a reference into the active_entities table
 		table.insert(active_entities, self)
