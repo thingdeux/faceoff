@@ -9,8 +9,8 @@ Player = Class{
 		self.friction = 6
 		self.width = 35
 		self.height = 75
-		self.ballCount = 1000
-		self.weight = .1
+		self.ballCount = 5
+		self.weight = .1		
 		self.isOnGround = false
 		self.type = "player"
 
@@ -26,6 +26,7 @@ Player = Class{
 
 		--Set the friction
 		self.fixture:setFriction(self.friction)
+		self.fixture:setRestitution(0)
 
 
 		--Players body won't rotate unless this is changed
@@ -44,3 +45,5 @@ Player = Class{
 }
 
 Player:include(Entity)
+
+

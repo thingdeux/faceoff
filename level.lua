@@ -43,3 +43,25 @@ level = Class{
 
 }
 
+
+
+function load_level(name)
+	if name == "basic" then
+		--Ground
+		level({0, 758}, "rectangle", 1024, 10)
+		--Roof
+		level({0, 0}, "rectangle", 1024, 10)
+		--Left Wall
+		level({0, 0}, "rectangle", 10, 768)
+		--Right Wall
+		level({1014, 0}, "rectangle", 10, 768)
+
+		--Sloped Platform bottom left
+		level({0, 650, 150, 768}, "edge")
+
+		--Sloped Platform bottom left
+		level({520, 650, 350, 768}, "edge")
+
+
+	end
+end

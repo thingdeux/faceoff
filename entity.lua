@@ -34,20 +34,22 @@ Entity = Class{
 	end;
 
 	controller = function(self, velocity_x, velocity_y, playerNumber)
-		if self.type == "player" then
+		if self.type == "player" then			
 
-			if (love.keyboard.isDown("w") and playerNumber == "One") and self.isOnGround then
+			if (love.keyboard.isDown("w") and playerNumber == "One") or
+			(love.joystick.isDown(1, 1) and playerNumber == "Two") and self.isOnGround then
 								
 				if self.isOnGround then
 					self.body:applyLinearImpulse(0, -self.jumpForce)
 				end
 
-			elseif love.keyboard.isDown("s") then
+			elseif (love.keyboard.isDown("s") and playerNumber =="One") then
 				self.body:applyForce(0, 0)
 			end
 
 
-			if love.keyboard.isDown("d") then
+			if (love.keyboard.isDown("d") and playerNumber == "One") or
+			   (love.joystick.getAxis(1, 1) > 0.8 and playerNumber == "Two") then
 				if velocity_x < self.maxSpeed then
 					if self.isOnGround then
 						self.body:applyForce(self.speed, 0)
@@ -55,7 +57,8 @@ Entity = Class{
 						self.body:applyForce(self.speed/2, 0)
 					end
 				end
-			elseif love.keyboard.isDown("a") then
+			elseif (love.keyboard.isDown("a") and playerNumber =="One") or
+			 (love.joystick.getAxis(1, 1) < -0.8 and playerNumber == "Two") then
 				if velocity_x > -self.maxSpeed then
 					if self.isOnGround then
 						self.body:applyForce(-self.speed, 0)
@@ -65,10 +68,14 @@ Entity = Class{
 				end
 			end
 
-			if love.keyboard.isDown("e") then
+			if (love.keyboard.isDown("e") and playerNumber =="One") or 
+				(love.joystick.isDown(1, 3) and playerNumber == "Two") then
+				
 				if not self.isThrowing and self.ballCount > 0 then					
 					local thrownBall = Ball({self.body:getX() + 30, self.body:getY()})
 					thrownBall.body:applyLinearImpulse(80, 0)
+					thrownBall.isOwned = true
+					thrownBall.owner = self
 
 					self.ballCount = self.ballCount - 1
 					--self.isThrowing = true
@@ -89,3 +96,34 @@ Entity = Class{
 	end;
 
 }
+
+
+
+--[[
+A = 1
+B = 2
+X = 3
+Y = 4
+
+Left Bumper = 5
+Right Bumper = 6
+Back Button = 7
+Start Button = 8
+
+Left Thumbstick Click = 9
+Right Thumbstick Click = 10
+
+getHat = D-Pad
+
+
+leftstick, leftstick, triggers, rightstick = love.joystick.getAxes( controller )
+
+{Stick Directional Numbers}
+      -0.5
+
+-1		       1
+
+	   0.5
+
+
+]]--
