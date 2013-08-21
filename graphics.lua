@@ -47,10 +47,10 @@ function drawBalls()
 end
 
 function drawPlayers()
-	for __, player in ipairs(active_players) do
+	for __, player in ipairs(active_players) do		
 		--For testing the physics bounding box (or shape/fixture)		
 		--love.graphics.setColor(100,255,255,255)
-		--love.graphics.polygon("fill", player.body:getWorldPoints(player.shape:getPoints()))
+		--love.graphics.polygon("fill", player.body:getWorldPoints(player.shape:getPoints()))		
 		--love.graphics.print(tostring(player.isOnGround), 20, 40)
 
 		if player.playerNumber == "One" then
@@ -58,9 +58,15 @@ function drawPlayers()
 		elseif player.playerNumber == "Two" then
 			love.graphics.setColor(color.brightyellow)			
 		end
-		love.graphics.drawq(player_sheet, stationary, player.body:getX() - 40, player.body:getY() - 45, 0, .8, .8)
-		love.graphics.print(tostring(player.ballCount), player.body:getX(), player.body:getY() - 55)
 
+		
+		love.graphics.drawq(player_sheet, stationary, player.body:getX() - 40, player.body:getY() - 45, player.orientation, .8, .8)
+
+		
+
+		love.graphics.print(tostring(player.ballCount), player.body:getX(), player.body:getY() - 55)
+		love.graphics.setColor(color.red)
+		love.graphics.point(player.cursor.x + 8, player.cursor.y)		
 	end
 end
 
@@ -86,6 +92,12 @@ function drawDebugInfo()
 		love.graphics.print(tostring(info), 20, position)
 		position = position + 10
 	end
+
+	local updated_position = 10
+	for varName, text in pairs(updated_debugging_text) do
+		love.graphics.print(tostring(varName) .. ": " .. tostring(text), 200, updated_position)
+		updated_position = updated_position + 10
+	end
 end
 
 function load_graphics()
@@ -100,6 +112,8 @@ function load_graphics()
 
 	player_sheet = love.graphics.newImage("/assets/player_sheet.png")
 	stationary = love.graphics.newQuad(0,0, 99, 110, 1024, 512)
+
+	cursor_image = love.graphics.newImage("/assets/cursor.png")
 end
 
 

@@ -42,10 +42,11 @@ function beginContact(a, b, coll)
 
 		--If the ball is dangerous (ie: thrown by another player)
 		elseif ballObject.isDangerous then
-
+			--local playerBody = player:getBody()
+			--playerBody:setFixedRotation(false)
 		else
 			if not ballObject.isOwned then
-				playerObject:pickupBall(ballObject)		
+				playerObject:pickupBall(ballObject)	
 			end
 		end
 

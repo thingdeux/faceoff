@@ -20,11 +20,14 @@ Entity = Class{
 		--Player Specific Updates
 		if self.type == "player" then
 			self:controller(velocity_x, velocity_y, self.playerNumber)
+			
 
-			if self.isPullingBackToThrow or self.isThrowing then
-				self:throw(dt) --Throw has to come before animate				
-				self:animate(dt)	
+			if self.isPullingBackToThrow or self.isThrowing or
+			self.timer.recentlyThrownBall then
+				self:throw(dt) --Throw has to come before animate												
 			end
+
+			self:animate(dt)
 		end
 
 		--Ball Specific Updates
@@ -43,7 +46,7 @@ Entity = Class{
 	end;
 
 	controller = function(self, velocity_x, velocity_y, playerNumber)
-		if self.type == "player" then			
+		if self.type == "player" then						
 
 			--Controller handler for when the player jumps
 			if (love.keyboard.isDown("w") and playerNumber == "One") or
@@ -95,8 +98,22 @@ Entity = Class{
 			elseif self.isPullingBackToThrow then				
 				self.isPullingBackToThrow = false			
 				self.isThrowing = true
-			end			
-				
+			end
+
+			if love.mouse.getY() < self.mouseTracker.y then --Mouse moved up
+				self.cursor.tracker.y = self.cursor.tracker.y - 2 		
+			elseif love.mouse.getY() > self.mouseTracker.y then --Mouse moves down
+				self.cursor.tracker.y = self.cursor.tracker.y + 2				
+			end
+			
+			if love.mouse.getX() > self.mouseTracker.x then ----Mouse moves right			
+				self.cursor.tracker.x = self.cursor.tracker.x + 2
+			elseif love.mouse.getX() < self.mouseTracker.x then --Mouse moves left
+				self.cursor.tracker.x = self.cursor.tracker.x - 2
+			end
+
+
+			self:trackMouse()  --Keep this as the very end, updates the mouse location tracker	
 		end
 	end;
 
@@ -111,11 +128,23 @@ Entity = Class{
 	animate = function(self)
 		
 		--While the player is reeling back
-		if self.isPullingBackToThrow then			
+		if self.isPullingBackToThrow then		
 			--Keep the ball moving with the player while the player is holding it
 			self.activeBall.body:setPosition(self.body:getX() + 30  - (self.throwForce.current - 50), self.body:getY())				
 		end
+
+		--Snap the cursor to the player
+		self.cursor.x = self.cursor.tracker.x
+		self.cursor.y = self.cursor.tracker.y
 		
+		debugger:keepUpdated("cursorTrackerX", self.cursor.tracker.x)
+		debugger:keepUpdated("cursorTrackerY", self.cursor.tracker.y)
+	
+		--Use math to ummm...magically point the cursor in the direction of the mouse -- Maaaaaaath
+		--local angle = math.angle(self.cursor.x, self.cursor.y, love.mouse.getX(), love.mouse.getY())
+		--self.cursor.x = self.cursor.x + math.sin(angle)*100
+		--self.cursor.y = self.cursor.y + math.cos(angle)*100
+	
 	end;
 
 }

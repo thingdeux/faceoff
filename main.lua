@@ -10,10 +10,13 @@ require("debugger")
 
 function love.load()
 
-	debugger = Debugger()
+	--Create a debugger instance
+	debugger = Debugger()	
+	love.mouse.setVisible(true)
+	love.mouse.setGrab(true)
 	load_colors()
-	load_graphics()
-	active_entities = {}
+	load_graphics()	
+	active_entities = {}	
 
 	--Set the physics distance calculation
 	love.physics.setMeter(64)
@@ -21,6 +24,8 @@ function love.load()
 	world = love.physics.newWorld(0,9.84*64, true)
 	--create the callback handler for collision
 	world:setCallbacks(beginContact, endContact, preSolve, postSolve)
+	love.graphics.setPointStyle("smooth")
+	love.graphics.setPointSize(4)
 
 	load_level("basic")
 
@@ -30,20 +35,15 @@ function love.load()
 
 	--If a joystick is enabled, two characters will spawn
 	if checkForJoystick() == "One Joystick" then
+		--Create Player 2
 		Player({380, 200}, "Two")
-		debugger:insert("One Joystick Detected")
-		print(love.joystick.getNumAxes(1))	
+		debugger:insert("One Joystick Detected")		
 	elseif checkForJoystick() == "Two Joystick" then
 		debugger:insert("Two Joysticks Detected")
 	else
 		debugger:insert("No Joysticks Detected")
 	end
-	
-	--Ball({400,100})
-	--Ball({400,70})
-	--Ball({500,150})
-	--Ball({550,200})
-	--Ball({250,200})
+
 end
 
 
@@ -96,3 +96,5 @@ function checkForJoystick()
 		return "No Joystick"
 	end	
 end
+
+function math.angle(x1,y1, x2,y2) return math.atan2(x2-x1, y2-y1) end
