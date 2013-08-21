@@ -12,7 +12,12 @@ Player = Class{
 		self.ballCount = 5
 		self.weight = .1		
 		self.isOnGround = false
+
+		self.isPullingBackToThrow = false
+		self.isThrowing = false
 		self.type = "player"
+		self.timer = {}
+		self.activeBall = nil
 
 		self.body = love.physics.newBody(world, self.x, self.y, "dynamic")
 		self.shape = love.physics.newRectangleShape(self.width, self.height)
@@ -27,7 +32,6 @@ Player = Class{
 		--Set the friction
 		self.fixture:setFriction(self.friction)
 		self.fixture:setRestitution(0)
-
 
 		--Players body won't rotate unless this is changed
 		self.body:setFixedRotation(true)

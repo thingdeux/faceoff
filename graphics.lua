@@ -80,6 +80,7 @@ function drawBackground()
 end
 
 function drawDebugInfo()
+	love.graphics.setColor(color.white)
 	local position = 10
 	for __, info in pairs(active_debugging_text) do
 		love.graphics.print(tostring(info), 20, position)
