@@ -28,7 +28,7 @@ function beginContact(a, b, coll)
 	end
 
 	determineCollision(a)
-	determineCollision(b)	
+	determineCollision(b)
 
 	if ball and player then
 		--This passes the balls class variables to ballObject since this is working with
@@ -41,12 +41,19 @@ function beginContact(a, b, coll)
 			playerObject:pickupBall(ballObject)
 
 		--If the ball is dangerous (ie: thrown by another player)
-		elseif ballObject.isDangerous then
+		elseif ballObject.isDangerous and not (ballObject.owner == playerObject) and not playerObject.isDead then
 			local playerBody = player:getBody()
 			playerBody:setFixedRotation(false)
+			player:setRestitution(.3)		
+			gameSpeed = .3
+			playerObject.isDead = true			
+			playerObject.timer.deathTimer = love.timer.getTime() + 3
+			roundOver = true
+			ballObject.owner.killCount = ballObject.owner.killCount + 1
+
 		else
 			if not ballObject.isOwned then
-				playerObject:pickupBall(ballObject)	
+				playerObject:pickupBall(ballObject)
 			end
 		end
 

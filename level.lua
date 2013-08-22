@@ -1,4 +1,4 @@
-level = Class{
+Level = Class{
 	init = function(self, coords, type_of_object, width, height)
 		self.type_of_object = type_of_object
 		
@@ -47,24 +47,43 @@ level = Class{
 
 function load_level(name)
 	if name == "basic" then
+		level = {}
+		level.name = name
+		level.spawnPoints = {}
+		table.insert(level.spawnPoints, {["x"] = 120, ["y"] = 150, ["name"] = "Top Left"})
+		table.insert(level.spawnPoints, {["x"] = 10, ["y"] = 700, ["name"] = "Bottom Left"})
+		table.insert(level.spawnPoints, {["x"] = 950, ["y"] = 50, ["name"] = "Top Right"})
+		table.insert(level.spawnPoints, {["x"] = 950, ["y"] = 50, ["name"] = "Bottom Right"})
+		level.roundOver = false
+
 		--Ground
-		level({0, 758}, "rectangle", 1024, 10)
+		Level({0, 758}, "rectangle", 1024, 10)
 		--Roof
-		level({0, 0}, "rectangle", 1024, 10)
+		Level({0, 0}, "rectangle", 1024, 10)
 		--Left Wall
-		level({0, 0}, "rectangle", 10, 768)
+		Level({0, 0}, "rectangle", 10, 768)
 		--Right Wall
-		level({1014, 0}, "rectangle", 10, 768)
+		Level({1014, 0}, "rectangle", 10, 768)
 
 		--Misc Block center
-		--level({300, 650}, "rectangle", 20, 80)
+		Level({300, 650}, "rectangle", 20, 60)
+		Level({700, 650}, "rectangle", 20, 60)
 
 		--Sloped Platform bottom left
-		level({0, 650, 150, 768}, "edge")
+		Level({0, 650, 150, 768}, "edge")
 
 		--Sloped Platform bottom left
-		level({520, 650, 350, 768}, "edge")
+		Level({520, 650, 350, 768}, "edge")
 
 
+	end
+end
+
+function getSpawnPoint(name)
+	for __, spawnpoint in ipairs(level.spawnPoints) do		
+		if spawnpoint.name == name then			
+			return spawnpoint.x, spawnpoint.y
+
+		end
 	end
 end

@@ -6,8 +6,7 @@ parameters.terminal_velocity = 50
 
 Entity = Class{
 
-	update = function(self, dt)
-
+	update = function(self, dt)		
 		--Pass the players x/y velocity to a local variable for checking below
 		local velocity_x,velocity_y = self.body:getLinearVelocity()
 		
@@ -19,7 +18,14 @@ Entity = Class{
 
 		--Player Specific Updates
 		if self.type == "player" then
-			self:controller(velocity_x, velocity_y, self.playerNumber, dt)
+			if not self.isDead then
+				self:controller(velocity_x, velocity_y, self.playerNumber, dt)
+				self.body:setAngle(0)
+			else  --If a is dead								
+				if love.timer.getTime() > self.timer.deathTimer then					
+					spawn_players(true)
+				end
+			end
 			
 
 			if self.isPullingBackToThrow or self.isThrowing or
@@ -87,8 +93,8 @@ Entity = Class{
 			end			
 
 			--Controller handler for when the player presses the throw button
-			if ( (love.keyboard.isDown(" ") or love.mouse.isDown("l") ) and playerNumber =="One") or 
-			   ( (love.joystick.isDown(1, 3) or love.joystick.isDown(1,6) )and playerNumber == "Two") then
+			if ( (love.keyboard.isDown(" ") or love.mouse.isDown("l") ) and playerNumber =="One" and not roundOver) or 
+			   ( (love.joystick.isDown(1, 3) or love.joystick.isDown(1,6) )and playerNumber == "Two" and not roundOver) then
 				
 				--If player presses the throw button, start reeling back to throw
 				if not self.isThrowing and not self.isPullingBackToThrow and self.ballCount > 0 then
@@ -121,16 +127,15 @@ Entity = Class{
 		--While the player is reeling back
 		if self.isPullingBackToThrow then		
 			--Keep the ball moving with the player while the player is holding it
-			self.activeBall.body:setPosition(self.body:getX() + 30  - (self.throwForce.current - 50), self.body:getY())				
+			self.activeBall.body:setPosition(self.body:getX() + 30 - (self.throwForce.current - 50), self.body:getY())				
 
 			local ballx, bally = self.activeBall.body:getPosition()				
-			local newAngle = math.angle(self.body:getX(), self.body:getY(), self.cursor.x, self.cursor.y)
+			self.throwForce.angle = math.angle(self.body:getX(), self.body:getY(), self.cursor.x, self.cursor.y)
 						
-			debugger:keepUpdated("New Angle: ", newAngle)			
+			--debugger:keepUpdated("New Angle: ", math.sin(self.throwForce.angle)	)
 
-			self.activeBall.body:setPosition( ballx + math.sin(newAngle)*25, bally )
-			self.activeBall.body:setPosition( ballx, bally + math.cos(newAngle)*25 )
-
+			self.activeBall.body:setPosition( ballx + math.sin(self.throwForce.angle)*25, bally )
+			self.activeBall.body:setPosition( ballx, bally + math.cos(self.throwForce.angle)*25 )
 
 		end
 

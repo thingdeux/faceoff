@@ -20,11 +20,14 @@ Player = Class{
 		self.throwForce.current = 40
 		self.throwForce.speed = 200
 		self.throwForce.max = 100
+		self.throwForce.angle = 0
 		self.cursor = {}
 		self.cursor.x = 0
 		self.cursor.y = 0
 		self.cursor.speed = 200	
 		self.cursor.angle = 0
+		self.isDead = false
+		self.killCount = 0
 		
 		self.mouseTracker = {}
 		self.mouseTracker.x = 0
@@ -101,7 +104,9 @@ Player = Class{
 			
 		if self.isThrowing and not self.timer.throwing then
 			self.activeBall.body:setActive (true)
-			self.activeBall.body:applyLinearImpulse(self.throwForce.current, 0)
+			--self.activeBall.body:applyLinearImpulse(self.throwForce.current, -20)			
+
+			self.activeBall.body:applyLinearImpulse(math.sin(self.throwForce.angle)*100, math.cos(self.throwForce.angle)*100)
 			self.ballCount = self.ballCount - 1
 			self.timer.throwing = love.timer.getTime() + .4
 
@@ -241,7 +246,3 @@ Player = Class{
 }
 
 Player:include(Entity)
-
-
-
-

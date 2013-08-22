@@ -4,7 +4,7 @@ function drawBalls()
 	local function chooseAnimation(ball)
 		if ball.animation == "no_squish" then
 			--Offset of 10 on either side to match up with the physics engine ball radius
-			love.graphics.drawq(ball_sheet, no_squish, ball.body:getX(), ball.body:getY(), 0, ball.size.x, ball.size.y, 10, 10)
+			love.graphics.drawq(ball_sheet, no_squish, ball.body:getX(), ball.body:getY(), ball.body:getAngle(), ball.size.x, ball.size.y, 10, 10)
 		elseif ball.animation == "top_squish" then
 			love.graphics.drawq(ball_sheet, top_squish, ball.x, ball.y, 0, 1, 1)
 		elseif ball.animation == "bottom_squish" then
@@ -39,9 +39,7 @@ function drawBalls()
 					love.graphics.setColor(color.white)
 				end
 				chooseAnimation(ball)
-				love.graphics.print( tostring( ball.body:getAngle() ), ball.body:getX(), ball.body:getY() )
-				--love.graphics.print(tostring(ball.isDangerous), ball.body:getX(), ball.body:getY() - 20 )				
-				--love.graphics.print("X: " .. tostring(x) .. " Y: " .. tostring(y), ball.body:getX(), ball.body:getY() - 30 )											
+
 			end
 		end
 	end
@@ -57,17 +55,15 @@ function drawPlayers()
 		if player.playerNumber == "One" then
 			love.graphics.setColor(color.white)
 		elseif player.playerNumber == "Two" then
-			love.graphics.setColor(color.brightyellow)			
+			love.graphics.setColor(color.brightyellow)		
 		end
-
 		
 		love.graphics.drawq(player_sheet, stationary, player.body:getX(), player.body:getY(), player.body:getAngle(), .8, .8, 52, 55)
-
 			
 		--love.graphics.point(player.cursor.x + player.thumbStickTracker.x, player.cursor.y + player.thumbStickTracker.y)
+		debugger:keepUpdated("Player " .. tostring(player.playerNumber) .. " Knockouts", player.killCount)
 
-
-		love.graphics.print(tostring(player.ballCount), player.body:getX(), player.body:getY() - 55)
+		love.graphics.print("Balls: " .. tostring(player.ballCount), player.body:getX() - 20, player.body:getY() - 55)
 		love.graphics.setColor(color.red)
 		love.graphics.point(player.cursor.x, player.cursor.y)	
 	end
@@ -86,19 +82,27 @@ function drawLevel()
 end
 
 function drawBackground()
+	love.graphics.setColor(color.white)
+	love.graphics.print("Enable a 360 controller for 2 player.", 750, 10 )
+	love.graphics.print("Move with Left Stick, Aim with Right Stick", 750, 20 )
+	love.graphics.print("LB to Jump, RB to throw", 750, 30 )
+
+	love.graphics.print("Move with WASD, Aim with Mouse", 20, 20 )
+	love.graphics.print("Throw with left-click", 20, 30 )
+
 end
 
 function drawDebugInfo()
 	love.graphics.setColor(color.white)
 	local position = 10
 	for __, info in pairs(active_debugging_text) do
-		love.graphics.print(tostring(info), 20, position)
+		love.graphics.print(tostring(info), 100, position)
 		position = position + 10
 	end
 
 	local updated_position = 10
 	for varName, text in pairs(updated_debugging_text) do
-		love.graphics.print(tostring(varName) .. ": " .. tostring(text), 200, updated_position)
+		love.graphics.print(tostring(varName) .. ": " .. tostring(text), 400, updated_position)
 		updated_position = updated_position + 10
 	end
 end
@@ -129,4 +133,10 @@ function load_colors()
 	color.cyan = {39, 181, 252, 255}
 	color.brightyellow = {255, 255, 158, 255}
 	color.white = {255,255,255,255}
+end
+
+
+function drawBuild()
+	love.graphics.setColor(color.red)
+	love.graphics.print("Prototype Build: 0.4", 0, 756 )
 end
