@@ -46,11 +46,11 @@ Entity = Class{
 	end;
 
 	controller = function(self, velocity_x, velocity_y, playerNumber, dt)
-		if self.type == "player" then						
+		if self.type == "player" then	
 
 			--Controller handler for when the player jumps
 			if (love.keyboard.isDown("w") and playerNumber == "One") or
-			(love.joystick.isDown(1, 1) and playerNumber == "Two") and self.isOnGround then
+			   ( (love.joystick.isDown(1, 1) or love.joystick.isDown(1,5) ) and playerNumber == "Two") and self.isOnGround then
 								
 				if self.isOnGround then
 					self.body:applyLinearImpulse(0, -self.jumpForce)
@@ -75,7 +75,7 @@ Entity = Class{
 
 			--Controller handler for when the player presses left
 			elseif (love.keyboard.isDown("a") and playerNumber =="One") or
-			 (love.joystick.getAxis(1, 1) < -0.8 and playerNumber == "Two") then
+			 	   (love.joystick.getAxis(1, 1) < -0.8 and playerNumber == "Two") then
 				if velocity_x > -self.maxSpeed then
 					if self.isOnGround then
 						self.body:applyForce(-self.speed, 0)
@@ -84,11 +84,11 @@ Entity = Class{
 						self.body:applyForce(-self.speed, 0)
 					end
 				end
-			end
+			end			
 
 			--Controller handler for when the player presses the throw button
-			if (love.keyboard.isDown(" ") and playerNumber =="One") or 
-				(love.joystick.isDown(1, 3) and playerNumber == "Two") then
+			if ( (love.keyboard.isDown(" ") or love.mouse.isDown("l") ) and playerNumber =="One") or 
+			   ( (love.joystick.isDown(1, 3) or love.joystick.isDown(1,6) )and playerNumber == "Two") then
 				
 				--If player presses the throw button, start reeling back to throw
 				if not self.isThrowing and not self.isPullingBackToThrow and self.ballCount > 0 then
@@ -122,6 +122,16 @@ Entity = Class{
 		if self.isPullingBackToThrow then		
 			--Keep the ball moving with the player while the player is holding it
 			self.activeBall.body:setPosition(self.body:getX() + 30  - (self.throwForce.current - 50), self.body:getY())				
+
+			local ballx, bally = self.activeBall.body:getPosition()				
+			local newAngle = math.angle(self.body:getX(), self.body:getY(), self.cursor.x, self.cursor.y)
+						
+			debugger:keepUpdated("New Angle: ", newAngle)			
+
+			self.activeBall.body:setPosition( ballx + math.sin(newAngle)*25, bally )
+			self.activeBall.body:setPosition( ballx, bally + math.cos(newAngle)*25 )
+
+
 		end
 
 		--Snap the cursor to the player

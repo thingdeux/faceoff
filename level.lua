@@ -56,6 +56,9 @@ function load_level(name)
 		--Right Wall
 		level({1014, 0}, "rectangle", 10, 768)
 
+		--Misc Block center
+		--level({300, 650}, "rectangle", 20, 80)
+
 		--Sloped Platform bottom left
 		level({0, 650, 150, 768}, "edge")
 

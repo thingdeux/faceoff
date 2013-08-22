@@ -23,7 +23,7 @@ Player = Class{
 		self.cursor = {}
 		self.cursor.x = 0
 		self.cursor.y = 0
-		self.cursor.speed = 40	
+		self.cursor.speed = 200	
 		self.cursor.angle = 0
 		
 		self.mouseTracker = {}
@@ -88,12 +88,12 @@ Player = Class{
 				self.isDangerous = true
 			else
 				--Stop the ball from simulating while the player holds it in their hand				
-				self.activeBall.body:setActive (false)			
+				self.activeBall.body:setActive (false)							
 
 				--Start 'charging' up the throw				
 				if self.throwForce.current < self.throwForce.max then
-					self.throwForce.current = self.throwForce.current + self.throwForce.speed*dt					
-				end				
+					self.throwForce.current = self.throwForce.current + self.throwForce.speed*dt
+				end		
 			end
 			
 		end
@@ -178,9 +178,6 @@ Player = Class{
 			self.thumbStickTracker.y = self.thumbStickTracker.y + self.cursor.speed*dt
 		end
 		
-
-		debugger:keepUpdated("X Axis", self.thumbStickTracker.current.x)
-		debugger:keepUpdated("Y Axis", self.thumbStickTracker.current.y)
 				
 	end;
 
@@ -189,17 +186,25 @@ Player = Class{
 			if controlType == "mouse" then
 				love.mouse.setPosition(x, self.body:getY() + 100)
 			elseif controlType == "stick" then				
-				self.thumbStickTracker.y = self.thumbStickTracker.y - self.cursor.speed*dt
-				debugger:insert("Too low")
-				return true
+				if self.thumbStickTracker.current.y > 0 then
+					self.thumbStickTracker.y = self.thumbStickTracker.y					
+					return true
+				else
+					return false
+				end				
 			end
 		elseif y <= self.body:getY() - 100 then
 			if controlType == "mouse" then
 				love.mouse.setPosition(x, self.body:getY() - 100)
+			
 			elseif controlType == "stick" then				
-				self.thumbStickTracker.y = self.thumbStickTracker.y + self.cursor.speed*dt
-				debugger:insert("Too high")
-				return true
+				if self.thumbStickTracker.current.y < 0 then
+					self.thumbStickTracker.y = self.thumbStickTracker.y					
+					return true
+				else
+					return false
+				end
+
 			end
 		end
 
@@ -207,17 +212,23 @@ Player = Class{
 			if controlType == "mouse" then
 				love.mouse.setPosition(self.body:getX() - 100, y)
 			elseif controlType == "stick" then
-				self.thumbStickTracker.x = self.thumbStickTracker.x + self.cursor.speed*dt
-				debugger:insert("Too far right")
-				return true
+				if self.thumbStickTracker.current.x < 0 then
+					self.thumbStickTracker.y = self.thumbStickTracker.y					
+					return true
+				else
+					return false
+				end				
 			end
 		elseif x >= self.body:getX() + 100 then
 			if controlType == "mouse" then
 				love.mouse.setPosition(self.body:getX() + 100, y)
 			elseif controlType == "stick" then
-				debugger:insert("Too far left")
-				self.thumbStickTracker.x = self.thumbStickTracker.x - self.cursor.speed*dt
-				return true
+				if self.thumbStickTracker.current.x > 0 then
+					self.thumbStickTracker.y = self.thumbStickTracker.y					
+					return true
+				else
+					return false
+				end
 			end
 		end
 		

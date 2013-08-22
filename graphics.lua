@@ -39,6 +39,7 @@ function drawBalls()
 					love.graphics.setColor(color.white)
 				end
 				chooseAnimation(ball)
+				love.graphics.print( tostring( ball.body:getAngle() ), ball.body:getX(), ball.body:getY() )
 				--love.graphics.print(tostring(ball.isDangerous), ball.body:getX(), ball.body:getY() - 20 )				
 				--love.graphics.print("X: " .. tostring(x) .. " Y: " .. tostring(y), ball.body:getX(), ball.body:getY() - 30 )											
 			end
@@ -50,7 +51,7 @@ function drawPlayers()
 	for __, player in ipairs(active_players) do		
 		--For testing the physics bounding box (or shape/fixture)		
 		--love.graphics.setColor(100,255,255,255)
-		--love.graphics.polygon("fill", player.body:getWorldPoints(player.shape:getPoints()))		
+		--love.graphics.polygon("fill", player.body:getWorldPoints(player.shape:getPoints()))	
 		--love.graphics.print(tostring(player.isOnGround), 20, 40)
 
 		if player.playerNumber == "One" then
@@ -60,14 +61,15 @@ function drawPlayers()
 		end
 
 		
-		love.graphics.drawq(player_sheet, stationary, player.body:getX() - 40, player.body:getY() - 45, player.orientation, .8, .8)
+		love.graphics.drawq(player_sheet, stationary, player.body:getX(), player.body:getY(), player.body:getAngle(), .8, .8, 52, 55)
 
-		
-		love.graphics.point(player.cursor.x + player.thumbStickTracker.x, player.cursor.y + player.thumbStickTracker.y)
+			
+		--love.graphics.point(player.cursor.x + player.thumbStickTracker.x, player.cursor.y + player.thumbStickTracker.y)
+
 
 		love.graphics.print(tostring(player.ballCount), player.body:getX(), player.body:getY() - 55)
 		love.graphics.setColor(color.red)
-		love.graphics.point(player.cursor.x + 8, player.cursor.y)		
+		love.graphics.point(player.cursor.x, player.cursor.y)	
 	end
 end
 
