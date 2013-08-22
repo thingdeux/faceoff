@@ -1,23 +1,19 @@
-local parameters = {}
-parameters.gravity = 5
-parameters.windResistance = 10
-parameters.terminal_velocity = 50
-
-
 Entity = Class{
 
 	update = function(self, dt)		
-		--Pass the players x/y velocity to a local variable for checking below
-		local velocity_x,velocity_y = self.body:getLinearVelocity()
 		
-		if velocity_y >= -1 and velocity_y <= 1 then
-			self.isOnGround = true
-		else
-			self.isOnGround = false
-		end
 
 		--Player Specific Updates
 		if self.type == "player" then
+			--Pass the players x/y velocity to a local variable for checking below		
+			local velocity_x,velocity_y = self.body:getLinearVelocity()		
+			
+			if velocity_y >= -1 and velocity_y <= 1 then
+				self.isOnGround = true
+			else
+				self.isOnGround = false
+			end
+
 			if not self.isDead then
 				self:controller(velocity_x, velocity_y, self.playerNumber, dt)
 				self.body:setAngle(0)
@@ -38,7 +34,7 @@ Entity = Class{
 
 		--Ball Specific Updates
 		if self.type == "ball" then
-			--local ballvelocity_x,ballvelocity_y = self.body:getLinearVelocity()
+			local velocity_x,velocity_y = self.body:getLinearVelocity()
 
 			if (velocity_x >= -20 and velocity_x <= 20) and (velocity_y >= -6 and velocity_y <= 6) then
 				self.isDangerous = false
@@ -47,6 +43,28 @@ Entity = Class{
 					self.isDangerous = true
 				end
 			end	
+		end
+
+		if self.type == "movingRectangle" then
+			if self.direction == "horizontal" then
+				self.body:setLinearVelocity(self.speed, 0)
+			elseif self.direction == "vertical" then
+				self.body:setLinearVelocity(0, self.speed)
+			end
+		end
+
+		if self.type == "object" then
+			if not self.timer.spawnTimer then				
+				self.timer.spawnTimer = 0
+				self.timer.spawnTimer = self.timer.spawnTimer + self.spawnRate				
+			elseif love.timer.getTime() > self.timer.spawnTimer then
+				if self.ammoLeft > 0 then
+					self:spawnBall()
+					self.timer.spawnTimer = nil	
+					self.ammoLeft = self.ammoLeft - 1					
+					
+				end				
+			end
 		end
 		
 	end;

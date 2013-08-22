@@ -10,7 +10,7 @@ Player = Class{
 		self.friction = 6
 		self.width = 35
 		self.height = 75
-		self.ballCount = 5
+		self.ballCount = 1
 		self.weight = .1		
 		self.isOnGround = false
 		self.gravitiesPull = 1.8
@@ -246,3 +246,58 @@ Player = Class{
 }
 
 Player:include(Entity)
+
+
+function spawn_players(respawn)
+
+	if not respawn then
+		--Create Player 1	
+		Player({getSpawnPoint("Bottom Left")}, "One")
+
+		--If a joystick is enabled, two characters will spawn
+		if checkForJoystick() == "One Joystick" then
+			--Create Player 2
+			Player({getSpawnPoint("Bottom Right")}, "Two")
+			--debugger:insert("One Joystick Detected")		
+		elseif checkForJoystick() == "Two Joystick" then
+			--debugger:insert("Two Joysticks Detected")
+		else
+			debugger:insert("No Joysticks Detected")
+		end
+	else		
+		--Delete all active balls
+		for __, ball in ipairs(active_balls) do			
+			ball.isBeingHeld = true
+			ball.isOwned = false
+			ball.owner = false
+			ball.body:setActive(false)		
+		end
+
+
+		for __, player in pairs(active_players) do
+			--Set the number of balls the players respawn with
+			player.ballCount = 1
+
+			if player.isDead then
+				player.body:isActive(false)				
+				player.isDead = false
+				player.body:setFixedRotation(true)				
+				player.body:setLinearDamping(0)
+				player.body:setAngularVelocity(0)
+				player.fixture:setRestitution(0)														
+				player.body:isActive(true)
+			end
+
+			if player.playerNumber == "One" then
+				player.body:setPosition(getSpawnPoint("Bottom Left"))				
+			else
+				player.body:setPosition(getSpawnPoint("Bottom Right"))				
+			end
+			player.body:applyLinearImpulse(0,1)
+		end		
+
+		gameSpeed = 1
+		roundOver = false
+	end
+
+end

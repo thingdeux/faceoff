@@ -6,6 +6,7 @@ require("level")
 require("collisions")
 require("players")
 require("debugger")
+require("objects")
 
 
 function love.load()
@@ -31,10 +32,7 @@ function love.load()
 
 	load_level("basic")
 	spawn_players()
-
 	
-	
-
 end
 
 
@@ -63,12 +61,12 @@ function love.keypressed(key)
 	end
 end
 
-function love.draw()
-	drawDebugInfo()
+function love.draw()	
 	drawBackground()
 	drawLevel()
 	drawPlayers()
 	drawBalls()
+	drawDebugInfo()
 	drawBuild()
 end
 
@@ -90,58 +88,3 @@ function checkForJoystick()
 end
 
 function math.angle(x1,y1, x2,y2) return math.atan2(x2-x1, y2-y1) end
-
-function spawn_players(respawn)
-
-	if not respawn then
-		--Create Player 1	
-		Player({getSpawnPoint("Top Left")}, "One")
-
-		--If a joystick is enabled, two characters will spawn
-		if checkForJoystick() == "One Joystick" then
-			--Create Player 2
-			Player({getSpawnPoint("Top Right")}, "Two")
-			--debugger:insert("One Joystick Detected")		
-		elseif checkForJoystick() == "Two Joystick" then
-			--debugger:insert("Two Joysticks Detected")
-		else
-			debugger:insert("No Joysticks Detected")
-		end
-	else		
-		--Delete all active balls
-		for __, ball in ipairs(active_balls) do			
-			ball.isBeingHeld = true
-			ball.isOwned = false
-			ball.owner = false
-			ball.body:setActive(false)
-			--ball:destroyObject()			
-			--ball.fixture:destroy()		
-			
-		end
-
-
-		for __, player in pairs(active_players) do
-			player.ballCount = 5
-			if player.isDead then
-				player.isDead = false
-				player.body:setFixedRotation(true)
-				player.body:setAngle(0)
-				player.body:setInertia(0)
-				player.body:setLinearDamping(0)
-				player.fixture:setRestitution(0)														
-			end
-
-			if player.playerNumber == "One" then
-				player.body:setPosition(getSpawnPoint("Top Left"))
-			else
-				player.body:setPosition(getSpawnPoint("Top Right"))
-			end
-		end
-
-		
-
-		gameSpeed = 1
-		roundOver = false
-	end
-
-end

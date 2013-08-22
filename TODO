@@ -5,3 +5,31 @@ Play with applyangularimpulse for balls bouncing on collision - appears to modif
 
 *ideas
 Allow the player to hide his/her directional cursor
+
+
+Level Ideas:
+
+A level that slowly pushes a wall down on you - like a trash compacter - so you have to hurry up and get the other guy
+or you're both dead.
+
+  
+|   |  <--Hammers
+
+-----
+*  *   <-Players
+
+
+
+
+
+--   --  A level with a pit in the middle that fires up balls
+
+
+
+--Narrow hallway where you can't shoot a ball directly at someone, you have to angle it
+
+-------
+*  |  *
+-------
+
+(Blocks inbetween that prevent straight shots)

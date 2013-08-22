@@ -36,6 +36,9 @@ Ball = Class{
 		-- Attach fixture to body and give it a density of 1.
 		self.fixture = love.physics.newFixture(self.body, self.shape, 1)
 
+		--This is gonna cause more processing but may be necessary if the collision is not accurate enough
+		self.body:setBullet(false)
+
 		--fixture parameters
 		self.fixture:setDensity(self.weight)
 		--Set the balls friction

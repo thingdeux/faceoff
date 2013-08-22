@@ -59,13 +59,11 @@ function drawPlayers()
 		end
 		
 		love.graphics.drawq(player_sheet, stationary, player.body:getX(), player.body:getY(), player.body:getAngle(), .8, .8, 52, 55)
-			
-		--love.graphics.point(player.cursor.x + player.thumbStickTracker.x, player.cursor.y + player.thumbStickTracker.y)
-		debugger:keepUpdated("Player " .. tostring(player.playerNumber) .. " Knockouts", player.killCount)
-
+					
 		love.graphics.print("Balls: " .. tostring(player.ballCount), player.body:getX() - 20, player.body:getY() - 55)
 		love.graphics.setColor(color.red)
-		love.graphics.point(player.cursor.x, player.cursor.y)	
+		love.graphics.point(player.cursor.x, player.cursor.y)
+		debugger:keepUpdated("Player " .. tostring(player.playerNumber) .. " Knockouts", player.killCount)
 	end
 end
 
@@ -77,32 +75,29 @@ function drawLevel()
 			love.graphics.polygon("fill", levelPiece.body:getWorldPoints(levelPiece.shape:getPoints()))
 		elseif levelPiece.type_of_object == "edge" then
 			love.graphics.line(levelPiece.body:getWorldPoints(levelPiece.shape:getPoints()))
+		elseif levelPiece.type_of_object == "movingRectangle" and not levelPiece.isInvisible then
+			love.graphics.polygon("fill", levelPiece.body:getWorldPoints(levelPiece.shape:getPoints()))
 		end
 	end
 end
 
 function drawBackground()
-	love.graphics.setColor(color.white)
-	love.graphics.print("Enable a 360 controller for 2 player.", 750, 10 )
-	love.graphics.print("Move with Left Stick, Aim with Right Stick", 750, 20 )
-	love.graphics.print("LB to Jump, RB to throw", 750, 30 )
-
-	love.graphics.print("Move with WASD, Aim with Mouse", 20, 20 )
-	love.graphics.print("Throw with left-click", 20, 30 )
+	
 
 end
 
 function drawDebugInfo()
-	love.graphics.setColor(color.white)
+	love.graphics.setColor(color.red)
 	local position = 10
 	for __, info in pairs(active_debugging_text) do
 		love.graphics.print(tostring(info), 100, position)
 		position = position + 10
 	end
 
-	local updated_position = 10
+	local updated_position = 140 -- Should be 10
+	love.graphics.setColor(color.white)
 	for varName, text in pairs(updated_debugging_text) do
-		love.graphics.print(tostring(varName) .. ": " .. tostring(text), 400, updated_position)
+		love.graphics.print(tostring(varName) .. ": " .. tostring(text), 720, updated_position) --Should be 400
 		updated_position = updated_position + 10
 	end
 end
@@ -137,6 +132,18 @@ end
 
 
 function drawBuild()
-	love.graphics.setColor(color.red)
+	local xLocation = 720	
+
+	love.graphics.setColor(color.red)	
+	love.graphics.print("Enable a 360 controller for 2 player.", xLocation, 10 )
+	love.graphics.print("Move with Left Stick, Aim with Right Stick", xLocation, 20 )
+	love.graphics.print("LB to Jump, RB to throw", xLocation, 30 )
+
+	love.graphics.print("Player 1 moves with WASD", xLocation, 60 )
+	love.graphics.print("Aim with Mouse", xLocation, 70)
+	love.graphics.print("Throw with left-click", xLocation, 80 )
+
+	love.graphics.print("The longer you hold throw, the harder you do", xLocation, 100 )
+
 	love.graphics.print("Prototype Build: 0.4", 0, 756 )
 end
