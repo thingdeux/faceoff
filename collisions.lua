@@ -7,8 +7,7 @@
 function beginContact(a, b, coll)		
 	--The collision function does not easily determine what two things are colliding
 	--This function will make it nice and easy to work with the colliders by giving them
-	--Local variable names by type
-	
+	--Local variable names by type	
 	local colliders = determineCollision(a,b)
 		
 -----------Player Collision Handlers START--------------------
@@ -56,8 +55,11 @@ function beginContact(a, b, coll)
 	end
 
 	if colliders.player and colliders.movingRectangle then
-		local playerObject = colliders.player:getUserData()
-		playerObject.isTouching.movingRectangle = true		
+		
+		local playerObject = colliders.player:getUserData()		
+		playerObject.isTouching.movingRectangle = true
+		--debugger:keepUpdated("isTouching: ",playerObject.isTouching.movingRectangle)
+
 	end
 
 	if colliders.player and colliders.level then
@@ -92,9 +94,9 @@ function endContact(a, b, coll)
 -----------Player Collision Handlers START--------------------
 	local colliders = determineCollision(a,b)
 
-	if colliders.movingRectangle and colliders.player then
-		local playerObject = colliders.player:getUserData()
-		playerObject.isTouching.movingRectangle = false
+	if colliders.movingRectangle and colliders.player then		
+		local playerObject = colliders.player:getUserData()		
+		playerObject.isTouching.movingRectangle = false		
 	end
 
 -----------Player Collision Handlers END--------------------

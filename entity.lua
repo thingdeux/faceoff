@@ -8,13 +8,20 @@ Entity = Class{
 			--Pass the players x/y velocity to a local variable for checking below		
 			local velocity_x,velocity_y = self.body:getLinearVelocity()
 			
+			--debugger:keepUpdated("isTouching: " .. tostring(self.isTouching.movingRectangle)
+			--debugger:keepUpdated("Before: OnGround", self.isOnGround)
+							
 			if velocity_y >= -1 and velocity_y <= 1 then
 				self.isOnGround = true
 			else
-				self.isOnGround = false
-			end
+				--If I'm not touching anyMoving Rectangles and my velocity is higher than 0
+				--I'm jumping, clearly!
+				if not self.isTouching.movingRectangle then					
+					self.isOnGround = false
+				end
+			end			
 
-			debugger:keepUpdated("OnGround", self.isOnGround)
+			debugger:keepUpdated("Secpmd: OnGround", self.isOnGround)
 
 			if not self.isDead then
 				self:controller(velocity_x, velocity_y, self.playerNumber, dt)
