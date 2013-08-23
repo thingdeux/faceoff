@@ -6,11 +6,11 @@ Player = Class{
 		self.playerNumber = playerNumber		
 		self.maxSpeed = 400
 		self.speed = 250
-		self.jumpForce = 28
+		self.jumpForce = 40
 		self.friction = 6
 		self.width = 35
 		self.height = 75
-		self.ballCount = 1
+		self.ballCount = 100
 		self.weight = .1		
 		self.isOnGround = false
 		self.gravitiesPull = 1.8
@@ -137,9 +137,11 @@ Player = Class{
 
 	pickupBall = function(self, ballObject)
 		self.ballCount = self.ballCount + 1
-		ballObject.isBeingHeld = true
-		ballObject:destroyObject()
+		ballObject.isBeingHeld = true				
+		ballObject.body:destroy()
 		ballObject.fixture:destroy()
+		ballObject.body:isActive(false)
+		ballObject:destroyObject()
 	end;
 
 	trackMouse = function(self)

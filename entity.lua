@@ -1,6 +1,6 @@
 Entity = Class{
 
-	update = function(self, dt)		
+	update = function(self, dt)	
 		
 
 		--Player Specific Updates
@@ -17,7 +17,7 @@ Entity = Class{
 			if not self.isDead then
 				self:controller(velocity_x, velocity_y, self.playerNumber, dt)
 				self.body:setAngle(0)
-			else  --If a is dead								
+			else  --If a player is dead								
 				if love.timer.getTime() > self.timer.deathTimer then					
 					spawn_players(true)
 				end
@@ -33,13 +33,31 @@ Entity = Class{
 		end
 
 		--Ball Specific Updates
-		if self.type == "ball" then
-			local velocity_x,velocity_y = self.body:getLinearVelocity()
+		if self.type == "ball" and not self.isBeingHeld then
+			local velocity_x,velocity_y = self.body:getLinearVelocity()			
+			debugger:keepUpdated("isDangerous", self.isDangerous)
 
-			if (velocity_x >= -20 and velocity_x <= 20) and (velocity_y >= -6 and velocity_y <= 6) then
-				self.isDangerous = false
+			if self.isOwned then
+				debugger:keepUpdated("VelocityX", velocity_x)			
+				debugger:keepUpdated("VelocityY", velocity_y)
+			end
+
+			if (velocity_x >= -20 and velocity_x <= 20) or (velocity_y >= -20 and velocity_y <= 20) and
+				self.isOwned then
+				
+				--If the balls X or Y velocity dips below 20 then start a counter
+				--If the velocity stays low for more than 1 second then the ball is neutral
+				if not self.timer.dangerousBallOneSecondRule then					
+					self.timer.dangerousBallOneSecondRule = love.timer.getTime() + 1
+				elseif love.timer.getTime() > self.timer.dangerousBallOneSecondRule then
+					--If the ball stops moving it's no longer dangerous
+					self.isDangerous = false
+					self.isOwned = false
+				end
+
 			else
 				if self.isOwned then --If the ball has an owner(ie: has been thrown)
+					self.timer.dangerousBallOneSecondRule = nil
 					self.isDangerous = true
 				end
 			end	
@@ -59,7 +77,7 @@ Entity = Class{
 				self.timer.spawnTimer = self.timer.spawnTimer + self.spawnRate				
 			elseif love.timer.getTime() > self.timer.spawnTimer then
 				if self.ammoLeft > 0 then
-					self:spawnBall()
+					--self:spawnBall()
 					self.timer.spawnTimer = nil	
 					self.ammoLeft = self.ammoLeft - 1					
 					
@@ -93,7 +111,7 @@ Entity = Class{
 						self.body:applyForce(self.speed, 0)
 					else
 						--If player is in the air then they can only move themselves at half the speed
-						self.body:applyForce(self.speed, 0)
+						self.body:applyForce(self.speed/2, 0)
 					end
 				end
 
@@ -105,7 +123,7 @@ Entity = Class{
 						self.body:applyForce(-self.speed, 0)
 					else
 						--If player is in the air then they can only move themselves at half the speed
-						self.body:applyForce(-self.speed, 0)
+						self.body:applyForce(-self.speed/2, 0)
 					end
 				end
 			end			
@@ -134,9 +152,24 @@ Entity = Class{
 
 
 	destroyObject = function(self)
-		for i, myvariable in ipairs(self) do
-			i = nil
+
+		--delete ball from active_balls table
+		if self.type == "ball" then
+			for i, ball in ipairs(active_balls) do			
+				if ball.id == self.id then
+					table.remove(active_balls, i)
+				end
+			end
 		end
+
+		--delete ball from active_entities table
+		for i, entity in ipairs(active_entities) do
+			if entity.type == "ball" and entity.id == self.id then				
+				table.remove(active_entities, i)	
+			end
+		end
+		
+		self = nil
 	end;
 
 	--Deal with animations

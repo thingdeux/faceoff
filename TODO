@@ -1,5 +1,7 @@
 TODO:
 Play with applyangularimpulse for balls bouncing on collision - appears to modify momentum
+Enable neutral ball shifting
+Fix destroying of ball objects
 
 
 

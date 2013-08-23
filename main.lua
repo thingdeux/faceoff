@@ -42,7 +42,7 @@ function love.update(dt)
 	--Update the physics world
 	world:update(dt*gameSpeed)
 
-	for __, entity in ipairs(active_entities) do
+	for __, entity in ipairs(active_entities) do		
 		entity:update(dt*gameSpeed)
 	end
 

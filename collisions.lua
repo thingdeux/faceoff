@@ -100,6 +100,8 @@ function beginContact(a, b, coll)
 		rectangleObject:flipMovingDirection()
 		rectangleObject2:flipMovingDirection()
 	end
+
+	
 end
 
 function endContact(a, b, coll)

@@ -125,7 +125,7 @@ function load_level(name)
 
 		--Right Ball container
 		Level({900, 370}, "rectangle", 5, 30)		
-		--Right Ball container
+		--Left Ball container
 		Level({100, 370}, "rectangle", 5, 30)		
 
 
@@ -151,7 +151,7 @@ function load_level(name)
 		
 		--Objects
 		Object({940, 350}, "spawner")
-		Object({940, 350}, "spawner")
+		Object({40, 350}, "spawner")
 
 
 

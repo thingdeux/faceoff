@@ -19,15 +19,24 @@ Ball = Class{
 		self.isDangerous = false
 		self.animation = "no_squish"
 		self.type = "ball"		
-		self.isOnGround = false		
+		self.isOnGround = false
+		self.timer = {}
 
 		--Create the active_balls table
 		if not active_balls then
 			active_balls = {}
-			table.insert(active_balls, self)			
+			table.insert(active_balls, self)					
 		else
 			table.insert(active_balls, self)	
-		end	
+		end
+
+		if not totalBallsSpawned then
+			totalBallsSpawned = 1
+		else
+			totalBallsSpawned = totalBallsSpawned + 1
+		end
+		--Assign the ball an ID (for use in deletion)
+		self.id = totalBallsSpawned
 		
 		 --place the body in the center of the world and make it dynamic, so it can move around
 		self.body = love.physics.newBody(world, self.x, self.y, "dynamic")
@@ -37,7 +46,7 @@ Ball = Class{
 		self.fixture = love.physics.newFixture(self.body, self.shape, 1)
 
 		--This is gonna cause more processing but may be necessary if the collision is not accurate enough
-		self.body:setBullet(false)
+		self.body:setBullet(true)
 
 		--fixture parameters
 		self.fixture:setDensity(self.weight)
