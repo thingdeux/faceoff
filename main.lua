@@ -42,6 +42,7 @@ function love.update(dt)
 	--Update the physics world
 	world:update(dt*gameSpeed)
 
+	--Updated each active object on screen
 	for __, entity in ipairs(active_entities) do		
 		entity:update(dt*gameSpeed)
 	end
@@ -57,7 +58,7 @@ function love.keypressed(key)
 	end
 
 	if key == "r" then
-		Ball({400,100})
+		--Ball({400,100})
 	end
 end
 

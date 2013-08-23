@@ -4,29 +4,32 @@ Entity = Class{
 		
 
 		--Player Specific Updates
-		if self.type == "player" then
+		if self.type == "player" then			
 			--Pass the players x/y velocity to a local variable for checking below		
 			local velocity_x,velocity_y = self.body:getLinearVelocity()
 			
-			--debugger:keepUpdated("isTouching: " .. tostring(self.isTouching.movingRectangle)
-			--debugger:keepUpdated("Before: OnGround", self.isOnGround)
-							
+			debugger:keepUpdated("isTouching", self.isTouching.movingRectangle)						
+			debugger:keepUpdated("Velocity", velocity_y)
+
+			
 			if velocity_y >= -1 and velocity_y <= 1 then
 				self.isOnGround = true
-			else
-				--If I'm not touching anyMoving Rectangles and my velocity is higher than 0
-				--I'm jumping, clearly!
-				if not self.isTouching.movingRectangle then					
-					self.isOnGround = false
-				end
+			elseif (velocity_y < -1 and self.isTouching.movingRectangle) or 
+				   (velocity_y > 1 and self.isTouching.movingRectangle) then
+				--if I'm moving vertically but touching a moving rectangle then I'm still "on ground"
+				self.isOnGround = true			
+			elseif velocity_y < -1 or velocity_y > 1 and not self.isTouching.movingRectangle then
+				--If I'm not touching anyMoving Rectangles and my velocity is higher than 0				
+				self.isOnGround = false	
 			end			
+			
+			debugger:keepUpdated("OnGround", self.isOnGround)			
 
-			debugger:keepUpdated("Secpmd: OnGround", self.isOnGround)
-
+			--If the player isn't dead allow control
 			if not self.isDead then
-				self:controller(velocity_x, velocity_y, self.playerNumber, dt)
+				self:controller(velocity_x, velocity_y, self.playerNumber, dt)				
 				self.body:setAngle(0)
-			else  --If a player is dead								
+			else  --If a player is dead, no control for them!								
 				if love.timer.getTime() > self.timer.deathTimer then					
 					spawn_players(true)
 				end
@@ -45,8 +48,9 @@ Entity = Class{
 		if self.type == "ball" and not self.isBeingHeld then
 			local velocity_x,velocity_y = self.body:getLinearVelocity()						
 
-			if (velocity_x >= -20 and velocity_x <= 20) or (velocity_y >= -20 and velocity_y <= 20) and
-				self.isOwned then
+			--If the ball has slowed down to a point where it's not bouncing much
+			if ( (velocity_x >= -20 and velocity_x <= 20) or (velocity_y >= -20 and velocity_y <= 20) ) and 
+				(self.isOwned) then	
 				
 				--If the balls X or Y velocity dips below 20 then start a counter
 				--If the velocity stays low for more than 1 second then the ball is neutral
@@ -82,7 +86,7 @@ Entity = Class{
 				self.timer.spawnTimer = self.timer.spawnTimer + self.spawnRate				
 			elseif love.timer.getTime() > self.timer.spawnTimer then
 				if self.ammoLeft > 0 then
-					--self:spawnBall()
+					self:spawnBall()
 					self.timer.spawnTimer = nil	
 					self.ammoLeft = self.ammoLeft - 1					
 					
@@ -100,7 +104,8 @@ Entity = Class{
 			   ( (love.joystick.isDown(1, 1) or love.joystick.isDown(1,5) ) and playerNumber == "Two") and self.isOnGround then
 								
 				if self.isOnGround then
-					self.body:applyLinearImpulse(0, -self.jumpForce)
+					self.body:applyLinearImpulse(0, -self.jumpForce)										
+					self.isTouching.movingRectangle = false
 				end
 
 			--Controller handler for when the player slides

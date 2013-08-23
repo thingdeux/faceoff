@@ -4,13 +4,14 @@
 --postSolve is called just after a frame is resolved for a current collision 
 
 
-function beginContact(a, b, coll)		
+function beginContact(a, b, coll)
 	--The collision function does not easily determine what two things are colliding
 	--This function will make it nice and easy to work with the colliders by giving them
 	--Local variable names by type	
 	local colliders = determineCollision(a,b)
-		
------------Player Collision Handlers START--------------------
+	
+	
+	------Player Collision Handlers START--------------------
 
 	--Handler for when a player has collided with a ball
 	if colliders.ball and colliders.player then
@@ -54,19 +55,21 @@ function beginContact(a, b, coll)
 
 	end
 
-	if colliders.player and colliders.movingRectangle then
+	if colliders.player and colliders.movingRectangle then		
+		local playerObject = colliders.player:getUserData()
 		
-		local playerObject = colliders.player:getUserData()		
-		playerObject.isTouching.movingRectangle = true
-		--debugger:keepUpdated("isTouching: ",playerObject.isTouching.movingRectangle)
-
+		if coll:isTouching() then
+			playerObject.isTouching.movingRectangle = true			
+		else
+			playerObject.isTouching.movingRectangle = false
+		end		
 	end
 
 	if colliders.player and colliders.level then
 
 	end
 
------------Player Collision Handlers END--------------------
+	-------Player Collision Handlers END--------------------
 
 
 
@@ -83,29 +86,25 @@ function beginContact(a, b, coll)
 		--Flip both moving Rectangles having them *bounce* off of each other
 		rectangleObject:flipMovingDirection()
 		rectangleObject2:flipMovingDirection()
-	end
-
-
-
-	
+	end	
 end
 
-function endContact(a, b, coll)
------------Player Collision Handlers START--------------------
+function endContact(a, b, coll)	
+	-----------Player Collision Handlers START--------------------
 	local colliders = determineCollision(a,b)
 
 	if colliders.movingRectangle and colliders.player then		
 		local playerObject = colliders.player:getUserData()		
-		playerObject.isTouching.movingRectangle = false		
+		playerObject.isTouching.movingRectangle = false
 	end
 
------------Player Collision Handlers END--------------------
+	-----------Player Collision Handlers END--------------------
 end
 
-function preSolve(a, b, coll)	
+function preSolve(a, b, coll)
 end
 
-function postSolve(a, b, coll)
+function postSolve(a, b, coll)	
 end
 
 
