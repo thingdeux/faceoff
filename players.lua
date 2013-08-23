@@ -45,6 +45,10 @@ Player = Class{
 		self.timer = {}
 		self.activeBall = nil
 
+		self.isTouching = {}
+		self.isTouching.level = false
+		self.isTouching.movingRectangle = false
+
 		self.body = love.physics.newBody(world, self.x, self.y, "dynamic")
 		self.shape = love.physics.newRectangleShape(self.width, self.height)
 		self.fixture = love.physics.newFixture(self.body, self.shape)

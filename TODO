@@ -1,11 +1,24 @@
 TODO:
+Add networking/dedicated server "support"
 Play with applyangularimpulse for balls bouncing on collision - appears to modify momentum
-Enable neutral ball shifting
+
+
+
+
+Fixed:
+---
 Fix destroying of ball objects
+Enable neutral ball shifting
+----------
 
 
 
-*ideas
+
+
+
+
+*Ideas
+---------------
 Allow the player to hide his/her directional cursor
 
 
@@ -35,3 +48,11 @@ or you're both dead.
 -------
 
 (Blocks inbetween that prevent straight shots)
+
+
+
+
+
+
+Lava Pit level - and balls don't kill you they just push you into the lava
+*NO* Lava pit gamemode - American gladiators with flare

@@ -6,13 +6,15 @@ Entity = Class{
 		--Player Specific Updates
 		if self.type == "player" then
 			--Pass the players x/y velocity to a local variable for checking below		
-			local velocity_x,velocity_y = self.body:getLinearVelocity()		
+			local velocity_x,velocity_y = self.body:getLinearVelocity()
 			
 			if velocity_y >= -1 and velocity_y <= 1 then
 				self.isOnGround = true
 			else
 				self.isOnGround = false
 			end
+
+			debugger:keepUpdated("OnGround", self.isOnGround)
 
 			if not self.isDead then
 				self:controller(velocity_x, velocity_y, self.playerNumber, dt)
@@ -34,23 +36,19 @@ Entity = Class{
 
 		--Ball Specific Updates
 		if self.type == "ball" and not self.isBeingHeld then
-			local velocity_x,velocity_y = self.body:getLinearVelocity()			
-			debugger:keepUpdated("isDangerous", self.isDangerous)
-
-			if self.isOwned then
-				debugger:keepUpdated("VelocityX", velocity_x)			
-				debugger:keepUpdated("VelocityY", velocity_y)
-			end
+			local velocity_x,velocity_y = self.body:getLinearVelocity()						
 
 			if (velocity_x >= -20 and velocity_x <= 20) or (velocity_y >= -20 and velocity_y <= 20) and
 				self.isOwned then
 				
 				--If the balls X or Y velocity dips below 20 then start a counter
 				--If the velocity stays low for more than 1 second then the ball is neutral
-				if not self.timer.dangerousBallOneSecondRule then					
-					self.timer.dangerousBallOneSecondRule = love.timer.getTime() + 1
-				elseif love.timer.getTime() > self.timer.dangerousBallOneSecondRule then
-					--If the ball stops moving it's no longer dangerous
+				if not self.timer.dangerousBallOneSecondRule then
+					--Only start timing if a player is not holding the ball in his hand about to throw
+					if not self.owner.isPullingBackToThrow then										
+						self.timer.dangerousBallOneSecondRule = love.timer.getTime() + 1
+					end
+				elseif love.timer.getTime() > self.timer.dangerousBallOneSecondRule then					
 					self.isDangerous = false
 					self.isOwned = false
 				end
