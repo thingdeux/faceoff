@@ -1,7 +1,10 @@
-function love.conf(t)
-	t.screen.width = 1024
-	t.screen.height = 768
-	t.title = "Faceoff"
-	t.author = "Joshua Johnson"	
-	t.vsync = true
+function love.conf(window)
+	screenWidth = 1280
+	screenHeight = 960
+
+	window.screen.width = screenWidth
+	window.screen.height = screenHeight
+	window.title = "Faceoff"
+	window.author = "Joshua Johnson"	
+	window.vsync = true
 end

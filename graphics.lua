@@ -49,8 +49,7 @@ function drawPlayers()
 	for __, player in ipairs(active_players) do		
 		--For testing the physics bounding box (or shape/fixture)		
 		--love.graphics.setColor(100,255,255,255)
-		--love.graphics.polygon("fill", player.body:getWorldPoints(player.shape:getPoints()))	
-		--love.graphics.print(tostring(player.isOnGround), 20, 40)
+		--love.graphics.polygon("fill", player.body:getWorldPoints(player.shape:getPoints()))			
 
 		if player.playerNumber == "One" then
 			love.graphics.setColor(color.white)
@@ -63,6 +62,11 @@ function drawPlayers()
 		love.graphics.print("Balls: " .. tostring(player.ballCount), player.body:getX() - 20, player.body:getY() - 55)
 		love.graphics.setColor(color.red)
 		love.graphics.point(player.cursor.x, player.cursor.y)
+
+		love.graphics.setColor(color.brightyellow)
+		love.graphics.point(player.cursor.x, player.cursor.y)
+		
+
 		debugger:keepUpdated("Player " .. tostring(player.playerNumber) .. " Knockouts", player.killCount)
 	end
 end
@@ -132,7 +136,7 @@ end
 
 
 function drawBuild()
-	local xLocation = 720	
+	local xLocation = 720
 
 	love.graphics.setColor(color.red)	
 	love.graphics.print("Enable a 360 controller for 2 player.", xLocation, 10 )
@@ -145,5 +149,5 @@ function drawBuild()
 
 	love.graphics.print("The longer you hold throw, the harder you do", xLocation, 100 )
 
-	love.graphics.print("Prototype Build: 0.4", 0, 756 )
+	love.graphics.print("Prototype Build: 0.4", 0, screenHeight - 12 )
 end

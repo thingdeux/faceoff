@@ -135,8 +135,6 @@ Player = Class{
 				self.timer.recentlyThrownBall = nil
 			end
 		end
-					
-
 	end;
 
 	pickupBall = function(self, ballObject)
@@ -279,27 +277,37 @@ function spawn_players(respawn)
 			ball.body:setActive(false)		
 		end
 
+		--Reset the spawners
+		for __, spawner in ipairs(active_spawners) do
+			spawner:setSpawnerAmmo(level.spawnerBallCount)
+		end
+
 
 		for __, player in pairs(active_players) do
 			--Set the number of balls the players respawn with
 			player.ballCount = 1
 
+			--If a player has died reset some parameters and let THEM LIVE!
 			if player.isDead then
 				player.body:isActive(false)				
 				player.isDead = false
-				player.body:setFixedRotation(true)				
+				player.body:setFixedRotation(true)			
 				player.body:setLinearDamping(0)
 				player.body:setAngularVelocity(0)
 				player.fixture:setRestitution(0)														
 				player.body:isActive(true)
 			end
 
+			--Spawn the players in their respective positions
 			if player.playerNumber == "One" then
-				player.body:setPosition(getSpawnPoint("Bottom Left"))				
+				player.body:setPosition(getSpawnPoint("Bottom Left"))								
 			else
 				player.body:setPosition(getSpawnPoint("Bottom Right"))				
 			end
+
+			--Give the player a lil' shove downwards so they fall after spawn
 			player.body:applyLinearImpulse(0,1)
+			
 		end		
 
 		gameSpeed = 1

@@ -7,11 +7,7 @@ Entity = Class{
 		if self.type == "player" then			
 			--Pass the players x/y velocity to a local variable for checking below		
 			local velocity_x,velocity_y = self.body:getLinearVelocity()
-			
-			debugger:keepUpdated("isTouching", self.isTouching.movingRectangle)						
-			debugger:keepUpdated("Velocity", velocity_y)
-
-			
+									
 			if velocity_y >= -1 and velocity_y <= 1 then
 				self.isOnGround = true
 			elseif (velocity_y < -1 and self.isTouching.movingRectangle) or 
@@ -21,10 +17,8 @@ Entity = Class{
 			elseif velocity_y < -1 or velocity_y > 1 and not self.isTouching.movingRectangle then
 				--If I'm not touching anyMoving Rectangles and my velocity is higher than 0				
 				self.isOnGround = false	
-			end			
+			end								
 			
-			debugger:keepUpdated("OnGround", self.isOnGround)			
-
 			--If the player isn't dead allow control
 			if not self.isDead then
 				self:controller(velocity_x, velocity_y, self.playerNumber, dt)				
@@ -37,7 +31,7 @@ Entity = Class{
 			
 
 			if self.isPullingBackToThrow or self.isThrowing or
-			self.timer.recentlyThrownBall then
+				self.timer.recentlyThrownBall then
 				self:throw(dt) --Throw has to come before animate												
 			end
 
@@ -80,15 +74,16 @@ Entity = Class{
 			end
 		end
 
-		if self.type == "object" then
-			if not self.timer.spawnTimer then				
-				self.timer.spawnTimer = 0
+		if self.type == "object" then			
+			if not self.timer.spawnTimer then								
 				self.timer.spawnTimer = self.timer.spawnTimer + self.spawnRate				
-			elseif love.timer.getTime() > self.timer.spawnTimer then
-				if self.ammoLeft > 0 then
-					self:spawnBall()
-					self.timer.spawnTimer = nil	
-					self.ammoLeft = self.ammoLeft - 1					
+			else 
+				if love.timer.getTime() > self.timer.spawnTimer then
+					if self.ammoLeft > 0 then
+						self:spawnBall()																	
+						self.ammoLeft = self.ammoLeft - 1
+						self.timer.spawnTimer = self.timer.spawnTimer + self.spawnRate
+					end
 					
 				end				
 			end

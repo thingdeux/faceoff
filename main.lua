@@ -8,9 +8,7 @@ require("players")
 require("debugger")
 require("objects")
 
-
-function love.load()
-
+function love.load()	
 	--Create a debugger instance
 	debugger = Debugger()
 	gameSpeed = 1
