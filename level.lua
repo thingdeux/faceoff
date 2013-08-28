@@ -24,10 +24,17 @@ Level = Class{
 			self.x1 = coords[3]
 			self.y1 = coords[4]
 			self.type = "level"
-			self.body = love.physics.newBody(world, self.x, self.y)
+			self.body = love.physics.newBody(world, 0, 0)
 			self.shape = love.physics.newEdgeShape(self.x, self.y, self.x1, self.y1)
-			self.fixture = love.physics.newFixture(self.body, self.shape)						
-			self.fixture:setFriction(0)
+			self.fixture = love.physics.newFixture(self.body, self.shape)
+
+			if width == "slippery" then
+				self.fixture:setFriction(0)
+			elseif width == "passable" then				
+				self.body:setActive(false)
+			elseif width == "rough" then
+				self.fixture:setFriction(1)
+			end
 
 			--Set the level filter mask to 3 so level pieces won't collide with each other
 			self.fixture:setFilterData(3, 3, -3)
@@ -96,8 +103,6 @@ Level = Class{
 
 Level:include(Entity)
 
-
-
 function load_level(name)
 	if name == "basic" then
 		level = {}
@@ -112,55 +117,83 @@ function load_level(name)
 
 		level.roundOver = false
 
-		--Ground
-		Level({0, screenHeight - 10}, "rectangle", screenWidth, 10)
-		--Roof
-		Level({0, 0}, "rectangle", screenWidth, 10)
 		
-
-
+		Level({0, screenHeight - 10}, "rectangle", screenWidth, 10) --Ground		
+		Level({0, 0}, "rectangle", screenWidth, 10) --Roof		
+		Level({0, 0}, "rectangle", 10, screenHeight) --Left Wall		
+		Level({screenWidth - 10, 0}, "rectangle", 10, screenHeight) --Right Wall
+		
 		--Stationary block overhangs
 		Level({10, screenHeight - 400}, "rectangle", 300, 50)
 		Level({screenWidth - 300, screenHeight - 400}, "rectangle", 300, 50)
 
-		--Right Ball container
-		Level({screenWidth - 124, screenHeight - 430}, "rectangle", 5, 30)		
-		--Left Ball container
-		Level({100, screenHeight - 430}, "rectangle", 5, 30)		
-
-
-
-		--Left Wall
-		Level({0, 0}, "rectangle", 10, screenHeight)
-		--Right Wall
-		Level({screenWidth - 10, 0}, "rectangle", 10, screenHeight)
-			
-				
-		--Sloped Platform bottom left
-		--Level({0, 400, 300, 800}, "edge")
-		--Sloped Top Platform bottom left
-		--Level({0, 300, 200, 100}, "edge")
-
-
-
-		--Moving Sections				
-		--Pounders below the overhang
-		Level({screenWidth - 990, screenHeight - 200}, "movingRectangle", 20, 80, "vertical", 200)
-		Level({screenWidth - 300, screenHeight - 200}, "movingRectangle", 20, 80, "vertical", 200)
-
-
-		--Outcropping to stop the elevator
-		Level({screenWidth/2, 0}, "rectangle", 100, 140)
-		--Elevator
-		Level({screenWidth/2, 500}, "movingRectangle", 100, 5, "vertical", 200)	
-		--Elevator platform
-		Level({screenWidth/2, screenHeight - 20}, "rectangle", 100, 20)
 		
-
-
+		Level({screenWidth - 124, screenHeight - 430}, "rectangle", 5, 30)		--Right Ball container		
+		Level({100, screenHeight - 430}, "rectangle", 5, 30)		--Left Ball container
+							
+		Level({screenWidth - 990, screenHeight - 200}, "movingRectangle", 20, 80, "vertical", 200) --Left pounder below the overhang
+		Level({screenWidth - 300, screenHeight - 200}, "movingRectangle", 20, 80, "vertical", 200) --Right pounder below the overhang
+	
+		Level({screenWidth/2, 0}, "rectangle", 100, 140) --Outcropping to stop the elevator		
+		Level({screenWidth/2, 500}, "movingRectangle", 100, 5, "vertical", 200)	 --Elevator		
+		Level({screenWidth/2, screenHeight - 20}, "rectangle", 100, 20) --Elevator platform
+		
 		--Objects (Spawning)
 		Object({screenWidth - 50, screenHeight - 500}, "spawner")
 		Object({50, screenHeight - 500}, "spawner")
+
+		--Spawn players
+		spawn_players()
+	elseif name == "single" then
+		level = {}
+		level.name = name
+		level.spawnerBallCount = 1
+		level.spawnPoints = {}
+		level.game_mode = "single ball"
+
+		table.insert(level.spawnPoints, {["x"] = 100, ["y"] = screenHeight -100, ["name"] = "Bottom Left"})		
+		table.insert(level.spawnPoints, {["x"] = screenWidth - 100, ["y"] = screenHeight -100, ["name"] = "Bottom Right"})
+		--table.insert(level.spawnPoints, {["x"] = 120, ["y"] = 50, ["name"] = "Top Left"})
+		--table.insert(level.spawnPoints, {["x"] = 950, ["y"] = 50, ["name"] = "Top Right"})
+
+		level.roundOver = false
+		
+		Level({0, 0}, "rectangle", 10, screenHeight) --Left Wall		
+		Level({screenWidth - 10, 0}, "rectangle", 10, screenHeight) ----Right Wall		
+		Level({0, screenHeight - 10}, "rectangle", screenWidth, 10)  --Ground		
+		Level({0, 0}, "rectangle", screenWidth, 10) --Roof
+
+		Level({screenWidth/2 - 50, screenHeight - 200}, "rectangle", 100, 190) --Podium in center
+		Level({screenWidth/2 - 100, screenHeight - 100}, "rectangle", 50, 90) --Step left of the podium
+		Level({screenWidth/2 + 50, screenHeight - 100}, "rectangle", 50, 90) --Step right of the podium
+
+		Level({screenWidth/2, screenHeight - 200,  screenWidth/2, screenHeight - 220}, "edge", "passable") --Ball Stand Leg
+		Level({screenWidth/2, screenHeight - 220,  screenWidth/2 - 30, screenHeight - 230}, "edge", "rough") --Ball Stand Left Arm
+		Level({screenWidth/2, screenHeight - 220,  screenWidth/2 + 30, screenHeight - 230}, "edge", "rough") --Ball Stand Right Arm
+
+		Level({0, screenHeight - 50}, "movingRectangle", 50, 2, "vertical", 200)  --Left Elevator		
+		Level({screenWidth-50, screenHeight - 50}, "movingRectangle", 50, 2, "vertical", 200)  --Right Elevator
+
+
+		Level({screenWidth*.15, screenHeight - 800}, "rectangle", 200, 50) --Left upper floating platform
+		Level({screenWidth*.70, screenHeight - 800}, "rectangle", 200, 50) --Right upper floating platform
+
+		Level({screenWidth*.25, screenHeight - 600}, "rectangle", 200, 50) --Left upper floating platform
+		Level({screenWidth/2 + 100, screenHeight - 600}, "rectangle", 200, 50) --Left upper floating platform
+
+		print (screenWidth*.25)
+		print (screenWidth/2 + 100)
+
+
+		
+
+		--Objects (Spawning)
+		spawner = Object({screenWidth/2, screenHeight - 280}, "spawner")
+		spawner:setSpawnerAmmo(level.spawnerBallCount)
+
+
+		--Spawn players
+		spawn_players()
 
 	end
 end

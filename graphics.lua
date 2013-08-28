@@ -65,8 +65,8 @@ function drawPlayers()
 
 		
 		if player.playerNumber == "Two" then
-			love.graphics.setColor(color.brightyellow)
-			love.graphics.point(player.cursor.x + player.thumbStickTracker.x, player.cursor.y + player.thumbStickTracker.y)			
+			--love.graphics.setColor(color.brightyellow)
+			--love.graphics.point(player.cursor.x + player.thumbStickTracker.x, player.cursor.y + player.thumbStickTracker.y)			
 		end
 		
 
@@ -76,14 +76,15 @@ end
 
 function drawLevel()
 	love.graphics.setColor(255,255,255,255)
-
-	for __, levelPiece in ipairs(current_level) do
-		if levelPiece.type_of_object == "rectangle" then
-			love.graphics.polygon("fill", levelPiece.body:getWorldPoints(levelPiece.shape:getPoints()))
-		elseif levelPiece.type_of_object == "edge" then
-			love.graphics.line(levelPiece.body:getWorldPoints(levelPiece.shape:getPoints()))
-		elseif levelPiece.type_of_object == "movingRectangle" and not levelPiece.isInvisible then
-			love.graphics.polygon("fill", levelPiece.body:getWorldPoints(levelPiece.shape:getPoints()))
+	if current_level then
+		for __, levelPiece in ipairs(current_level) do
+			if levelPiece.type_of_object == "rectangle" then
+				love.graphics.polygon("fill", levelPiece.body:getWorldPoints(levelPiece.shape:getPoints()))
+			elseif levelPiece.type_of_object == "edge" then
+				love.graphics.line(levelPiece.body:getWorldPoints(levelPiece.shape:getPoints()))				
+			elseif levelPiece.type_of_object == "movingRectangle" and not levelPiece.isInvisible then
+				love.graphics.polygon("fill", levelPiece.body:getWorldPoints(levelPiece.shape:getPoints()))
+			end
 		end
 	end
 end

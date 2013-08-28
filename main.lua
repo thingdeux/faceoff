@@ -12,7 +12,7 @@ function love.load()
 	--Create a debugger instance
 	debugger = Debugger()
 	gameSpeed = 1
-	roundOver = false
+	roundOver = false	
 	love.mouse.setVisible(false)
 	love.mouse.setGrab(true)
 	load_colors()
@@ -25,12 +25,13 @@ function love.load()
 	world = love.physics.newWorld(0,9.84*64, true)
 	--create the callback handler for collision
 	world:setCallbacks(beginContact, endContact, preSolve, postSolve)
+
+	--Set point style (for cursor)
 	love.graphics.setPointStyle("smooth")
 	love.graphics.setPointSize(4)
 
-	load_level("basic")
-	spawn_players()
-	
+	--Load level
+	load_level("single")		
 end
 
 
@@ -38,7 +39,7 @@ end
 function love.update(dt)	
 
 	--Update the physics world
-	world:update(dt*gameSpeed)
+	world:update(dt*gameSpeed)	
 
 	--Updated each active object on screen
 	for __, entity in ipairs(active_entities) do		
@@ -58,6 +59,7 @@ function love.keypressed(key)
 	if key == "r" then
 		--Ball({400,100})
 	end
+
 end
 
 function love.draw()	

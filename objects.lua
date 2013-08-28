@@ -39,7 +39,7 @@ Object = Class{
 
 	spawnBall = function(self)
 		local thisBall = Ball({self.x,self.y + 20})
-		thisBall.body:applyLinearImpulse(.5, 10)		
+		thisBall.body:applyLinearImpulse(0, 1)		
 	end;
 	
 }

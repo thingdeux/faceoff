@@ -25,26 +25,19 @@ function beginContact(a, b, coll)
 			playerObject:pickupBall(ballObject)
 
 		--If the ball is dangerous (ie: thrown by an opponent) and hits an opposing player
-		elseif ballObject.isDangerous and not (ballObject.owner == playerObject) and not playerObject.isDead then			
+		elseif ballObject.isDangerous and not (ballObject.owner == playerObject) and not playerObject.isDead then	
 			local playerBody = colliders.player:getBody() --Pass the player.body physics object to playerBody
-			
-			--Turn off the fixed rotation so the player will spin after they're hit
-			--WEEEEEEEEEEEEEEEEEEEEE
-			playerBody:setFixedRotation(false)
-			colliders.player:setRestitution(.3)		
-
-			--Cut the gamespeed down and go into slow mo 
-			gameSpeed = .3
-
-			--Kill the player hit by a ball and set a 3 second timer until respawn
-			playerObject.isDead = true		
-			playerObject.timer.deathTimer = love.timer.getTime() + 3
+										
+			--Kill the hit player
+			playerObject:die()			
 
 			--Using this to prevent throwing after "slowmo" kicks in
 			roundOver = true
 
-			--Add to the score of the person who threw the ball
-			ballObject.owner.killCount = ballObject.owner.killCount + 1
+			if ballObject.owner then
+				--Add to the score of the person who threw the ball
+				ballObject.owner.killCount = ballObject.owner.killCount + 1
+			end
 
 		else
 			--Player picks up the ball if no one owns it
@@ -55,7 +48,8 @@ function beginContact(a, b, coll)
 
 	end
 
-	if colliders.player and colliders.movingRectangle then		
+	--Handler for when a player is colliding with a movingRectangle
+	if colliders.player and colliders.movingRectangle then
 		local playerObject = colliders.player:getUserData()
 		
 		if coll:isTouching() then
@@ -65,7 +59,18 @@ function beginContact(a, b, coll)
 		end		
 	end
 
+	--Handler for when a player is colliding with a level
 	if colliders.player and colliders.level then
+		local playerObject = colliders.player:getUserData()
+		local levelObject = colliders.level:getUserData()
+
+		--If the player is falling really fast - kill them
+		if playerObject.isFallingTooFast then
+			if levelObject.body:getY() > playerObject.body:getY() then				
+				--Kill Player
+				playerObject:die()				
+			end
+		end
 
 	end
 

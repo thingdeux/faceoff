@@ -19,8 +19,9 @@ Player = Class{
 		self.throwForce = {}
 		self.throwForce.current = 40
 		self.throwForce.speed = 200
-		self.throwForce.max = 100
+		self.throwForce.max = 80
 		self.throwForce.angle = 0
+		self.throwForce.speedModifier = 0
 		self.cursor = {}
 		self.cursor.x = 0
 		self.cursor.y = 0
@@ -28,6 +29,8 @@ Player = Class{
 		self.cursor.angle = 0
 		self.isDead = false
 		self.killCount = 0
+
+		self.isFallingTooFast = false
 		
 		self.mouseTracker = {}
 		self.mouseTracker.x = 0
@@ -98,19 +101,19 @@ Player = Class{
 				self.activeBall.body:setActive (false)							
 
 				--Start 'charging' up the throw				
-				if self.throwForce.current < self.throwForce.max then
+				if self.throwForce.current < (self.throwForce.max + self.throwForce.speedModifier) then
 					self.throwForce.current = self.throwForce.current + self.throwForce.speed*dt
 				end		
 			end
 			
 		end
 			
-			
+		--Throw the ball		
 		if self.isThrowing and not self.timer.throwing then
 			self.activeBall.body:setActive (true)
-			--self.activeBall.body:applyLinearImpulse(self.throwForce.current, -20)			
-
-			self.activeBall.body:applyLinearImpulse(math.sin(self.throwForce.angle)*100, math.cos(self.throwForce.angle)*100)
+			
+			--Apply speed of throw						
+			self.activeBall.body:applyLinearImpulse(math.sin(self.throwForce.angle)*self.throwForce.current, math.cos(self.throwForce.angle)*self.throwForce.current)
 			self.ballCount = self.ballCount - 1
 			self.timer.throwing = love.timer.getTime() + .4
 
@@ -270,6 +273,20 @@ Player = Class{
 		end
 	end;
 
+	die = function(self)
+		--Cut the gamespeed down and go into slow mo 
+		gameSpeed = .3
+		--Turn off the fixed rotation so the player will spin after they're hit
+		--WEEEEEEEEEEEEEEEEEEEEE		
+		self.body:setFixedRotation(false)
+		self.fixture:setRestitution(.3)
+
+		--Kill the player hit by a ball and set a 3 second timer until respawn
+		self.timer.deathTimer = love.timer.getTime() + 3		
+
+		self.isDead = true
+	end;
+
 }
 
 Player:include(Entity)
@@ -317,6 +334,7 @@ function spawn_players(respawn)
 				player.body:setFixedRotation(true)			
 				player.body:setLinearDamping(0)
 				player.body:setAngularVelocity(0)
+				player.body:setLinearVelocity(0,0)
 				player.fixture:setRestitution(0)														
 				player.body:isActive(true)
 			end
