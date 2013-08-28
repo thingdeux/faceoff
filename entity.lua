@@ -7,7 +7,7 @@ Entity = Class{
 		if self.type == "player" then			
 			--Pass the players x/y velocity to a local variable for checking below		
 			local velocity_x,velocity_y = self.body:getLinearVelocity()
-									
+
 			if velocity_y >= -1 and velocity_y <= 1 then
 				self.isOnGround = true
 			elseif (velocity_y < -1 and self.isTouching.movingRectangle) or 
@@ -20,7 +20,7 @@ Entity = Class{
 			end								
 			
 			--If the player isn't dead allow control
-			if not self.isDead then
+			if not self.isDead then				
 				self:controller(velocity_x, velocity_y, self.playerNumber, dt)				
 				self.body:setAngle(0)
 			else  --If a player is dead, no control for them!								
@@ -97,9 +97,9 @@ Entity = Class{
 			--Controller handler for when the player jumps
 			if (love.keyboard.isDown("w") and playerNumber == "One") or
 			   ( (love.joystick.isDown(1, 1) or love.joystick.isDown(1,5) ) and playerNumber == "Two") and self.isOnGround then
-								
+					
 				if self.isOnGround then
-					self.body:applyLinearImpulse(0, -self.jumpForce)										
+					self.body:applyLinearImpulse(0, -self.jumpForce)											
 					self.isTouching.movingRectangle = false
 				end
 
@@ -110,13 +110,13 @@ Entity = Class{
 
 			--Controller handler for when the player presses right
 			if (love.keyboard.isDown("d") and playerNumber == "One") or
-			   (love.joystick.getAxis(1, 1) > 0.8 and playerNumber == "Two") then
+			   (love.joystick.getAxis(1, 1) > 0.8 and playerNumber == "Two") then			   
 				if velocity_x < self.maxSpeed then
 					if self.isOnGround then
-						self.body:applyForce(self.speed, 0)
+						self.body:applyForce(self.speed, 0)														
 					else
 						--If player is in the air then they can only move themselves at half the speed
-						self.body:applyForce(self.speed/2, 0)
+						self.body:applyForce(self.speed/2, 0)						
 					end
 				end
 
@@ -125,10 +125,10 @@ Entity = Class{
 			 	   (love.joystick.getAxis(1, 1) < -0.8 and playerNumber == "Two") then
 				if velocity_x > -self.maxSpeed then
 					if self.isOnGround then
-						self.body:applyForce(-self.speed, 0)
+						self.body:applyForce(-self.speed, 0)						
 					else
 						--If player is in the air then they can only move themselves at half the speed
-						self.body:applyForce(-self.speed/2, 0)
+						self.body:applyForce(-self.speed/2, 0)						
 					end
 				end
 			end			
@@ -147,11 +147,14 @@ Entity = Class{
 				self.isThrowing = true
 			end
 
-			if playerNumber == "One" then
+			if self.playerNumber == "One" then
 				self:trackMouse(dt)  --Keep this as the very end, updates the mouse location tracker
-			elseif playerNumber == "Two" then
+				self:moveCursorWithPlayer("Mouse", dt)						
+			elseif self.playerNumber == "Two" then
 				self:trackThumbStick(dt)
+				self:moveCursorWithPlayer("Stick", dt)		
 			end
+
 		end
 	end;
 

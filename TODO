@@ -3,8 +3,6 @@ Add networking/dedicated server "support"
 Play with applyangularimpulse for balls bouncing on collision - appears to modify momentum
 
 
-
-
 Fixed:
 ---
 Fix destroying of ball objects
@@ -56,3 +54,20 @@ or you're both dead.
 
 Lava Pit level - and balls don't kill you they just push you into the lava
 *NO* Lava pit gamemode - American gladiators with flare
+
+
+---
+--can use a variation of this for auto-aim
+x, y = self.body:getLinearVelocity()
+
+			if x > 0 then
+				self.thumbStickTracker.x = self.thumbStickTracker.x + x*dt
+			elseif x < 0 then
+				self.thumbStickTracker.x = self.thumbStickTracker.x + x*dt
+			end
+
+			if y > 0 then
+				love.mouse.setPosition(love.mouse.getX(), love.mouse.getY() + (y+30)*dt)
+			elseif y < 0 then
+				love.mouse.setPosition(love.mouse.getX(), love.mouse.getY() + (y+30)*dt )
+			end

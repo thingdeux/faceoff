@@ -151,6 +151,7 @@ Player = Class{
 		self.mouseTracker.x = x					
 		self.mouseTracker.y = y
 
+		--Make sure the mouse doesn't move too far away from the player
 		self:keepCursorNearPlayer(x,y, "mouse")	
 	end;
 
@@ -191,8 +192,10 @@ Player = Class{
 	end;
 
 	keepCursorNearPlayer = function(self, x, y, controlType, dt)
+
 		if y >= self.body:getY() + 100 then
 			if controlType == "mouse" then
+				--If the passed mouse location is greater than Y + 100 set it back to Y + 100 so it goes no further
 				love.mouse.setPosition(x, self.body:getY() + 100)
 			elseif controlType == "stick" then				
 				if self.thumbStickTracker.current.y > 0 then
@@ -204,6 +207,7 @@ Player = Class{
 			end
 		elseif y <= self.body:getY() - 100 then
 			if controlType == "mouse" then
+				--If the passed mouse location is greater than Y - 100 set it back to Y - 100 so it goes no further
 				love.mouse.setPosition(x, self.body:getY() - 100)
 			
 			elseif controlType == "stick" then				
@@ -244,6 +248,25 @@ Player = Class{
 		--If the cursor tracker isn't pass the threshold.
 		if controlType == "stick" then			
 			return false
+		end
+	end;
+
+	--Moves the 'invisible' aiming cursor (mouse or trackpad cursor) along with the characters velocity
+	moveCursorWithPlayer = function(self, controlType, dt)
+		if controlType == "Mouse" then
+			x, y = self.body:getLinearVelocity()
+									
+			if x > 0 then
+				love.mouse.setPosition(love.mouse.getX() + (x+30)*dt, love.mouse.getY() )
+			elseif x < 0 then
+				love.mouse.setPosition(love.mouse.getX() + (x+30)*dt, love.mouse.getY() )
+			end
+
+			if y > 0 then
+				love.mouse.setPosition(love.mouse.getX(), love.mouse.getY() + (y+30)*dt)
+			elseif y < 0 then
+				love.mouse.setPosition(love.mouse.getX(), love.mouse.getY() + (y+30)*dt )
+			end							
 		end
 	end;
 

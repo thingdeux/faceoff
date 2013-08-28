@@ -63,8 +63,11 @@ function drawPlayers()
 		love.graphics.setColor(color.red)
 		love.graphics.point(player.cursor.x, player.cursor.y)
 
-		love.graphics.setColor(color.brightyellow)
-		love.graphics.point(player.cursor.x, player.cursor.y)
+		
+		if player.playerNumber == "Two" then
+			love.graphics.setColor(color.brightyellow)
+			love.graphics.point(player.cursor.x + player.thumbStickTracker.x, player.cursor.y + player.thumbStickTracker.y)			
+		end
 		
 
 		debugger:keepUpdated("Player " .. tostring(player.playerNumber) .. " Knockouts", player.killCount)
