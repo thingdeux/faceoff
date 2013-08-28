@@ -28,7 +28,8 @@ function drawBalls()
 			--local x,y = ball.body:getLinearVelocity()
 			if not ball.isBeingHeld then --If the ball isn't held by a player draw it to the screen
 				--Find the current animation frame for the ball				
-				--love.graphics.circle("fill", ball.body:getX(), ball.body:getY(), ball.shape:getRadius())
+				love.graphics.circle("fill", ball.body:getX(), ball.body:getY(), ball.shape:getRadius())
+				
 				if ball.isOwned then
 					if ball.owner.playerNumber == "One" then						
 						love.graphics.setColor(color.blue)
@@ -38,7 +39,7 @@ function drawBalls()
 				else
 					love.graphics.setColor(color.white)
 				end
-				chooseAnimation(ball)
+				--chooseAnimation(ball)
 
 			end
 		end
@@ -50,16 +51,25 @@ function drawPlayers()
 		--For testing the physics bounding box (or shape/fixture)		
 		--love.graphics.setColor(100,255,255,255)
 		--love.graphics.polygon("fill", player.body:getWorldPoints(player.shape:getPoints()))			
+		--local translatex, translatey = player.body:getWorldPoints( player.shape:getPoints() )
 
 		if player.playerNumber == "One" then
 			love.graphics.setColor(color.white)
 		elseif player.playerNumber == "Two" then
-			love.graphics.setColor(color.brightyellow)		
+			love.graphics.setColor(color.brightyellow)	
 		end
 		
-		love.graphics.drawq(player_sheet, stationary, player.body:getX(), player.body:getY(), player.body:getAngle(), .8, .8, 52, 55)
-					
+		--Draw player body
+		love.graphics.drawq(player_sheet, stationary, player.body:getX(), player.body:getY(), player.body:getAngle(), .8, .8, 52, 55)					
+		--Draw the cursor
+		love.graphics.draw(cursor_image, player.cursor.x, player.cursor.y, -player.cursorAngle, .7, .7, 10, 5)	
+
+		--Draw text that shows how many balls the player has
 		love.graphics.print("Balls: " .. tostring(player.ballCount), player.body:getX() - 20, player.body:getY() - 55)
+						
+		love.graphics.line(player.body:getX(), player.body:getY(), player.cursor.x, player.cursor.y)
+
+		--Draw cursor
 		love.graphics.setColor(color.red)
 		love.graphics.point(player.cursor.x, player.cursor.y)
 
@@ -80,6 +90,7 @@ function drawLevel()
 		for __, levelPiece in ipairs(current_level) do
 			if levelPiece.type_of_object == "rectangle" then
 				love.graphics.polygon("fill", levelPiece.body:getWorldPoints(levelPiece.shape:getPoints()))
+				love.graphics.point(levelPiece.body:getX() + 20, levelPiece.body:getY() - levelPiece.body:getY())
 			elseif levelPiece.type_of_object == "edge" then
 				love.graphics.line(levelPiece.body:getWorldPoints(levelPiece.shape:getPoints()))				
 			elseif levelPiece.type_of_object == "movingRectangle" and not levelPiece.isInvisible then

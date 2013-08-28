@@ -11,7 +11,7 @@ require("objects")
 function love.load()	
 	--Create a debugger instance
 	debugger = Debugger()
-	gameSpeed = 1
+	gameSpeed = .1
 	roundOver = false	
 	love.mouse.setVisible(false)
 	love.mouse.setGrab(true)

@@ -4,11 +4,17 @@ Entity = Class{
 		
 
 		--Player Specific Updates
-		if self.type == "player" then					
+		if self.type == "player" then
+			--self.cursorAngle = math.angle(self.body:getX(), self.body:getY(), self.cursor.x, self.cursor.y)
+			self.cursorAngle = math.angle(self.cursor.x,self.cursor.y , self.body:getX(), self.body:getY())
+
+			debugger:keepUpdated("Angle", self.cursorAngle)					
+			debugger:keepUpdated("isOnGround", self.isOnGround)					
+			debugger:keepUpdated("isTouchingLevel", self.isTouching.level)
 			--Pass the players x/y velocity to a local variable for checking below		
 			local velocity_x,velocity_y = self.body:getLinearVelocity()
 
-			if velocity_y >= -1 and velocity_y <= 1 then
+			if velocity_y >= -1 and velocity_y <= 1 and not self.isTouching.level then
 				self.isOnGround = true
 				self.isFallingTooFast = false				
 			elseif (velocity_y < -1 and self.isTouching.movingRectangle) or 
@@ -16,17 +22,18 @@ Entity = Class{
 				--if I'm moving vertically but touching a moving rectangle then I'm still "on ground"
 				self.isOnGround = true			
 			elseif velocity_y < -1 or velocity_y > 1 and not self.isTouching.movingRectangle then
-				--If I'm not touching anyMoving Rectangles and my velocity is higher than 0		
+				--If I'm not touching anyMoving Rectangles and my velocity is higher than 0	
 				self.isOnGround = false					
 			end
 
-			if velocity_y > 1000 then
-				self.isFallingTooFast = true				
+			--If the player is falling too fast set the flag
+			if velocity_y > 1200 then
+				self.isFallingTooFast = true
 			end
 			
 			--If the player isn't dead allow control
 			if not self.isDead then				
-				self:controller(velocity_x, velocity_y, self.playerNumber, dt)				
+				self:controller(velocity_x, velocity_y, self.playerNumber, dt)			
 				self.body:setAngle(0)
 			else  --If a player is dead, no control for them!								
 				if love.timer.getTime() > self.timer.deathTimer then					
@@ -123,6 +130,10 @@ Entity = Class{
 						--If player is in the air then they can only move themselves at half the speed
 						self.body:applyForce(self.speed/2, 0)						
 					end
+
+					if self.isTouching.level then
+						self.body:applyForce(0, 75)
+					end
 				end
 
 			--Controller handler for when the player presses left
@@ -135,6 +146,10 @@ Entity = Class{
 						--If player is in the air then they can only move themselves at half the speed
 						self.body:applyForce(-self.speed/2, 0)						
 					end
+				end
+
+				if self.isTouching.level then
+					self.body:applyForce(0, 75)
 				end
 			end			
 
@@ -191,17 +206,22 @@ Entity = Class{
 		--While the player is reeling back
 		if self.isPullingBackToThrow then		
 			--Keep the ball moving with the player while the player is holding it - Only have the player animation pull the ball back so far (100)
-			if self.throwForce.current < 100 then
+			if self.throwForce.current < self.throwForce.max then
 				self.activeBall.body:setPosition(self.body:getX() + 30 - (self.throwForce.current - 50), self.body:getY())				
 			else
+				self.isPullingBackToThrow = false			
+				self.isThrowing = true				
 				self.activeBall.body:setPosition(self.body:getX() + 30 - (100 - 50), self.body:getY())				
 			end
 
 			local ballx, bally = self.activeBall.body:getPosition()				
 			self.throwForce.angle = math.angle(self.body:getX(), self.body:getY(), self.cursor.x, self.cursor.y)
 									
-			self.activeBall.body:setPosition( ballx + math.sin(self.throwForce.angle)*25, bally )
-			self.activeBall.body:setPosition( ballx, bally + math.cos(self.throwForce.angle)*25 )
+			--self.activeBall.body:setPosition( ballx + math.sin(self.throwForce.angle)*25, bally )
+			--self.activeBall.body:setPosition( ballx, bally + math.cos(self.throwForce.angle)*25 )
+
+			self.activeBall.body:setPosition( ballx + math.sin(self.throwForce.angle), bally )
+			self.activeBall.body:setPosition( ballx, bally + math.cos(self.throwForce.angle) )
 
 		end
 

@@ -64,11 +64,26 @@ function beginContact(a, b, coll)
 		local playerObject = colliders.player:getUserData()
 		local levelObject = colliders.level:getUserData()
 
+
+		if coll:isTouching() then
+			local playerx, playery = playerObject.body:getWorldPoints( playerObject.shape:getPoints() )
+			local levelx, levely = levelObject.body:getWorldPoints( levelObject.shape:getPoints() )
+
+			if levely < playery then
+				playerObject.isTouching.level = true
+			elseif levely > playery then
+				playerObject.isTouching.level = false
+			end
+		end
+
 		--If the player is falling really fast - kill them
 		if playerObject.isFallingTooFast then
-			if levelObject.body:getY() > playerObject.body:getY() then				
+			local playerx, playery = playerObject.body:getWorldPoints( playerObject.shape:getPoints() )
+			local levelx, levely = levelObject.body:getWorldPoints( levelObject.shape:getPoints() )
+			
+			if levely > playery then				
 				--Kill Player
-				playerObject:die()				
+				playerObject:die()
 			end
 		end
 
@@ -102,6 +117,11 @@ function endContact(a, b, coll)
 		local playerObject = colliders.player:getUserData()		
 		playerObject.isTouching.movingRectangle = false
 	end
+
+	if colliders.player and colliders.level then
+		local playerObject = colliders.player:getUserData()				
+		playerObject.isTouching.level = false
+	end	
 
 	-----------Player Collision Handlers END--------------------
 end
