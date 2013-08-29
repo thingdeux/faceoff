@@ -55,8 +55,12 @@ function drawPlayers()
 		--For testing the physics bounding box (or shape/fixture)		
 		--love.graphics.setColor(100,255,255,255)
 		--love.graphics.polygon("fill", player.body:getWorldPoints(player.shape:getPoints()))			
+		--For testing the cursor		
 		--local translatex, translatey = player.body:getWorldPoints( player.shape:getPoints() )
 		--love.graphics.line(player.body:getX(), player.body:getY(), player.cursor.x, player.cursor.y)
+		--love.graphics.point(player.cursor.x + player.thumbStickTracker.x, player.cursor.y + player.thumbStickTracker.y)
+		--love.graphics.point(player.cursor.x, player.cursor.y)
+		--debugger:keepUpdated("Player " .. tostring(player.playerNumber) .. " Knockouts", player.killCount)
 
 		if player.playerNumber == "One" then
 			love.graphics.setColor(color.white)
@@ -66,8 +70,7 @@ function drawPlayers()
 		
 		--Draw player body
 		love.graphics.drawq(player_sheet, stationary, player.body:getX(), player.body:getY(), player.body:getAngle(), .8, .8, 52, 55)					
-		
-		--love.graphics.setColor(color.red)		
+				
 		--Draw the cursor
 		love.graphics.draw(cursor_image, player.cursor.x, player.cursor.y, -player.cursorAngle, .7, .7, 10, 5)	
 
@@ -75,17 +78,7 @@ function drawPlayers()
 		love.graphics.print("Balls: " .. tostring(player.ballCount), player.body:getX() - 20, player.body:getY() - 55)
 								
 		--Draw cursor
-		love.graphics.setColor(color.red)
-		--love.graphics.point(player.cursor.x, player.cursor.y)
-
-		
-		if player.playerNumber == "Two" then
-			--love.graphics.setColor(color.brightyellow)
-			--love.graphics.point(player.cursor.x + player.thumbStickTracker.x, player.cursor.y + player.thumbStickTracker.y)			
-		end
-		
-
-		debugger:keepUpdated("Player " .. tostring(player.playerNumber) .. " Knockouts", player.killCount)
+		love.graphics.setColor(color.red)					
 	end
 end
 

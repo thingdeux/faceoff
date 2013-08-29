@@ -7,9 +7,12 @@ Entity = Class{
 		if self.type == "player" then			
 			--Get the angle for the cursor, so it rotates
 			self.cursorAngle = math.angle(self.cursor.x,self.cursor.y , self.body:getX(), self.body:getY())
-			debugger:keepUpdated("isThrowing", self.isThrowing)
-			debugger:keepUpdated("isOnGround", self.isOnGround)					
-			debugger:keepUpdated("isTouchingLevel", self.isTouching.level)
+			if self.playerNumber == "Two" then
+				debugger:keepUpdated("isCatching", self.isCatching)
+				debugger:keepUpdated("isReflecting", self.isReflecting)
+				debugger:keepUpdated("isOnGround", self.isOnGround)					
+				debugger:keepUpdated("isTouchingLevel", self.isTouching.level)
+			end
 			--Pass the players x/y velocity to a local variable for checking below		
 			local velocity_x,velocity_y = self.body:getLinearVelocity()
 
@@ -44,6 +47,14 @@ Entity = Class{
 			if self.isThrowing or self.timer.recentlyThrownBall then
 				self:throw(dt) --Throw has to come before animate												
 			end
+
+			if self.isCatching then
+				self:catch(dt)
+			elseif self.isReflecting then
+				self:reflect(dt)
+			end
+
+
 
 			self:animate(dt)
 		end
@@ -154,7 +165,7 @@ Entity = Class{
 			--Controller handler for when the player presses the throw button
 			if ( (love.keyboard.isDown(" ") or love.mouse.isDown("l") ) and playerNumber =="One" and not roundOver) or 
 			   ( (love.joystick.isDown(1, 3) or love.joystick.isDown(1,6) )and playerNumber == "Two" and not roundOver) then
-				
+
 				--If player presses the throw button, throw
 				if not self.isThrowing and self.canThrow and self.ballCount > 0 then				
 					self.isThrowing = true		
@@ -164,13 +175,36 @@ Entity = Class{
 				self.canThrow = true
 			end
 
+
+			--Controller handler for when player presses the 'catch' button
+			if ( love.keyboard.isDown("e") and playerNumber == "One" ) or
+			   ( love.joystick.getAxis(1, 3) > 0.4 and playerNumber == "Two" ) and not self.isReflecting then
+			   
+			   if not self.isCatching then
+			   	  self.isCatching = true
+			   end
+
+			end
+
+			--Controller handler for when player presses the 'reflect' button
+			if ( love.keyboard.isDown("lshift") and playerNumber == "One" ) or
+			   ( love.joystick.getAxis(1, 3) < -0.4 and playerNumber == "Two" ) and not self.isCatching then
+			   
+			   if not self.isCatching then
+			   	  self.isReflecting = true
+			   end
+			   
+			end
+
+
+
 			--Make sure the mouse cursor moves along with the player and doesn't go too far outside of a specific zone
 			if self.playerNumber == "One" then
 				self:trackMouse(dt)  --Keep this as the very end, updates the mouse location tracker
 				self:moveCursorWithPlayer("Mouse", dt)						
 			elseif self.playerNumber == "Two" then
 				self:trackThumbStick(dt)
-				self:moveCursorWithPlayer("Stick", dt)		
+				self:moveCursorWithPlayer("Stick", dt)
 			end
 
 		end
@@ -181,7 +215,7 @@ Entity = Class{
 
 		--delete ball from active_balls table
 		if self.type == "ball" then
-			for i, ball in ipairs(active_balls) do			
+			for i, ball in ipairs(active_balls) do		
 				if ball.id == self.id then
 					table.remove(active_balls, i)
 				end

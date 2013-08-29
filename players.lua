@@ -1,8 +1,8 @@
 Player = Class{
 	init = function(self, coords, playerNumber)
 		self.x = coords[1]
-		self.y = coords[2]
-		self.cursorAngle = 0
+		self.y = coords[2]		
+
 		self.orientation = 0
 		self.playerNumber = playerNumber		
 		self.maxSpeed = 400
@@ -12,26 +12,41 @@ Player = Class{
 		self.width = 35
 		self.height = 75
 		self.ballCount = 100
-		self.weight = .1		
+		self.weight = .1
+		self.catchDuration = .3
+		self.reflectDuration = .5
+		
+		--Status booleans
 		self.isOnGround = false
-		self.gravitiesPull = 1.8
-		self.isPullingBackToThrow = false
+		self.gravitiesPull = 1.8		
 		self.isThrowing = false
+		self.isCatching = false
+		self.isReflecting = true
+		self.isDead = false
+		self.isFallingTooFast = false
+		self.isTouching = {}
+		self.isTouching.level = false
+		self.isTouching.movingRectangle = false
 		self.canThrow = true
+
+		--Throw variables
 		self.throwDelay = .3
 		self.throwForce = {}		
-		self.throwForce.speed = 100		
+		self.throwForce.speed = 100
 		self.throwForce.angle = 0
 		self.throwForce.speedModifier = 0
+
+		--Cursor tracking variables
 		self.cursor = {}
 		self.cursor.x = 0
 		self.cursor.y = 0
 		self.cursor.speed = 200	
 		self.cursor.angle = 0
-		self.isDead = false
+		self.cursorAngle = 0		
+		
+		--Score trackers
 		self.killCount = 0
-
-		self.isFallingTooFast = false
+		
 		
 		self.mouseTracker = {}
 		self.mouseTracker.x = 0
@@ -48,10 +63,6 @@ Player = Class{
 		self.type = "player"
 		self.timer = {}
 		self.activeBall = nil
-
-		self.isTouching = {}
-		self.isTouching.level = false
-		self.isTouching.movingRectangle = false
 
 		self.body = love.physics.newBody(world, self.x, self.y, "dynamic")
 		self.shape = love.physics.newRectangleShape(self.width, self.height)
@@ -156,6 +167,26 @@ Player = Class{
 			end
 		end
 	end;
+
+	catch = function(self, dt)
+		if self.isCatching and not self.timer.catching then
+			self.timer.catching = love.timer.getTime() + gameSpeed*self.catchDuration
+		elseif self.isCatching and love.timer.getTime() > self.timer.catching then
+			self.isCatching = false
+			self.timer.catching = nil
+		end
+	end;
+
+	reflect = function(self, dt)
+		if self.isReflecting and not self.timer.reflecting then
+			self.timer.reflecting = love.timer.getTime() + gameSpeed*self.reflectDuration
+		elseif self.isReflecting and love.timer.getTime() > self.timer.reflecting then
+			self.isReflecting = false
+			self.timer.reflecting = nil
+		end
+	end;
+
+
 
 	pickupBall = function(self, ballObject)
 		self.ballCount = self.ballCount + 1
