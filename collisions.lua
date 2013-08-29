@@ -92,18 +92,19 @@ function beginContact(a, b, coll)
 	--Handler for when a player is colliding with a level
 	if colliders.player and colliders.level then
 		local playerObject = colliders.player:getUserData()
-		local levelObject = colliders.level:getUserData()
+		local levelObject = colliders.level:getUserData()		
 
-
-		if coll:isTouching() then
+		if coll:isTouching() then			
 			local playerx, playery = playerObject.body:getWorldPoints( playerObject.shape:getPoints() )
 			local levelx, levely = levelObject.body:getWorldPoints( levelObject.shape:getPoints() )
 
-			if levely < playery then
+			--This prevents the level touch flag from being triggered by the ground beneath the players feet
+			if levely < (playery + 75) then  --If the top of a level object is above a players foot
 				playerObject.isTouching.level = true
-			elseif levely > playery then
-				playerObject.isTouching.level = false
+			elseif levely > (playery + 75) then  --If the top of a level object is lower than the players foot
+				--playerObject.isTouching.level = false
 			end
+
 		end
 
 		--If the player is falling really fast - kill them
@@ -155,8 +156,18 @@ function endContact(a, b, coll)
 	end
 
 	if colliders.player and colliders.level then
-		local playerObject = colliders.player:getUserData()				
-		playerObject.isTouching.level = false
+		local playerObject = colliders.player:getUserData()
+		local levelObject = colliders.level:getUserData()
+		local playerx, playery = playerObject.body:getWorldPoints( playerObject.shape:getPoints() )
+		local levelx, levely = levelObject.body:getWorldPoints( levelObject.shape:getPoints() )
+
+		--This prevents the level touch flag from being triggered by the ground beneath the players feet		
+		if levely < (playery + 75) then  --If the top of a level object is lower than the players foot
+			playerObject.isTouching.level = false
+		end
+
+
+		--playerObject.isTouching.level = false
 	end	
 
 	-----------Player Collision Handlers END--------------------

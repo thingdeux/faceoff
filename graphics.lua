@@ -78,7 +78,10 @@ function drawPlayers()
 		love.graphics.print("Balls: " .. tostring(player.ballCount), player.body:getX() - 20, player.body:getY() - 55)
 								
 		--Draw cursor
-		love.graphics.setColor(color.red)					
+		love.graphics.setColor(color.red)	
+		local playerx, playery = player.body:getWorldPoints( player.shape:getPoints() )
+		love.graphics.point(playerx, playery + 75)
+
 	end
 end
 
@@ -86,6 +89,9 @@ function drawLevel()
 	love.graphics.setColor(255,255,255,255)
 	if current_level then
 		for __, levelPiece in ipairs(current_level) do
+			local levelx, levely = levelPiece.body:getWorldPoints( levelPiece.shape:getPoints() )
+
+			love.graphics.setColor(color.white)
 			if levelPiece.type_of_object == "rectangle" then
 				love.graphics.polygon("fill", levelPiece.body:getWorldPoints(levelPiece.shape:getPoints()))
 				love.graphics.point(levelPiece.body:getX() + 20, levelPiece.body:getY() - levelPiece.body:getY())
@@ -93,7 +99,9 @@ function drawLevel()
 				love.graphics.line(levelPiece.body:getWorldPoints(levelPiece.shape:getPoints()))				
 			elseif levelPiece.type_of_object == "movingRectangle" and not levelPiece.isInvisible then
 				love.graphics.polygon("fill", levelPiece.body:getWorldPoints(levelPiece.shape:getPoints()))
-			end
+			end			
+			love.graphics.setColor(color.red)
+			love.graphics.point(levelx, levely)
 		end
 	end
 end

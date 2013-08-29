@@ -7,9 +7,9 @@ Entity = Class{
 		if self.type == "player" then			
 			--Get the angle for the cursor, so it rotates
 			self.cursorAngle = math.angle(self.cursor.x,self.cursor.y , self.body:getX(), self.body:getY())
-			if self.playerNumber == "Two" then
-				debugger:keepUpdated("isCatching", self.isCatching)
-				debugger:keepUpdated("isReflecting", self.isReflecting)
+			if self.playerNumber == "One" then		
+				local x, y = self.body:getLinearVelocity()
+				debugger:keepUpdated("VelY", y)
 				debugger:keepUpdated("isOnGround", self.isOnGround)					
 				debugger:keepUpdated("isTouchingLevel", self.isTouching.level)
 			end
@@ -20,12 +20,26 @@ Entity = Class{
 				self.isOnGround = true
 				self.isFallingTooFast = false				
 			elseif (velocity_y < -1 and self.isTouching.movingRectangle) or 
-				   (velocity_y > 1 and self.isTouching.movingRectangle) then
+				   (velocity_y > 1 and self.isTouching.movingRectangle) and not self.isTouching.level then
+
 				--if I'm moving vertically but touching a moving rectangle then I'm still "on ground"
 				self.isOnGround = true			
 			elseif velocity_y < -1 or velocity_y > 1 and not self.isTouching.movingRectangle then
-				--If I'm not touching anyMoving Rectangles and my velocity is higher than 0	
-				self.isOnGround = false					
+				--If I'm not touching anyMoving Rectangles and my velocity is higher than 0
+				self.isOnGround = false
+			elseif (velocity_y == 0 and self.isTouching.level) and not self.isOnGround then
+
+				if not self.timer.groundTimer then
+					self.timer.groundTimer = love.timer.getTime() + gameSpeed*.2
+					debugger:insert("timerSet")
+				else
+					if love.timer.getTime() > self.timer.groundTimer and not self.isOnGround then
+						self.isOnGround = true
+						self.timer.groundTimer = nil
+						debugger:insert("timerCompleted")
+					end
+				end
+				
 			end
 
 			--If the player is falling too fast set the flag
@@ -146,7 +160,7 @@ Entity = Class{
 					end
 
 					if self.isTouching.level then
-						self.body:applyForce(0, 75)
+						self.body:applyForce(0, 75)						
 					end
 				end
 
@@ -157,13 +171,13 @@ Entity = Class{
 					if self.isOnGround then
 						self.body:applyForce(-self.speed, 0)						
 					else
-						--If player is in the air then they can only move themselves at half the speed
+						--If player is in the air then they can only move themselves at half the speed						
 						self.body:applyForce(-self.speed/2, 0)						
 					end
 				end
 
 				if self.isTouching.level then
-					self.body:applyForce(0, 75)
+					self.body:applyForce(0, 75)					
 				end
 			end			
 
