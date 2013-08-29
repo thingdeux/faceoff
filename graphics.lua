@@ -27,20 +27,24 @@ function drawBalls()
 		for __, ball in ipairs(active_balls) do
 			--local x,y = ball.body:getLinearVelocity()
 			if not ball.isBeingHeld then --If the ball isn't held by a player draw it to the screen
-				--Find the current animation frame for the ball				
-				love.graphics.circle("fill", ball.body:getX(), ball.body:getY(), ball.shape:getRadius())
+						
+				--love.graphics.circle("fill", ball.body:getX(), ball.body:getY(), ball.shape:getRadius())
 				
 				if ball.isOwned then
-					if ball.owner.playerNumber == "One" then						
+					if ball.owner.playerNumber == "One" then
+						--Blue ball for P1					
 						love.graphics.setColor(color.blue)
 					elseif ball.owner.playerNumber == "Two" then
+						--Pee Yellow ball for P2
 						love.graphics.setColor(color.brightyellow)											
 					end
 				else
+					--White ball for non-owned ball
 					love.graphics.setColor(color.white)
 				end
-				--chooseAnimation(ball)
-
+				
+				--Find the current animation frame for the ball
+				chooseAnimation(ball)
 			end
 		end
 	end
@@ -52,6 +56,7 @@ function drawPlayers()
 		--love.graphics.setColor(100,255,255,255)
 		--love.graphics.polygon("fill", player.body:getWorldPoints(player.shape:getPoints()))			
 		--local translatex, translatey = player.body:getWorldPoints( player.shape:getPoints() )
+		--love.graphics.line(player.body:getX(), player.body:getY(), player.cursor.x, player.cursor.y)
 
 		if player.playerNumber == "One" then
 			love.graphics.setColor(color.white)
@@ -61,17 +66,17 @@ function drawPlayers()
 		
 		--Draw player body
 		love.graphics.drawq(player_sheet, stationary, player.body:getX(), player.body:getY(), player.body:getAngle(), .8, .8, 52, 55)					
+		
+		--love.graphics.setColor(color.red)		
 		--Draw the cursor
 		love.graphics.draw(cursor_image, player.cursor.x, player.cursor.y, -player.cursorAngle, .7, .7, 10, 5)	
 
 		--Draw text that shows how many balls the player has
 		love.graphics.print("Balls: " .. tostring(player.ballCount), player.body:getX() - 20, player.body:getY() - 55)
-						
-		love.graphics.line(player.body:getX(), player.body:getY(), player.cursor.x, player.cursor.y)
-
+								
 		--Draw cursor
 		love.graphics.setColor(color.red)
-		love.graphics.point(player.cursor.x, player.cursor.y)
+		--love.graphics.point(player.cursor.x, player.cursor.y)
 
 		
 		if player.playerNumber == "Two" then
@@ -164,5 +169,5 @@ function drawBuild()
 
 	love.graphics.print("The longer you hold throw, the harder you do", xLocation, 100 )
 
-	love.graphics.print("Prototype Build: 0.4", 0, screenHeight - 12 )
+	love.graphics.print("Prototype Build: " .. tostring(build), 0, screenHeight - 12 )
 end

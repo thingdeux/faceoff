@@ -158,8 +158,7 @@ function load_level(name)
 
 		level.roundOver = false
 		
-		Level({0, screenHeight - 10}, "rectangle", screenWidth, 10)  --Ground		
-		--[[
+		Level({0, screenHeight - 10}, "rectangle", screenWidth, 10)  --Ground				
 		Level({0, 0}, "rectangle", 10, screenHeight) --Left Wall		
 		Level({screenWidth - 10, 0}, "rectangle", 10, screenHeight) ----Right Wall				
 		Level({0, 0}, "rectangle", screenWidth, 10) --Roof
@@ -180,8 +179,7 @@ function load_level(name)
 		Level({screenWidth*.70, screenHeight - 700}, "rectangle", 200, 50) --Right upper floating platform
 
 		Level({screenWidth*.25, screenHeight - 500}, "rectangle", 200, 50) --Left upper floating platform
-		Level({screenWidth/2 + 100, screenHeight - 500}, "rectangle", 200, 50) --Left upper floating platform
-		--]]
+		Level({screenWidth/2 + 100, screenHeight - 500}, "rectangle", 200, 50) --Left upper floating platform		
 
 		--Objects (Spawning)
 		spawner = Object({screenWidth/2, screenHeight - 280}, "spawner")

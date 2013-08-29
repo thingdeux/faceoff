@@ -2,6 +2,7 @@ Player = Class{
 	init = function(self, coords, playerNumber)
 		self.x = coords[1]
 		self.y = coords[2]
+		self.cursorAngle = 0
 		self.orientation = 0
 		self.playerNumber = playerNumber		
 		self.maxSpeed = 400
@@ -16,11 +17,10 @@ Player = Class{
 		self.gravitiesPull = 1.8
 		self.isPullingBackToThrow = false
 		self.isThrowing = false
-		self.throwDelay = .2
-		self.throwForce = {}
-		self.throwForce.current = 40
-		self.throwForce.speed = 1000
-		self.throwForce.max = 100
+		self.canThrow = true
+		self.throwDelay = .3
+		self.throwForce = {}		
+		self.throwForce.speed = 100		
 		self.throwForce.angle = 0
 		self.throwForce.speedModifier = 0
 		self.cursor = {}
@@ -90,14 +90,7 @@ Player = Class{
 
 		if self.isPullingBackToThrow then
 			if not self.activeBall then
-				--Spawn a ball and put it next to the player (in their hand)								
-				--self.activeBall = Ball({self.body:getX() + 30, self.body:getY()})
-				self.activeBall = Ball({self.body:getX() + 30, self.body:getY()})	
-
-				--Set the ball to being owned by the current player
-				self.activeBall.isOwned = true
-				self.activeBall.owner = self
-				self.isDangerous = true
+				
 			else
 				--Stop the ball from simulating while the player holds it in their hand				
 				self.activeBall.body:setActive (false)							
@@ -112,15 +105,37 @@ Player = Class{
 			
 		--Throw the ball		
 		if self.isThrowing and not self.timer.throwing then
-			self.activeBall.body:setActive (true)
-			
-			--Apply speed of throw						
-			self.activeBall.body:applyLinearImpulse(math.sin(self.throwForce.angle)*self.throwForce.current, math.cos(self.throwForce.angle)*self.throwForce.current)
-			self.ballCount = self.ballCount - 1
-			self.timer.throwing = love.timer.getTime() + self.throwDelay
+			if not self.activeBall then
+				--Spawn a ball and put it next to the player (in their hand)											
+				self.activeBall = Ball({self.body:getX(), self.body:getY()})	
 
-			--This timer keeps the ball from colliding with the thrower
-			self.timer.recentlyThrownBall = love.timer.getTime() + .02
+				--Set the ball to being owned by the current player
+				self.activeBall.isOwned = true
+				self.activeBall.owner = self
+				self.activeBall.isDangerous = true				
+				self.activeBall.fixture:setMask(2)
+			
+				--Find the angle at which the ball should be thrown (determined by cursor)
+				local ballx, bally = self.activeBall.body:getPosition()
+				self.throwForce.angle = math.angle(self.body:getX(), self.body:getY(), self.cursor.x, self.cursor.y)									
+				self.activeBall.body:setPosition( ballx + math.sin(self.throwForce.angle), bally )
+				self.activeBall.body:setPosition( ballx, bally + math.cos(self.throwForce.angle) )
+
+				--Apply linear velocity to the ball - ie: make it SHOOT in a direction
+				self.activeBall.body:applyLinearImpulse(math.sin(self.throwForce.angle)*(self.throwForce.speed+self.throwForce.speedModifier), math.cos(self.throwForce.angle)*(self.throwForce.speed+self.throwForce.speedModifier) )
+				
+				--Subtract ball from inventory
+				self.ballCount = self.ballCount - 1
+
+				--Set the throw delay timer
+				self.timer.throwing = love.timer.getTime() + self.throwDelay
+				--This timer keeps the ball from colliding with the thrower
+				self.timer.recentlyThrownBall = love.timer.getTime() + .02
+				--Prevent repeat throws
+				self.canThrow = false
+
+
+			end
 
 		elseif self.isThrowing and self.timer.throwing then
 			if love.timer.getTime() > self.timer.throwing then				

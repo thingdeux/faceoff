@@ -1,4 +1,6 @@
 TODO:
+Fix Wall cling
+Setup 3 bounce deactivation
 Add networking/dedicated server "support"
 Play with applyangularimpulse for balls bouncing on collision - appears to modify momentum
 
@@ -7,6 +9,7 @@ Fixed:
 ---
 Fix destroying of ball objects
 Enable neutral ball shifting
+Fix ballthrowing repeat
 ----------
 
 

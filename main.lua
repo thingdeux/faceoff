@@ -8,10 +8,12 @@ require("players")
 require("debugger")
 require("objects")
 
+build = "0.45"
+
 function love.load()	
 	--Create a debugger instance
 	debugger = Debugger()
-	gameSpeed = .1
+	gameSpeed = 1
 	roundOver = false	
 	love.mouse.setVisible(false)
 	love.mouse.setGrab(true)
@@ -61,6 +63,38 @@ function love.keypressed(key)
 	end
 
 end
+
+--Handler for when keys are released
+function love.keyreleased(key)
+	
+	if key == " " then
+		for __, player in ipairs(active_players) do
+			if player.playerNumber == "One" then
+				player.canThrow = true
+			end
+		end
+	end
+
+
+end
+
+--Handler for when mouse keys are released
+function love.mousereleased(x, y, button)
+	if button == "l" then
+		for __, player in ipairs(active_players) do
+			if player.playerNumber == "One" then
+				player.canThrow = true
+			end
+		end
+	end
+end
+
+--Handler for when joystick keys are released
+function love.joystickreleased(joystick, button)	
+end
+
+
+
 
 function love.draw()	
 	drawBackground()

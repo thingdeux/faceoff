@@ -4,11 +4,10 @@ Entity = Class{
 		
 
 		--Player Specific Updates
-		if self.type == "player" then
-			--self.cursorAngle = math.angle(self.body:getX(), self.body:getY(), self.cursor.x, self.cursor.y)
+		if self.type == "player" then			
+			--Get the angle for the cursor, so it rotates
 			self.cursorAngle = math.angle(self.cursor.x,self.cursor.y , self.body:getX(), self.body:getY())
-
-			debugger:keepUpdated("Angle", self.cursorAngle)					
+			debugger:keepUpdated("isThrowing", self.isThrowing)
 			debugger:keepUpdated("isOnGround", self.isOnGround)					
 			debugger:keepUpdated("isTouchingLevel", self.isTouching.level)
 			--Pass the players x/y velocity to a local variable for checking below		
@@ -42,8 +41,7 @@ Entity = Class{
 			end
 			
 
-			if self.isPullingBackToThrow or self.isThrowing or
-				self.timer.recentlyThrownBall then
+			if self.isThrowing or self.timer.recentlyThrownBall then
 				self:throw(dt) --Throw has to come before animate												
 			end
 
@@ -157,16 +155,16 @@ Entity = Class{
 			if ( (love.keyboard.isDown(" ") or love.mouse.isDown("l") ) and playerNumber =="One" and not roundOver) or 
 			   ( (love.joystick.isDown(1, 3) or love.joystick.isDown(1,6) )and playerNumber == "Two" and not roundOver) then
 				
-				--If player presses the throw button, start reeling back to throw
-				if not self.isThrowing and not self.isPullingBackToThrow and self.ballCount > 0 then
-					--Set the player to be realing back their arm ready to throw
-					self.isPullingBackToThrow = true					
+				--If player presses the throw button, throw
+				if not self.isThrowing and self.canThrow and self.ballCount > 0 then				
+					self.isThrowing = true		
 				end
-			elseif self.isPullingBackToThrow then				
-				self.isPullingBackToThrow = false			
-				self.isThrowing = true
+
+			elseif not self.canThrow and not ( love.joystick.isDown(1,3) or love.joystick.isDown(1,6) ) and (self.playerNumber == "Two") then				
+				self.canThrow = true
 			end
 
+			--Make sure the mouse cursor moves along with the player and doesn't go too far outside of a specific zone
 			if self.playerNumber == "One" then
 				self:trackMouse(dt)  --Keep this as the very end, updates the mouse location tracker
 				self:moveCursorWithPlayer("Mouse", dt)						
@@ -204,25 +202,17 @@ Entity = Class{
 	animate = function(self)
 		
 		--While the player is reeling back
-		if self.isPullingBackToThrow then		
+		if self.isPullingBackToThrow then	
 			--Keep the ball moving with the player while the player is holding it - Only have the player animation pull the ball back so far (100)
 			if self.throwForce.current < self.throwForce.max then
-				self.activeBall.body:setPosition(self.body:getX() + 30 - (self.throwForce.current - 50), self.body:getY())				
+				--self.activeBall.body:setPosition(self.body:getX() + 30 - (self.throwForce.current - 50), self.body:getY())				
 			else
-				self.isPullingBackToThrow = false			
-				self.isThrowing = true				
-				self.activeBall.body:setPosition(self.body:getX() + 30 - (100 - 50), self.body:getY())				
+				--self.isPullingBackToThrow = false			
+				--self.isThrowing = true				
+				--self.activeBall.body:setPosition(self.body:getX() + 30 - (100 - 50), self.body:getY())				
 			end
 
-			local ballx, bally = self.activeBall.body:getPosition()				
-			self.throwForce.angle = math.angle(self.body:getX(), self.body:getY(), self.cursor.x, self.cursor.y)
-									
-			--self.activeBall.body:setPosition( ballx + math.sin(self.throwForce.angle)*25, bally )
-			--self.activeBall.body:setPosition( ballx, bally + math.cos(self.throwForce.angle)*25 )
-
-			self.activeBall.body:setPosition( ballx + math.sin(self.throwForce.angle), bally )
-			self.activeBall.body:setPosition( ballx, bally + math.cos(self.throwForce.angle) )
-
+			
 		end
 
 		--Snap the cursor to the player
