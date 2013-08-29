@@ -1,7 +1,6 @@
 TODO:
 Fix Wall cling
-Setup 3 bounce deactivation
-Implement Reflecting
+Implement Double Jump (use one second rule timer from ball)
 Add networking/dedicated server "support"
 Play with applyangularimpulse for balls bouncing on collision - appears to modify momentum
 
@@ -12,6 +11,8 @@ Fix destroying of ball objects
 Enable neutral ball shifting
 Fix ballthrowing repeat
 Implement Catching
+Implement Reflecting
+Setup 3 bounce deactivation
 ----------
 
 

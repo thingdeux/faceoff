@@ -24,8 +24,10 @@ function beginContact(a, b, coll)
 		if ballObject.isOwned and ballObject.owner == playerObject and not
 		   playerObject.isThrowing then
 
-			playerObject:pickupBall(ballObject)
-
+		   if not playerObject.isReflecting then
+				playerObject:pickupBall(ballObject)
+		   end
+		
 		--If the ball is dangerous (ie: thrown by an opponent) and hits an opposing player
 		elseif ballObject.isDangerous and not (ballObject.owner == playerObject) and not playerObject.isDead then						
 			--local playerBody = colliders.player:getBody() --Pass the player.body physics object to playerBody
@@ -40,35 +42,41 @@ function beginContact(a, b, coll)
 					--Add to the score of the person who threw the ball
 					ballObject.owner.killCount = ballObject.owner.killCount + 1
 				end
-			elseif playerObject.isCatching then
-				playerObject:pickupBall(ballObject)
-			
-			elseif playerObject.isReflecting then
-				local ballBody = colliders.ball:getBody()
-				--Get the balls current velocity
-				local reversedVelocityX, reversedVelocityY = ballBody:getLinearVelocity()
-
-				--Change ownership of ball
-				ballObject.owner = playerObject
-				
-				--Reverse the velocity (making it shoot back in the other direction)
-				reversedVelocityX = (reversedVelocityX*-1)*.07 --Have to cut the speed down by multiplying it by .07 or it's too fast
-				reversedVelocityY = (reversedVelocityY*-1)*.07
-
-				--Kill any current velocity
-				ballBody:setLinearVelocity(0,0)
-				--Apply reversed velocity
-				ballBody:applyLinearImpulse(reversedVelocityX, reversedVelocityY)		
 			end
-					
+		elseif playerObject.isCatching then
+				playerObject:pickupBall(ballObject)
+
 		else
 			--Player picks up the ball if no one owns it
-			if not ballObject.isOwned then
+			if not ballObject.isOwned and not playerObject.isReflecting then
 				playerObject:pickupBall(ballObject)
 			end
 		end
 
+
+		if playerObject.isReflecting then
+			local ballBody = colliders.ball:getBody()
+			--Get the balls current velocity
+			local reversedVelocityX, reversedVelocityY = ballBody:getLinearVelocity()
+
+			--Change ownership of ball
+			ballObject.owner = playerObject
+			ballObject.wallsHit = 0
+			ballObject.isDangerous = true
+			
+			--Reverse the velocity (making it shoot back in the other direction)
+			reversedVelocityX = (reversedVelocityX*-1)*.07 --Have to cut the speed down by multiplying it by .07 or it's too fast
+			reversedVelocityY = (reversedVelocityY*-1)*.07
+
+			--Kill any current velocity
+			ballBody:setLinearVelocity(0,0)
+			--Apply reversed velocity
+			ballBody:applyLinearImpulse(reversedVelocityX, reversedVelocityY)		
+		end
+
 	end
+
+	
 
 	--Handler for when a player is colliding with a movingRectangle
 	if colliders.player and colliders.movingRectangle then
@@ -128,7 +136,13 @@ function beginContact(a, b, coll)
 		--Flip both moving Rectangles having them *bounce* off of each other
 		rectangleObject:flipMovingDirection()
 		rectangleObject2:flipMovingDirection()
-	end	
+	end
+
+	if colliders.ball and (colliders.movingRectangle or colliders.level) then
+		local ballObject = colliders.ball:getUserData()
+
+		ballObject.wallsHit = ballObject.wallsHit + 1
+	end
 end
 
 function endContact(a, b, coll)	

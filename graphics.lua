@@ -149,7 +149,7 @@ end
 
 
 function drawBuild()
-	local xLocation = 720
+	local xLocation = screenWidth - 300
 
 	love.graphics.setColor(color.red)	
 	love.graphics.print("Enable a 360 controller for 2 player.", xLocation, 10 )
@@ -163,4 +163,5 @@ function drawBuild()
 	love.graphics.print("The longer you hold throw, the harder you do", xLocation, 100 )
 
 	love.graphics.print("Prototype Build: " .. tostring(build), 0, screenHeight - 12 )
+	love.graphics.print("FPS: " .. tostring(love.timer.getFPS()), 20, 0)
 end

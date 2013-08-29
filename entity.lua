@@ -85,6 +85,11 @@ Entity = Class{
 					self.isDangerous = true
 				end
 			end	
+
+			if self.isOwned and self.wallsHit > 2 then
+				self.isDangerous = false
+				self.isOwned = false
+			end
 		end
 
 		if self.type == "movingRectangle" then
