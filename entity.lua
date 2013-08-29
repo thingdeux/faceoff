@@ -8,6 +8,7 @@ Entity = Class{
 			--Get the angle for the cursor, so it rotates
 			self.cursorAngle = math.angle(self.cursor.x,self.cursor.y , self.body:getX(), self.body:getY())
 			if self.playerNumber == "One" then						
+				debugger:keepUpdated("isCatching", self.isCatching)
 				debugger:keepUpdated("canDouble", self.canDoubleJump)
 				debugger:keepUpdated("isOnGround", self.isOnGround)					
 				debugger:keepUpdated("isTouchingLevel", self.isTouching.level)

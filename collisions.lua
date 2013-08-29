@@ -23,15 +23,15 @@ function beginContact(a, b, coll)
 		--If the person who owns the dangerous ball touches it
 		if ballObject.isOwned and ballObject.owner == playerObject and not
 		   playerObject.isThrowing then
-
+		   --And they're not currently reflecting
 		   if not playerObject.isReflecting then
 				playerObject:pickupBall(ballObject)
 		   end
 		
 		--If the ball is dangerous (ie: thrown by an opponent) and hits an opposing player
-		elseif ballObject.isDangerous and not (ballObject.owner == playerObject) and not playerObject.isDead then						
-			--local playerBody = colliders.player:getBody() --Pass the player.body physics object to playerBody
-										
+		elseif ballObject.isDangerous and not (ballObject.owner == playerObject) and not playerObject.isDead then									
+			
+			--If the player isn't catching or reflecting, THEY DEAD			
 			if not playerObject.isCatching and not playerObject.isReflecting then
 				--Kill the hit player
 				playerObject:die()			
@@ -42,18 +42,25 @@ function beginContact(a, b, coll)
 					--Add to the score of the person who threw the ball
 					ballObject.owner.killCount = ballObject.owner.killCount + 1
 				end
-			end
-		elseif playerObject.isCatching then
+				--If the player is catching, catch the ball
+			elseif playerObject.isCatching then
+				local ballBody = colliders.ball:getBody()
+				local ballvelocityx, ballvelocity = ballBody:getLinearVelocity()
+				
+				ballBody:setLinearVelocity(ballvelocityx*.25,0)							
 				playerObject:pickupBall(ballObject)
+			end
+			
+			
 
 		else
 			--Player picks up the ball if no one owns it
-			if not ballObject.isOwned and not playerObject.isReflecting then
+			if not ballObject.isOwned and not playerObject.isReflecting then				
 				playerObject:pickupBall(ballObject)
 			end
 		end
 
-
+		--If the player is reflecting, REFLECT
 		if playerObject.isReflecting then
 			local ballBody = colliders.ball:getBody()
 			--Get the balls current velocity

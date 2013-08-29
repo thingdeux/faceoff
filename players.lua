@@ -15,7 +15,7 @@ Player = Class{
 		self.weight = .1
 		self.catchDuration = .3
 		self.reflectDuration = .5
-		self.doubleJumpDelay = .05
+		self.doubleJumpDelay = .4
 		
 		--Status booleans
 		self.isOnGround = false
