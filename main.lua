@@ -75,6 +75,15 @@ function love.keyreleased(key)
 		end
 	end
 
+	if key == "w" then
+		for __, player in ipairs(active_players) do
+			if player.playerNumber == "One" then
+				player.canDoubleJump = true
+			end
+		end
+
+	end
+
 
 end
 

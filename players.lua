@@ -15,11 +15,14 @@ Player = Class{
 		self.weight = .1
 		self.catchDuration = .3
 		self.reflectDuration = .5
+		self.doubleJumpDelay = .05
 		
 		--Status booleans
 		self.isOnGround = false
 		self.gravitiesPull = 1.8		
 		self.isThrowing = false
+		self.isJumping = false
+		self.isDoubleJumping = false
 		self.isCatching = false
 		self.isReflecting = true
 		self.isDead = false
@@ -28,6 +31,7 @@ Player = Class{
 		self.isTouching.level = false
 		self.isTouching.movingRectangle = false
 		self.canThrow = true
+		self.canDoubleJump = false
 
 		--Throw variables
 		self.throwDelay = .3

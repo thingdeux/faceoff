@@ -7,16 +7,15 @@ Entity = Class{
 		if self.type == "player" then			
 			--Get the angle for the cursor, so it rotates
 			self.cursorAngle = math.angle(self.cursor.x,self.cursor.y , self.body:getX(), self.body:getY())
-			if self.playerNumber == "One" then		
-				local x, y = self.body:getLinearVelocity()
-				debugger:keepUpdated("VelY", y)
+			if self.playerNumber == "One" then						
+				debugger:keepUpdated("canDouble", self.canDoubleJump)
 				debugger:keepUpdated("isOnGround", self.isOnGround)					
 				debugger:keepUpdated("isTouchingLevel", self.isTouching.level)
 			end
 			--Pass the players x/y velocity to a local variable for checking below		
 			local velocity_x,velocity_y = self.body:getLinearVelocity()
 
-			if velocity_y >= -1 and velocity_y <= 1 and not self.isTouching.level then
+			if velocity_y >= -1 and velocity_y <= 1 and not self.isTouching.level and not self.isJumping then
 				self.isOnGround = true
 				self.isFallingTooFast = false				
 			elseif (velocity_y < -1 and self.isTouching.movingRectangle) or 
@@ -28,15 +27,14 @@ Entity = Class{
 				--If I'm not touching anyMoving Rectangles and my velocity is higher than 0
 				self.isOnGround = false
 			elseif (velocity_y == 0 and self.isTouching.level) and not self.isOnGround then
-
+				--Quick fix ground timer, goes into effect when the player is touching a wall and they hit another wall/floor
+				--Should probably rewrite this so it only applies to floors
 				if not self.timer.groundTimer then
-					self.timer.groundTimer = love.timer.getTime() + gameSpeed*.2
-					debugger:insert("timerSet")
+					self.timer.groundTimer = love.timer.getTime() + gameSpeed*.2					
 				else
 					if love.timer.getTime() > self.timer.groundTimer and not self.isOnGround then
 						self.isOnGround = true
-						self.timer.groundTimer = nil
-						debugger:insert("timerCompleted")
+						self.timer.groundTimer = nil						
 					end
 				end
 				
@@ -44,7 +42,7 @@ Entity = Class{
 
 			--If the player is falling too fast set the flag
 			if velocity_y > 1200 then
-				self.isFallingTooFast = true
+				--self.isFallingTooFast = true
 			end
 			
 			--If the player isn't dead allow control
@@ -138,10 +136,29 @@ Entity = Class{
 			if (love.keyboard.isDown("w") and playerNumber == "One") or
 			   ( (love.joystick.isDown(1, 1) or love.joystick.isDown(1,5) ) and playerNumber == "Two") and self.isOnGround then
 					
-				if self.isOnGround then
-					self.body:applyLinearImpulse(0, -self.jumpForce)											
-					self.isTouching.movingRectangle = false
-				end
+				if self.isOnGround and not self.isJumping then					
+					self.body:applyLinearImpulse(0, -self.jumpForce)
+					self.isTouching.movingRectangle = false  --I don't like this being here
+					if not self.isJumping then
+						self.isJumping = true
+					end
+				elseif not self.isOnGround and self.isJumping then
+					if not self.timer.doubleJump then
+						self.timer.doubleJump = love.timer.getTime() + self.doubleJumpDelay
+					else
+						if love.timer.getTime() > self.timer.doubleJump then
+							if self.canDoubleJump then
+								debugger:insert("DoubleJump")
+								--self.body:applyLinearImpulse(0, -self.jumpForce)
+								self.isDoubleJumping = true
+								self.isJumping = false
+								self.canDoubleJump = false
+								self.timer.doubleJump = nil
+							end
+						end
+					end
+
+				end				
 
 			--Controller handler for when the player slides
 			elseif (love.keyboard.isDown("s") and playerNumber =="One") then
