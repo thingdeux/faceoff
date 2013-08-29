@@ -12,7 +12,7 @@ Ball = Class{
 		self.weight = 4
 		self.bounciness = .8 --The higher the bouncier
 		self.isBeingHeld = false
-		self.wallsHit = 0
+		self.wallsHit = 0 --Counts number of balls hit
 
 		self.isOwned = false
 		self.owner = false
