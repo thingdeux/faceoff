@@ -43,11 +43,15 @@ function drawBalls()
 					love.graphics.setColor(color.white)
 				end
 				
+				
 				--Find the current animation frame for the ball
 				chooseAnimation(ball)
+				
 			end
 		end
 	end
+
+
 end
 
 function drawPlayers()
@@ -72,7 +76,8 @@ function drawPlayers()
 		love.graphics.drawq(player_sheet, stationary, player.body:getX(), player.body:getY(), player.body:getAngle(), .8, .8, 52, 55)					
 				
 		--Draw the cursor
-		love.graphics.draw(cursor_image, player.cursor.x, player.cursor.y, -player.cursorAngle, .7, .7, 10, 5)	
+		love.graphics.draw(cursor_image, player.cursor.x, player.cursor.y, -player.cursorAngle, .7, .7, 10, 5)
+		drawPaths()
 
 		--Draw text that shows how many balls the player has
 		love.graphics.print("Balls: " .. tostring(player.ballCount), player.body:getX() - 20, player.body:getY() - 55)
@@ -176,4 +181,18 @@ function drawBuild()
 
 	love.graphics.print("Prototype Build: " .. tostring(build), 0, screenHeight - 12 )
 	love.graphics.print("FPS: " .. tostring(love.timer.getFPS()), 20, 0)
+end
+
+function drawPaths()
+	if active_trackers then
+		for __, ball in ipairs(active_trackers) do
+			if not ball.isBeingHeld then --If the ball isn't held by a player draw it to the screen
+													
+				--White ball for non-owned ball
+				love.graphics.setColor(color.white)				
+				--Find the current animation frame for the ball
+				love.graphics.drawq(ball_sheet, no_squish, ball.body:getX(), ball.body:getY(), ball.body:getAngle(), ball.size.x, ball.size.y, 10, 10)			
+			end
+		end
+	end	
 end

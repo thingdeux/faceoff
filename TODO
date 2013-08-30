@@ -1,12 +1,14 @@
 TODO:
-Fix Wall cling
-Implement Double Jump (use one second rule timer from ball)
+Add Aiming
+Implement Animations
 Add networking/dedicated server "support"
-Play with applyangularimpulse for balls bouncing on collision - appears to modify momentum
+Play with applyangular impulse for balls bouncing on collision - appears to modify momentum
 
 
 Done:
 ---
+Fix Wall cling
+Implement Double Jump (use one second rule timer from ball)
 Fix destroying of ball objects
 Enable neutral ball shifting
 Fix ballthrowing repeat

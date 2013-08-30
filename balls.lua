@@ -1,5 +1,5 @@
 Ball = Class{
-	init = function(self, coords)
+	init = function(self, coords, tracker)
 		self.x = coords[1]
 		self.y = coords[2]
 		self.velocity = {}
@@ -13,6 +13,7 @@ Ball = Class{
 		self.bounciness = .8 --The higher the bouncier
 		self.isBeingHeld = false
 		self.wallsHit = 0 --Counts number of balls hitwadw
+		self.isTracker = tracker
 
 		self.isOwned = false
 		self.owner = false
@@ -24,11 +25,20 @@ Ball = Class{
 		self.timer = {}
 
 		--Create the active_balls table
-		if not active_balls then
-			active_balls = {}
-			table.insert(active_balls, self)					
-		else
-			table.insert(active_balls, self)	
+		if not self.isTracker then
+			if not active_balls then
+				active_balls = {}
+				table.insert(active_balls, self)					
+			else
+				table.insert(active_balls, self)	
+			end
+		else				
+			if not active_trackers then
+				active_trackers = {}
+				table.insert(active_trackers, self)					
+			else
+				table.insert(active_trackers, self)
+			end
 		end
 
 		if not totalBallsSpawned then
@@ -62,9 +72,10 @@ Ball = Class{
 
 		--body parameters
 		self.body:resetMassData()
-
+		
 		--Insert a reference into the active_entities table
 		table.insert(active_entities, self)
+
 	end;
 
 	

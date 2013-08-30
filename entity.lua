@@ -1,32 +1,50 @@
 Entity = Class{
 
-	update = function(self, dt)	
+	update = function(self, dt)
 		
 
 		--Player Specific Updates
 		if self.type == "player" then			
 			--Get the angle for the cursor, so it rotates
 			self.cursorAngle = math.angle(self.cursor.x,self.cursor.y , self.body:getX(), self.body:getY())
-			if self.playerNumber == "One" then						
-				debugger:keepUpdated("isCatching", self.isCatching)
-				debugger:keepUpdated("canDouble", self.canDoubleJump)
-				debugger:keepUpdated("isOnGround", self.isOnGround)					
-				debugger:keepUpdated("isTouchingLevel", self.isTouching.level)
+			
+			--Find the throwing arc/path of the ball if the player is alive
+			if not self.isDead then
+				if not self.timer.pathFinderDelay then
+					self:findThrowPath()
+				else
+					if love.timer.getTime() > self.timer.pathFinderDelay then
+						self.timer.pathFinderDelay = nil
+					end					
+				end
+			end
+
+			if active_balls then
+				debugger:keepUpdated("Active Trackers", #active_trackers)
+			end
+				debugger:keepUpdated("Body Count", world:getBodyCount())
+
+			if self.playerNumber == "One" then																					
+				debugger:keepUpdated("isOnGround", self.isOnGround)
+				debugger:keepUpdated("canJump", self.canJump)				
 			end
 			--Pass the players x/y velocity to a local variable for checking below		
 			local velocity_x,velocity_y = self.body:getLinearVelocity()
 
 			if velocity_y >= -1 and velocity_y <= 1 and not self.isTouching.level and not self.isJumping then
 				self.isOnGround = true
-				self.isFallingTooFast = false				
+				self:stopJumping()
+				self.isFallingTooFast = false
+						
 			elseif (velocity_y < -1 and self.isTouching.movingRectangle) or 
 				   (velocity_y > 1 and self.isTouching.movingRectangle) and not self.isTouching.level then
 
 				--if I'm moving vertically but touching a moving rectangle then I'm still "on ground"
-				self.isOnGround = true			
+				self.isOnGround = true
+				self:stopJumping()				
 			elseif velocity_y < -1 or velocity_y > 1 and not self.isTouching.movingRectangle then
 				--If I'm not touching anyMoving Rectangles and my velocity is higher than 0
-				self.isOnGround = false
+				self.isOnGround = false				
 			elseif (velocity_y == 0 and self.isTouching.level) and not self.isOnGround then
 				--Quick fix ground timer, goes into effect when the player is touching a wall and they hit another wall/floor
 				--Should probably rewrite this so it only applies to floors
@@ -35,7 +53,8 @@ Entity = Class{
 				else
 					if love.timer.getTime() > self.timer.groundTimer and not self.isOnGround then
 						self.isOnGround = true
-						self.timer.groundTimer = nil						
+						self.timer.groundTimer = nil
+						self:stopJumping()								
 					end
 				end
 				
@@ -45,6 +64,18 @@ Entity = Class{
 			if velocity_y > 1200 then
 				--self.isFallingTooFast = true
 			end
+
+			if self.isJumping then
+				if not self.timer.jumping then
+					self.timer.jumping = love.timer.getTime() + gameSpeed*self.jumpDelay
+				else
+					if love.timer.getTime() > self.timer.jumping then
+						self.isJumping = false
+						self.timer.jumping = nil
+					end
+				end
+
+			end				
 			
 			--If the player isn't dead allow control
 			if not self.isDead then				
@@ -103,6 +134,21 @@ Entity = Class{
 				self.isDangerous = false
 				self.isOwned = false
 			end
+
+			if self.isTracker and self.wallsHit > 2 then
+				self.isBeingHeld = true
+				self:destroyObject()
+				self.body:destroy()				
+			end
+
+			--Destroy a ball if it gets accidentally pushed outside of the screen world
+			if not self.isBeingHeld then
+				if (self.body:getX() > screenWidth or self.body:getX() < 0) or
+			   (self.body:getY() > screenHeight or self.body:getY() < 0) then
+
+				self:destroyObject()				
+				end			
+			end
 		end
 
 		if self.type == "movingRectangle" then
@@ -133,26 +179,37 @@ Entity = Class{
 	controller = function(self, velocity_x, velocity_y, playerNumber, dt)
 		if self.type == "player" then	
 
+			if love.keyboard.isDown("f") then
+				self.throwForce.speedModifier = 50
+			end
+
 			--Controller handler for when the player jumps
 			if (love.keyboard.isDown("w") and playerNumber == "One") or
-			   ( (love.joystick.isDown(1, 1) or love.joystick.isDown(1,5) ) and playerNumber == "Two") and self.isOnGround then
+			   ( (love.joystick.isDown(1, 1) or love.joystick.isDown(1,5) ) and playerNumber == "Two") then			   
 					
-				if self.isOnGround and not self.isJumping then					
-					self.body:applyLinearImpulse(0, -self.jumpForce)
-					self.isTouching.movingRectangle = false  --I don't like this being here
-					if not self.isJumping then
-						self.isJumping = true
-					end
-				elseif not self.isOnGround and self.isJumping then
+				--If I'm on the ground and not jumping, make me jump
+				if self.isOnGround and not self.isJumping and self.canJump then					
+					self.body:applyLinearImpulse(0, self.jumpForce)
+					self.isTouching.movingRectangle = false  --I don't like this being here	
+					self.isJumping = true
+					self.canJump = false					
+
+				elseif not self.isOnGround and self.isJumping then					
+					--After the first jump X amount of time must pass before double jumping
+					--This sets up a timer to keep track of the time
 					if not self.timer.doubleJump then
 						self.timer.doubleJump = love.timer.getTime() + self.doubleJumpDelay
 					else
-						if love.timer.getTime() > self.timer.doubleJump then
-							if self.canDoubleJump then
-								debugger:insert("DoubleJump")
-								--self.body:applyLinearImpulse(0, -self.jumpForce)
-								self.isDoubleJumping = true
-								self.isJumping = false
+						--If enough time has passed to be able to double Jump
+						if (love.timer.getTime() > self.timer.doubleJump) then													
+							--Double Jump - I don't want the character to be able to double jump without
+							--Letting go of the initial jump button, so there's a keyrelease function in
+							--The main thread that sets "canDoubleJump" to true						
+							if self.canDoubleJump then								
+								self.body:applyLinearImpulse(0, self.jumpForce*.75)
+								--self.isJumping = false
+								self.canJump = false
+								self.isDoubleJumping = true												
 								self.canDoubleJump = false
 								self.timer.doubleJump = nil
 							end
@@ -252,9 +309,17 @@ Entity = Class{
 
 		--delete ball from active_balls table
 		if self.type == "ball" then
-			for i, ball in ipairs(active_balls) do		
-				if ball.id == self.id then
-					table.remove(active_balls, i)
+			if not self.isTracker then
+				for i, ball in ipairs(active_balls) do		
+					if ball.id == self.id then
+						table.remove(active_balls, i)					
+					end
+				end
+			else
+				for i, ball in ipairs(active_trackers) do		
+					if ball.id == self.id then
+						table.remove(active_trackers, i)					
+					end
 				end
 			end
 		end

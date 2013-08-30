@@ -7,7 +7,7 @@ Player = Class{
 		self.playerNumber = playerNumber		
 		self.maxSpeed = 400
 		self.speed = 250
-		self.jumpForce = 40
+		self.jumpForce = -40
 		self.friction = 6
 		self.width = 35
 		self.height = 75
@@ -15,7 +15,9 @@ Player = Class{
 		self.weight = .1
 		self.catchDuration = .3
 		self.reflectDuration = .5
-		self.doubleJumpDelay = .4
+		self.jumpDelay = 1
+		self.doubleJumpDelay = .1
+		self.pathFinderDelay = .2
 		
 		--Status booleans
 		self.isOnGround = false
@@ -30,6 +32,9 @@ Player = Class{
 		self.isTouching = {}
 		self.isTouching.level = false
 		self.isTouching.movingRectangle = false
+		
+		--Created these to track repeated key holds
+		self.canJump = true
 		self.canThrow = true
 		self.canDoubleJump = false
 
@@ -338,6 +343,37 @@ Player = Class{
 
 		self.isDead = true
 	end;
+
+	stopJumping = function(self)		
+		self.isJumping = false
+		self.canDoubleJump = false		
+		self.isDoubleJumping = false
+		self.timer.doubleJump = nil
+	end;
+
+	findThrowPath = function(self)		
+		self.timer.pathFinderDelay = love.timer.getTime() + self.pathFinderDelay
+		--Spawn a tracker ball
+		local trackerBall = Ball({self.body:getX(), self.body:getY()}, true)
+		--Set the ball to not collide with anything but the level mask
+		trackerBall.fixture:setMask(2)		
+		trackerBall.isBeingHeld = false
+
+		--Set the ball to have no owner and not be dangerous
+		trackerBall.isOwned = false
+		trackerBall.owner = nil
+		trackerBall.isDangerous = false					
+		
+		--Find the angle at which the ball should be thrown (determined by cursor)
+		local ballx, bally = trackerBall.body:getPosition()
+		self.throwForce.angle = math.angle(self.body:getX(), self.body:getY(), self.cursor.x, self.cursor.y)									
+		trackerBall.body:setPosition( ballx + math.sin(self.throwForce.angle), bally )
+		trackerBall.body:setPosition( ballx, bally + math.cos(self.throwForce.angle) )
+
+		--Apply linear velocity to the ball - ie: make it SHOOT in a direction
+		trackerBall.body:applyLinearImpulse(math.sin(self.throwForce.angle)*(self.throwForce.speed+self.throwForce.speedModifier), math.cos(self.throwForce.angle)*(self.throwForce.speed+self.throwForce.speedModifier) )
+	end;
+
 
 }
 

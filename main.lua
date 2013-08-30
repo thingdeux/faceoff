@@ -8,7 +8,7 @@ require("players")
 require("debugger")
 require("objects")
 
-build = "0.45"
+build = "0.47"
 
 function love.load()	
 	--Create a debugger instance
@@ -57,11 +57,6 @@ function love.keypressed(key)
 	if key == "q" then
 		love.event.push("quit") -- Quit the game
 	end
-
-	if key == "r" then
-		--Ball({400,100})
-	end
-
 end
 
 --Handler for when keys are released
@@ -78,7 +73,15 @@ function love.keyreleased(key)
 	if key == "w" then
 		for __, player in ipairs(active_players) do
 			if player.playerNumber == "One" then
-				player.canDoubleJump = true
+				if not player.canDoubleJump and player.isJumping and not
+					player.isDoubleJumping then
+
+					player.canDoubleJump = true
+				end
+
+				if not player.canJump then
+					player.canJump = true
+				end
 			end
 		end
 
@@ -100,6 +103,21 @@ end
 
 --Handler for when joystick keys are released
 function love.joystickreleased(joystick, button)	
+	if joystick == 1 and (button == 5 or button == 1) then
+		for __, player in ipairs(active_players) do
+			if player.playerNumber == "Two" then
+				if not player.canDoubleJump and player.isJumping and not
+					player.isDoubleJumping then
+
+					player.canDoubleJump = true
+				end
+
+				if not player.canJump then
+					player.canJump = true
+				end
+			end
+		end
+	end
 end
 
 
@@ -109,7 +127,7 @@ function love.draw()
 	drawBackground()
 	drawLevel()
 	drawPlayers()
-	drawBalls()
+	drawBalls()	
 	drawDebugInfo()
 	drawBuild()
 end

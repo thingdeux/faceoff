@@ -159,8 +159,7 @@ function load_level(name)
 		level.roundOver = false
 		
 		Level({0, screenHeight - 10}, "rectangle", screenWidth, 10)  --Ground	
-
-		--[[
+		
 		Level({0, 0}, "rectangle", 10, screenHeight) --Left Wall		
 		Level({screenWidth - 10, 0}, "rectangle", 10, screenHeight) ----Right Wall				
 		Level({0, 0}, "rectangle", screenWidth, 10) --Roof
@@ -186,7 +185,6 @@ function load_level(name)
 		--Objects (Spawning)
 		spawner = Object({screenWidth/2, screenHeight - 280}, "spawner")
 		spawner:setSpawnerAmmo(level.spawnerBallCount)
-		--]]
 
 		--Spawn players
 		spawn_players()
