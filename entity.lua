@@ -6,24 +6,8 @@ Entity = Class{
 		--Player Specific Updates
 		if self.type == "player" then			
 			--Get the angle for the cursor, so it rotates
-			self.cursorAngle = math.angle(self.cursor.x,self.cursor.y , self.body:getX(), self.body:getY())
-			
-			--Find the throwing arc/path of the ball if the player is alive
-			if not self.isDead then
-				if not self.timer.pathFinderDelay then
-					self:findThrowPath()
-				else
-					if love.timer.getTime() > self.timer.pathFinderDelay then
-						self.timer.pathFinderDelay = nil
-					end					
-				end
-			end
-
-			if active_balls then
-				debugger:keepUpdated("Active Trackers", #active_trackers)
-			end
-				debugger:keepUpdated("Body Count", world:getBodyCount())
-
+			self.cursorAngle = math.angle(self.cursor.x,self.cursor.y , self.body:getX(), self.body:getY())						
+						
 			if self.playerNumber == "One" then																					
 				debugger:keepUpdated("isOnGround", self.isOnGround)
 				debugger:keepUpdated("canJump", self.canJump)				
@@ -110,7 +94,7 @@ Entity = Class{
 			--If the ball has slowed down to a point where it's not bouncing much
 			if ( (velocity_x >= -20 and velocity_x <= 20) or (velocity_y >= -20 and velocity_y <= 20) ) and 
 				(self.isOwned) then	
-				
+
 				--If the balls X or Y velocity dips below 20 then start a counter
 				--If the velocity stays low for more than 1 second then the ball is neutral
 				if not self.timer.dangerousBallOneSecondRule then
@@ -130,15 +114,10 @@ Entity = Class{
 				end
 			end	
 
+			--If the ball bounces off at least 3 walls it becomes neutral
 			if self.isOwned and self.wallsHit > 2 then
 				self.isDangerous = false
 				self.isOwned = false
-			end
-
-			if self.isTracker and self.wallsHit > 2 then
-				self.isBeingHeld = true
-				self:destroyObject()
-				self.body:destroy()				
 			end
 
 			--Destroy a ball if it gets accidentally pushed outside of the screen world

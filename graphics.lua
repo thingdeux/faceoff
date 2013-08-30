@@ -77,7 +77,9 @@ function drawPlayers()
 				
 		--Draw the cursor
 		love.graphics.draw(cursor_image, player.cursor.x, player.cursor.y, -player.cursorAngle, .7, .7, 10, 5)
-		drawPaths()
+
+		--Draw the throwing arc
+		drawPaths(player)
 
 		--Draw text that shows how many balls the player has
 		love.graphics.print("Balls: " .. tostring(player.ballCount), player.body:getX() - 20, player.body:getY() - 55)
@@ -105,7 +107,7 @@ function drawLevel()
 				love.graphics.polygon("fill", levelPiece.body:getWorldPoints(levelPiece.shape:getPoints()))
 			end
 
-			--[[
+			--[[ --Draw world top left most coords
 			local levelx, levely = levelPiece.body:getWorldPoints( levelPiece.shape:getPoints() )
 			love.graphics.setColor(color.red)
 			love.graphics.point(levelx, levely)
@@ -183,16 +185,5 @@ function drawBuild()
 	love.graphics.print("FPS: " .. tostring(love.timer.getFPS()), 20, 0)
 end
 
-function drawPaths()
-	if active_trackers then
-		for __, ball in ipairs(active_trackers) do
-			if not ball.isBeingHeld then --If the ball isn't held by a player draw it to the screen
-													
-				--White ball for non-owned ball
-				love.graphics.setColor(color.white)				
-				--Find the current animation frame for the ball
-				love.graphics.drawq(ball_sheet, no_squish, ball.body:getX(), ball.body:getY(), ball.body:getAngle(), ball.size.x, ball.size.y, 10, 10)			
-			end
-		end
-	end	
+function drawPaths(player)	
 end

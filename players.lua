@@ -17,7 +17,7 @@ Player = Class{
 		self.reflectDuration = .5
 		self.jumpDelay = 1
 		self.doubleJumpDelay = .1
-		self.pathFinderDelay = .2
+		self.pathFinderDelay = 0
 		
 		--Status booleans
 		self.isOnGround = false
@@ -72,6 +72,11 @@ Player = Class{
 		self.type = "player"
 		self.timer = {}
 		self.activeBall = nil
+
+		self.throwingArc = {}
+		self.throwingArc.queue = {}
+		self.throwingArc.current = {}
+		self.throwingArc.isDrawable = false
 
 		self.body = love.physics.newBody(world, self.x, self.y, "dynamic")
 		self.shape = love.physics.newRectangleShape(self.width, self.height)
@@ -351,7 +356,7 @@ Player = Class{
 		self.timer.doubleJump = nil
 	end;
 
-	findThrowPath = function(self)		
+	findThrowPath = function(self)	
 		self.timer.pathFinderDelay = love.timer.getTime() + self.pathFinderDelay
 		--Spawn a tracker ball
 		local trackerBall = Ball({self.body:getX(), self.body:getY()}, true)
@@ -362,7 +367,8 @@ Player = Class{
 		--Set the ball to have no owner and not be dangerous
 		trackerBall.isOwned = false
 		trackerBall.owner = nil
-		trackerBall.isDangerous = false					
+		trackerBall.isDangerous = false	
+		trackerBall.trackingOwner = self
 		
 		--Find the angle at which the ball should be thrown (determined by cursor)
 		local ballx, bally = trackerBall.body:getPosition()

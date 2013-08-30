@@ -148,7 +148,7 @@ function beginContact(a, b, coll)
 
 	if colliders.ball and (colliders.movingRectangle or colliders.level) then
 		local ballObject = colliders.ball:getUserData()
-
+		--The ball hit a level object or a movingRectangle, add to its walls hit count
 		ballObject.wallsHit = ballObject.wallsHit + 1
 	end
 end

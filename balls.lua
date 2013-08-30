@@ -1,5 +1,5 @@
 Ball = Class{
-	init = function(self, coords, tracker)
+	init = function(self, coords)
 		self.x = coords[1]
 		self.y = coords[2]
 		self.velocity = {}
@@ -12,8 +12,7 @@ Ball = Class{
 		self.weight = 4
 		self.bounciness = .8 --The higher the bouncier
 		self.isBeingHeld = false
-		self.wallsHit = 0 --Counts number of balls hitwadw
-		self.isTracker = tracker
+		self.wallsHit = 0 --Counts number of walls hit
 
 		self.isOwned = false
 		self.owner = false
@@ -25,21 +24,13 @@ Ball = Class{
 		self.timer = {}
 
 		--Create the active_balls table
-		if not self.isTracker then
-			if not active_balls then
-				active_balls = {}
-				table.insert(active_balls, self)					
-			else
-				table.insert(active_balls, self)	
-			end
-		else				
-			if not active_trackers then
-				active_trackers = {}
-				table.insert(active_trackers, self)					
-			else
-				table.insert(active_trackers, self)
-			end
+		if not active_balls then
+			active_balls = {}
+			table.insert(active_balls, self)					
+		else
+			table.insert(active_balls, self)	
 		end
+		
 
 		if not totalBallsSpawned then
 			totalBallsSpawned = 1
