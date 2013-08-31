@@ -17,7 +17,10 @@ Player = Class{
 		self.reflectDuration = .5
 		self.jumpDelay = 1
 		self.doubleJumpDelay = .1
-		self.pathFinderDelay = 0
+		self.target = nil
+		self.objectsBlockingLineOfSight = {}
+		self.objectsBlockingLineOfSight.level = false
+		self.objectsBlockingLineOfSight.movingRectangle = false
 		
 		--Status booleans
 		self.isOnGround = false
@@ -32,6 +35,7 @@ Player = Class{
 		self.isTouching = {}
 		self.isTouching.level = false
 		self.isTouching.movingRectangle = false
+		self.canSeeEnemy = false
 		
 		--Created these to track repeated key holds
 		self.canJump = true
@@ -48,35 +52,29 @@ Player = Class{
 		--Cursor tracking variables
 		self.cursor = {}
 		self.cursor.x = 0
-		self.cursor.y = 0
-		self.cursor.speed = 200	
+		self.cursor.y = 0		
 		self.cursor.angle = 0
-		self.cursorAngle = 0		
+		self.cursorAngle = 0
+		--self.cursor.speed = 200
 		
 		--Score trackers
 		self.killCount = 0
-		
-		
-		self.mouseTracker = {}
-		self.mouseTracker.x = 0
-		self.mouseTracker.y = 0
+				
+		--self.mouseTracker = {}
+		--self.mouseTracker.x = 0
+		--self.mouseTracker.y = 0
 
-		self.thumbStickTracker = {}
-		self.thumbStickTracker.x = 0
-		self.thumbStickTracker.y = -50
+		--self.thumbStickTracker = {}
+		--self.thumbStickTracker.x = 0
+		--self.thumbStickTracker.y = -50
 		
-		self.thumbStickTracker.current = {}		
-		self.thumbStickTracker.current.x = 0
-		self.thumbStickTracker.current.y = 0
+		--self.thumbStickTracker.current = {}		
+		--self.thumbStickTracker.current.x = 0
+		--self.thumbStickTracker.current.y = 0
 
 		self.type = "player"
 		self.timer = {}
-		self.activeBall = nil
-
-		self.throwingArc = {}
-		self.throwingArc.queue = {}
-		self.throwingArc.current = {}
-		self.throwingArc.isDrawable = false
+		self.activeBall = nil		
 
 		self.body = love.physics.newBody(world, self.x, self.y, "dynamic")
 		self.shape = love.physics.newRectangleShape(self.width, self.height)
@@ -94,10 +92,6 @@ Player = Class{
 		self.body:setFixedRotation(true) --Players body won't rotate unless this is changed
 		self.body:setGravityScale(self.gravitiesPull)
 		
-		
-
-		
-		
 
 		if not active_players then
 			active_players = {}
@@ -112,21 +106,6 @@ Player = Class{
 
 	--Handlers for Throwing the ball
 	throw = function(self, dt)
-
-		if self.isPullingBackToThrow then
-			if not self.activeBall then
-				
-			else
-				--Stop the ball from simulating while the player holds it in their hand				
-				self.activeBall.body:setActive (false)							
-
-				--Start 'charging' up the throw				
-				if self.throwForce.current < (self.throwForce.max + self.throwForce.speedModifier) then
-					self.throwForce.current = self.throwForce.current + self.throwForce.speed*dt
-				end		
-			end
-			
-		end
 			
 		--Throw the ball		
 		if self.isThrowing and not self.timer.throwing then
@@ -380,6 +359,58 @@ Player = Class{
 		trackerBall.body:applyLinearImpulse(math.sin(self.throwForce.angle)*(self.throwForce.speed+self.throwForce.speedModifier), math.cos(self.throwForce.angle)*(self.throwForce.speed+self.throwForce.speedModifier) )
 	end;
 
+	determineThrowingAngle = function(self)
+		local function findTarget()			
+			for __, player in ipairs(active_players) do
+				if player ~= self then					
+					return (player)
+				end
+			end
+		end
+
+		local function aimAtEnemy()
+			self.cursor.x = self.body:getX()
+            self.cursor.y = self.body:getY()
+             --Use math to ummm...magically point the cursor in the direction of the enemy -- Maaaaaaath
+			local angle = math.angle(self.body:getX(), self.body:getY(), self.target.body:getX(), self.target.body:getY() - 40)
+			self.cursor.x = self.cursor.x + math.sin(angle)*100
+			self.cursor.y = self.cursor.y + math.cos(angle)* 100
+			
+		end
+
+		local function checkLineOfSightToEnemy(target)
+			if self.playerNumber == "One" then			
+				world:rayCast(self.body:getX(), self.body:getY() - 30, target.body:getX(), target.body:getY() - 30, worldRayCastCallback)							
+			end
+		end
+
+		--If I don't have a target acquire one
+		if not self.target then			
+			self.target = findTarget()			
+		end
+
+		--Check a constantly running raycast and see if an object is in between the players
+		if self.target then
+			checkLineOfSightToEnemy(self.target)
+			if not self.objectsBlockingLineOfSight.level and not self.objectsBlockingLineOfSight.movingRectangle then
+				self.canSeeEnemy = true
+			else
+				self.canSeeEnemy = false
+			end
+		end
+
+
+		--If you can't see an enemy, aim straight ahead
+		if not self.canSeeEnemy then
+			self.cursor.x = self.body:getX() + 50
+			self.cursor.y = self.body:getY() - 5								
+		elseif self.canSeeEnemy and self.target then
+			--If the player can see an enemy then aim at them						
+			aimAtEnemy(self.target)
+		end
+
+	end;
+
 
 }
 
@@ -391,11 +422,12 @@ function spawn_players(respawn)
 	if not respawn then
 		--Create Player 1	
 		Player({getSpawnPoint("Bottom Left")}, "One")
+		Player({getSpawnPoint("Bottom Right")}, "Two")
 
 		--If a joystick is enabled, two characters will spawn
 		if checkForJoystick() == "One Joystick" then
 			--Create Player 2
-			Player({getSpawnPoint("Bottom Right")}, "Two")
+			--Player({getSpawnPoint("Bottom Right")}, "Two")
 			--debugger:insert("One Joystick Detected")		
 		elseif checkForJoystick() == "Two Joystick" then
 			--debugger:insert("Two Joysticks Detected")
@@ -449,4 +481,42 @@ function spawn_players(respawn)
 		roundOver = false
 	end
 
+end
+
+--This is the raycast "handler" or callback function
+function worldRayCastCallback(fixture, x, y, xn, yn, fraction)
+	local hit = {}
+	hit.fixture = fixture
+	hit.x, hit.y = x,y
+	hit.xn, hit.yn = xn, yn
+	hit.fraction = fraction
+
+	local fixtureObject = hit.fixture:getUserData()
+
+	if fixtureObject.type == "level" then
+		--If a level object is in the way, no need to continue raycasting, stop this check the player is blocked		
+		for __, player in ipairs(active_players) do
+			--Set both players BlockingLineofsight for levels to yes
+			player.objectsBlockingLineOfSight.level = true			
+		end
+
+		return 0
+	elseif fixtureObject.type == "movingRectangle" then
+
+		--Set both players BlockingLineofsight for rectangles to yes
+		for __, player in ipairs(active_players) do
+			player.objectsBlockingLineOfSight.movingRectangle = true
+		end
+		return 0
+	elseif fixtureObject.type == "player" then		
+		for __, player in ipairs(active_players) do		
+			player.objectsBlockingLineOfSight.level = false			
+			player.objectsBlockingLineOfSight.movingRectangle = false
+			player.canSeeEnemy = true
+		end
+		
+		
+	end
+
+	return 1
 end

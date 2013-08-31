@@ -74,20 +74,14 @@ function drawPlayers()
 		
 		--Draw player body
 		love.graphics.drawq(player_sheet, stationary, player.body:getX(), player.body:getY(), player.body:getAngle(), .8, .8, 52, 55)					
-				
-		--Draw the cursor
-		love.graphics.draw(cursor_image, player.cursor.x, player.cursor.y, -player.cursorAngle, .7, .7, 10, 5)
-
-		--Draw the throwing arc
-		drawPaths(player)
+		
+		if player.canSeeEnemy then
+			--Draw the cursor
+			love.graphics.draw(cursor_image, player.cursor.x, player.cursor.y, -player.cursorAngle, .7, .7, 10, 5)
+		end
 
 		--Draw text that shows how many balls the player has
-		love.graphics.print("Balls: " .. tostring(player.ballCount), player.body:getX() - 20, player.body:getY() - 55)
-								
-		--Draw cursor
-		love.graphics.setColor(color.red)	
-		local playerx, playery = player.body:getWorldPoints( player.shape:getPoints() )		
-
+		love.graphics.print("Balls: " .. tostring(player.ballCount), player.body:getX() - 20, player.body:getY() - 55)											
 	end
 end
 
@@ -183,7 +177,4 @@ function drawBuild()
 
 	love.graphics.print("Prototype Build: " .. tostring(build), 0, screenHeight - 12 )
 	love.graphics.print("FPS: " .. tostring(love.timer.getFPS()), 20, 0)
-end
-
-function drawPaths(player)	
 end

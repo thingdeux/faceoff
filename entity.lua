@@ -6,11 +6,17 @@ Entity = Class{
 		--Player Specific Updates
 		if self.type == "player" then			
 			--Get the angle for the cursor, so it rotates
-			self.cursorAngle = math.angle(self.cursor.x,self.cursor.y , self.body:getX(), self.body:getY())						
-						
+			if self.playerNumber == "One" then
+				debugger:keepUpdated("Level", self.objectsBlockingLineOfSight.level)
+				debugger:keepUpdated("Moving", self.objectsBlockingLineOfSight.movingRectangle)
+			end	
+
+			self:determineThrowingAngle()
+			self.cursorAngle = math.angle(self.cursor.x,self.cursor.y , self.body:getX(), self.body:getY())
+			
 			if self.playerNumber == "One" then																					
-				debugger:keepUpdated("isOnGround", self.isOnGround)
-				debugger:keepUpdated("canJump", self.canJump)				
+				--debugger:keepUpdated("isOnGround", self.isOnGround)
+				--debugger:keepUpdated("canJump", self.canJump)				
 			end
 			--Pass the players x/y velocity to a local variable for checking below		
 			local velocity_x,velocity_y = self.body:getLinearVelocity()
@@ -267,18 +273,16 @@ Entity = Class{
 			   	  self.isReflecting = true
 			   end
 			   
-			end
-
-
+			end			
 
 			--Make sure the mouse cursor moves along with the player and doesn't go too far outside of a specific zone
-			if self.playerNumber == "One" then
-				self:trackMouse(dt)  --Keep this as the very end, updates the mouse location tracker
-				self:moveCursorWithPlayer("Mouse", dt)						
-			elseif self.playerNumber == "Two" then
-				self:trackThumbStick(dt)
-				self:moveCursorWithPlayer("Stick", dt)
-			end
+			--if self.playerNumber == "One" then
+				--self:trackMouse(dt)  --Keep this as the very end, updates the mouse location tracker
+				--self:moveCursorWithPlayer("Mouse", dt)						
+			--elseif self.playerNumber == "Two" then
+				--self:trackThumbStick(dt)
+				--self:moveCursorWithPlayer("Stick", dt)
+			--end
 
 		end
 	end;
@@ -314,37 +318,7 @@ Entity = Class{
 	end;
 
 	--Deal with animations
-	animate = function(self)
-		
-		--While the player is reeling back
-		if self.isPullingBackToThrow then	
-			--Keep the ball moving with the player while the player is holding it - Only have the player animation pull the ball back so far (100)
-			if self.throwForce.current < self.throwForce.max then
-				--self.activeBall.body:setPosition(self.body:getX() + 30 - (self.throwForce.current - 50), self.body:getY())				
-			else
-				--self.isPullingBackToThrow = false			
-				--self.isThrowing = true				
-				--self.activeBall.body:setPosition(self.body:getX() + 30 - (100 - 50), self.body:getY())				
-			end
-
-			
-		end
-
-		--Snap the cursor to the player
-		self.cursor.x = self.body:getX()
-		self.cursor.y = self.body:getY()
-					
-		--Use math to ummm...magically point the cursor in the direction of the mouse -- Maaaaaaath
-		if self.playerNumber == "One" then
-			local angle = math.angle(self.cursor.x, self.cursor.y, love.mouse.getX(), love.mouse.getY())
-			self.cursor.x = self.cursor.x + math.sin(angle)*100
-			self.cursor.y = self.cursor.y + math.cos(angle)*100
-		elseif self.playerNumber == "Two" then
-			local angle = math.angle(self.cursor.x, self.cursor.y, self.cursor.x + self.thumbStickTracker.x, self.cursor.y + self.thumbStickTracker.y)
-			self.cursor.x = self.cursor.x + math.sin(angle)*100
-			self.cursor.y = self.cursor.y + math.cos(angle)*100
-		end
-		
+	animate = function(self)						
 	
 	end;
 

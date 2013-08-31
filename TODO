@@ -1,5 +1,7 @@
 TODO:
-Add Aiming
+Kill manual aiming
+Implement auto-aim and raycasting for line of sight
+
 Implement Animations
 Add networking/dedicated server "support"
 Play with applyangular impulse for balls bouncing on collision - appears to modify momentum
