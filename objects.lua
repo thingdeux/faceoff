@@ -17,7 +17,7 @@ Object = Class{
 				table.insert(active_spawners, self)
 			else
 				table.insert(active_spawners, self)
-			end
+			end		
 		end
 
 		table.insert(active_entities, self)

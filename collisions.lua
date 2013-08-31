@@ -32,7 +32,7 @@ function beginContact(a, b, coll)
 		elseif ballObject.isDangerous and not (ballObject.owner == playerObject) and not playerObject.isDead then									
 			
 			--If the player isn't catching or reflecting, THEY DEAD			
-			if not playerObject.isCatching and not playerObject.isReflecting then
+			if not playerObject.isCatching and not playerObject.isReflecting and not roundOver then
 				--Kill the hit player
 				playerObject:die()			
 				--Using this to prevent throwing after "slowmo" kicks in

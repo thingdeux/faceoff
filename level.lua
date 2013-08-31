@@ -109,13 +109,12 @@ function load_level(name)
 		level.name = name
 		level.spawnerBallCount = 5
 		level.spawnPoints = {}
+		level.timer = {}
 
 		table.insert(level.spawnPoints, {["x"] = 10, ["y"] = screenHeight -100, ["name"] = "Bottom Left"})		
 		table.insert(level.spawnPoints, {["x"] = screenWidth - 30, ["y"] = screenHeight -100, ["name"] = "Bottom Right"})
 		table.insert(level.spawnPoints, {["x"] = 120, ["y"] = 50, ["name"] = "Top Left"})
-		table.insert(level.spawnPoints, {["x"] = 950, ["y"] = 50, ["name"] = "Top Right"})
-
-		level.roundOver = false
+		table.insert(level.spawnPoints, {["x"] = 950, ["y"] = 50, ["name"] = "Top Right"})	
 
 		
 		Level({0, screenHeight - 10}, "rectangle", screenWidth, 10) --Ground		
@@ -140,23 +139,18 @@ function load_level(name)
 		
 		--Objects (Spawning)
 		Object({screenWidth - 50, screenHeight - 500}, "spawner")
-		Object({50, screenHeight - 500}, "spawner")
-
-		--Spawn players
-		spawn_players()
+		Object({50, screenHeight - 500}, "spawner")		
 	elseif name == "single" then
 		level = {}
 		level.name = name
 		level.spawnerBallCount = 1
 		level.spawnPoints = {}
-		level.game_mode = "single ball"
+		level.timer = {}	
 
 		table.insert(level.spawnPoints, {["x"] = 100, ["y"] = screenHeight -100, ["name"] = "Bottom Left"})		
 		table.insert(level.spawnPoints, {["x"] = screenWidth - 100, ["y"] = screenHeight -100, ["name"] = "Bottom Right"})
 		--table.insert(level.spawnPoints, {["x"] = 120, ["y"] = 50, ["name"] = "Top Left"})
-		--table.insert(level.spawnPoints, {["x"] = 950, ["y"] = 50, ["name"] = "Top Right"})
-
-		level.roundOver = false
+		--table.insert(level.spawnPoints, {["x"] = 950, ["y"] = 50, ["name"] = "Top Right"})		
 		
 		Level({0, screenHeight - 10}, "rectangle", screenWidth, 10)  --Ground	
 		
@@ -186,10 +180,30 @@ function load_level(name)
 		spawner = Object({screenWidth/2, screenHeight - 280}, "spawner")
 		spawner:setSpawnerAmmo(level.spawnerBallCount)
 
-		--Spawn players
-		spawn_players()
+		Level({screenWidth-210, screenHeight - 150}, "movingRectangle", 10, 100, "vertical", 600)  --Right Block next to bottom right start
+		Level({210, screenHeight - 450}, "movingRectangle", 10, 100, "vertical", 600)  --Left Block next to bottom right start	
+	elseif name == "catch_n_release" then
+		level = {}
+		level.name = name
+		level.spawnerBallCount = 5
+		level.playerBallCount = 2
+		level.spawnPoints = {}
+		level.timer = {}	
 
+		table.insert(level.spawnPoints, {["x"] = screenWidth/2 - 360, ["y"] = screenHeight/2 + 155, ["name"] = "Bottom Left"})		
+		table.insert(level.spawnPoints, {["x"] = screenWidth/2 + 200, ["y"] = screenHeight/2 + 155, ["name"] = "Bottom Right"})		
+
+		level.roundOver = false
+		Level({screenWidth/2 - 400, screenHeight/2 + 200}, "rectangle", screenWidth/2, 10) --Ground		
+		Level({screenWidth/2 - 400, screenHeight/2 + 100}, "rectangle", screenWidth/2, 10) --Roof		
+		Level({screenWidth/2 - 400, screenHeight/2 + 100}, "rectangle", 10, 100) --Left Wall		
+		Level({screenWidth/2 + 230, screenHeight/2 + 100}, "rectangle", 10, 100) --Right Wall
+
+		Level({screenWidth/2 - 85, screenHeight/2 + 150}, "movingRectangle", 5, 20, "vertical", 100)  --Left Elevator
 	end
+
+	--Spawn players
+	spawn_players()
 end
 
 function getSpawnPoint(name)

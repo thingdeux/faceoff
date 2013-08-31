@@ -7,12 +7,14 @@ require("collisions")
 require("players")
 require("debugger")
 require("objects")
+require("timers")
 
-build = "0.47"
+build = "0.5"
 
 function love.load()	
 	--Create a debugger instance
 	debugger = Debugger()
+	timer = Timer()
 	gameSpeed = 1
 	roundOver = false	
 	love.mouse.setVisible(false)
@@ -30,10 +32,10 @@ function love.load()
 
 	--Set point style (for cursor)
 	love.graphics.setPointStyle("smooth")
-	love.graphics.setPointSize(4)
+	love.graphics.setPointSize(2)
 
 	--Load level
-	load_level("single")		
+	load_level("catch_n_release")		
 end
 
 
@@ -50,6 +52,9 @@ function love.update(dt)
 
 	--Update the debugger instance
 	debugger:update()
+
+	--Update any timers
+	timer:update()
 
 end
 
@@ -119,9 +124,6 @@ function love.joystickreleased(joystick, button)
 		end
 	end
 end
-
-
-
 
 function love.draw()	
 	drawBackground()

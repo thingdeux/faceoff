@@ -1,5 +1,5 @@
 Player = Class{
-	init = function(self, coords, playerNumber)
+	init = function(self, coords, playerNumber, ai)
 		self.x = coords[1]
 		self.y = coords[2]		
 
@@ -11,25 +11,30 @@ Player = Class{
 		self.friction = 6
 		self.width = 35
 		self.height = 75
-		self.ballCount = 100
+		if level.playerBallCount then
+			self.ballCount = level.playerBallCount
+		else
+			self.ballCount = 5
+		end
+		self.isAI = ai		
 		self.weight = .1
 		self.catchDuration = .3
 		self.reflectDuration = .5
 		self.jumpDelay = 1
 		self.doubleJumpDelay = .1
-		self.target = nil
+		self.target = nil		
 		self.objectsBlockingLineOfSight = {}
 		self.objectsBlockingLineOfSight.level = false
 		self.objectsBlockingLineOfSight.movingRectangle = false
 		
 		--Status booleans
 		self.isOnGround = false
-		self.gravitiesPull = 1.8		
+		self.gravitiesPull = 1.8	
 		self.isThrowing = false
 		self.isJumping = false
 		self.isDoubleJumping = false
 		self.isCatching = false
-		self.isReflecting = true
+		self.isReflecting = false
 		self.isDead = false
 		self.isFallingTooFast = false
 		self.isTouching = {}
@@ -58,19 +63,7 @@ Player = Class{
 		--self.cursor.speed = 200
 		
 		--Score trackers
-		self.killCount = 0
-				
-		--self.mouseTracker = {}
-		--self.mouseTracker.x = 0
-		--self.mouseTracker.y = 0
-
-		--self.thumbStickTracker = {}
-		--self.thumbStickTracker.x = 0
-		--self.thumbStickTracker.y = -50
-		
-		--self.thumbStickTracker.current = {}		
-		--self.thumbStickTracker.current.x = 0
-		--self.thumbStickTracker.current.y = 0
+		self.killCount = 0				
 
 		self.type = "player"
 		self.timer = {}
@@ -411,6 +404,14 @@ Player = Class{
 
 	end;
 
+	ai = function(self, velocity_x, velocity_y, playerNumber, dt)		
+		if self.canSeeEnemy then
+			if self.ballCount > 0 and not roundOver then		
+				self.isThrowing = true
+			end
+		end
+	end;
+
 
 }
 
@@ -422,17 +423,18 @@ function spawn_players(respawn)
 	if not respawn then
 		--Create Player 1	
 		Player({getSpawnPoint("Bottom Left")}, "One")
-		Player({getSpawnPoint("Bottom Right")}, "Two")
-
+		
 		--If a joystick is enabled, two characters will spawn
 		if checkForJoystick() == "One Joystick" then
+			Player({getSpawnPoint("Bottom Right")}, "Two")
 			--Create Player 2
 			--Player({getSpawnPoint("Bottom Right")}, "Two")
 			--debugger:insert("One Joystick Detected")		
 		elseif checkForJoystick() == "Two Joystick" then
 			--debugger:insert("Two Joysticks Detected")
 		else
-			debugger:insert("No Joysticks Detected")
+			debugger:insert("No Joysticks Detected, AI Opponent")
+			Player({getSpawnPoint("Bottom Right")}, "Two", true)
 		end
 	else		
 		--Delete all active balls
@@ -443,15 +445,21 @@ function spawn_players(respawn)
 			ball.body:setActive(false)		
 		end
 
-		--Reset the spawners
-		for __, spawner in ipairs(active_spawners) do
-			spawner:setSpawnerAmmo(level.spawnerBallCount)
+		if active_spawners then
+			--Reset the spawners
+			for __, spawner in ipairs(active_spawners) do
+				spawner:setSpawnerAmmo(level.spawnerBallCount)
+			end
 		end
 
 
 		for __, player in pairs(active_players) do
 			--Set the number of balls the players respawn with
-			player.ballCount = 1
+			if level.playerBallCount then
+				player.ballCount = level.playerBallCount
+			else
+				player.ballCount = 5
+			end
 
 			--If a player has died reset some parameters and let THEM LIVE!
 			if player.isDead then
@@ -481,9 +489,13 @@ function spawn_players(respawn)
 		roundOver = false
 	end
 
+	roundOver = true
+	timer:queueBoolean(1.5, "roundOver")
 end
 
---This is the raycast "handler" or callback function
+--This is the raycast "handler" or callback function for players
+--It handles what happens with the invisible drawn lines between each player
+--If there are no obstructions in the way it will set the 'canSeeEnemy' flag and start auto-targeting
 function worldRayCastCallback(fixture, x, y, xn, yn, fraction)
 	local hit = {}
 	hit.fixture = fixture

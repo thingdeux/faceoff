@@ -5,19 +5,10 @@ Entity = Class{
 
 		--Player Specific Updates
 		if self.type == "player" then			
-			--Get the angle for the cursor, so it rotates
-			if self.playerNumber == "One" then
-				debugger:keepUpdated("Level", self.objectsBlockingLineOfSight.level)
-				debugger:keepUpdated("Moving", self.objectsBlockingLineOfSight.movingRectangle)
-			end	
-
+			--Get the angle for the cursor, so it rotates			
 			self:determineThrowingAngle()
 			self.cursorAngle = math.angle(self.cursor.x,self.cursor.y , self.body:getX(), self.body:getY())
 			
-			if self.playerNumber == "One" then																					
-				--debugger:keepUpdated("isOnGround", self.isOnGround)
-				--debugger:keepUpdated("canJump", self.canJump)				
-			end
 			--Pass the players x/y velocity to a local variable for checking below		
 			local velocity_x,velocity_y = self.body:getLinearVelocity()
 
@@ -68,8 +59,12 @@ Entity = Class{
 			end				
 			
 			--If the player isn't dead allow control
-			if not self.isDead then				
-				self:controller(velocity_x, velocity_y, self.playerNumber, dt)			
+			if not self.isDead then
+				if not self.isAI then								
+					self:controller(velocity_x, velocity_y, self.playerNumber, dt)								
+				else					
+					self:ai(velocity_x, velocity_y, self.playerNumber, dt)
+				end
 				self.body:setAngle(0)
 			else  --If a player is dead, no control for them!								
 				if love.timer.getTime() > self.timer.deathTimer then					
@@ -87,8 +82,6 @@ Entity = Class{
 			elseif self.isReflecting then
 				self:reflect(dt)
 			end
-
-
 
 			self:animate(dt)
 		end

@@ -107,8 +107,12 @@ function drawLevel()
 			love.graphics.point(levelx, levely)
 			--]]
 
+			
+
 		end
 	end
+
+
 end
 
 function drawBackground()
