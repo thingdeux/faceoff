@@ -55,6 +55,52 @@ function drawBalls()
 end
 
 function drawPlayers()
+	local function getPlayerAnimation(player)
+		if player.currentAnimation == "idle" then
+			if player.isFacingRight then
+				player.animations.idle:draw(playersheet, player.body:getX(), player.body:getY(), player.body:getAngle(), .8, .8, 43.5, 54)
+			else
+				player.animations.idle:draw(playersheet, player.body:getX(), player.body:getY(), player.body:getAngle(), .8, .8, 56, 54)
+			end
+		elseif player.currentAnimation == "walk" then
+			if player.isFacingRight then
+				player.animations.walk:draw(playersheet, player.body:getX(), player.body:getY(), player.body:getAngle(), .8, .8, 43.5, 54)
+			else
+				player.animations.walk:draw(playersheet, player.body:getX(), player.body:getY(), player.body:getAngle(), .8, .8, 56, 54)
+			end
+		elseif player.currentAnimation == "run" then
+			if player.isFacingRight then
+				player.animations.run:draw(playersheet, player.body:getX(), player.body:getY(), player.body:getAngle(), .8, .8, 43.5, 54)
+			else
+				player.animations.run:draw(playersheet, player.body:getX(), player.body:getY(), player.body:getAngle(), .8, .8, 56, 54)
+			end
+		elseif player.currentAnimation == "throw" then
+			if player.isFacingRight then
+				player.animations.throw:draw(playersheet, player.body:getX(), player.body:getY(), player.body:getAngle(), .8, .8, 43.5, 54)
+			else
+				player.animations.throw:draw(playersheet, player.body:getX(), player.body:getY(), player.body:getAngle(), .8, .8, 56, 54)
+			end
+		elseif player.currentAnimation == "catch" then
+			if player.isFacingRight then
+				player.animations.catch:draw(playersheet, player.body:getX(), player.body:getY(), player.body:getAngle(), .8, .8, 43.5, 54)
+			else
+				player.animations.catch:draw(playersheet, player.body:getX(), player.body:getY(), player.body:getAngle(), .8, .8, 56, 54)
+			end
+		elseif player.currentAnimation == "reflect" then
+			if player.isFacingRight then
+				player.animations.reflect:draw(playersheet, player.body:getX(), player.body:getY(), player.body:getAngle(), .8, .8, 43.5, 54)
+			else
+				player.animations.reflect:draw(playersheet, player.body:getX(), player.body:getY(), player.body:getAngle(), .8, .8, 56, 54)
+			end
+		elseif player.currentAnimation == "hit" then
+			if player.isFacingRight then
+				player.animations.hit:draw(playersheet, player.body:getX(), player.body:getY(), player.body:getAngle(), .8, .8, 43.5, 54)
+			else
+				player.animations.hit:draw(playersheet, player.body:getX(), player.body:getY(), player.body:getAngle(), .8, .8, 56, 54)
+			end
+		end
+	end
+
 	for __, player in ipairs(active_players) do		
 		--For testing the physics bounding box (or shape/fixture)		
 		--love.graphics.setColor(100,255,255,255)
@@ -73,8 +119,8 @@ function drawPlayers()
 		end
 		
 		--Draw player body
-		love.graphics.drawq(player_sheet, stationary, player.body:getX(), player.body:getY(), player.body:getAngle(), .8, .8, 52, 55)					
-		
+		getPlayerAnimation(player)
+
 		if player.canSeeEnemy then
 			--Draw the cursor
 			love.graphics.draw(cursor_image, player.cursor.x, player.cursor.y, -player.cursorAngle, .7, .7, 10, 5)
@@ -146,10 +192,23 @@ function load_graphics()
 	right_squish = love.graphics.newQuad(20, 20, 20, 20, 64, 64)
 	no_squish = love.graphics.newQuad(0, 40, 20, 20, 64, 64)
 
-	player_sheet = love.graphics.newImage("/assets/player_sheet.png")
-	stationary = love.graphics.newQuad(0,0, 99, 110, 1024, 512)
-
 	cursor_image = love.graphics.newImage("/assets/cursor.png")
+
+
+	--stationary = love.graphics.newQuad(0,0, 99, 110, 1024, 512)
+	playersheet = love.graphics.newImage("/assets/player_sheet.png")
+	playergrid = anim8.newGrid(99, 110, playersheet:getWidth(), playersheet:getHeight(), 8, 0)		
+	
+	playerStandStill = anim8.newAnimation(playergrid(1,1, 2,1, 1,2), 0.3)
+	playerWalk = anim8.newAnimation(playergrid(10, 1, 9, 2, 8, 3, 7, 4, 10, 2, 9, 3), 0.12)
+	playerJab = anim8.newAnimation(playergrid(3,1, 4,1, 4,1), {0.03, 8.09,0.03} )
+	playerFrontKick = anim8.newAnimation(playergrid(4,4, 5,4, 4,4), {0.08,0.2, 0.2})
+	playerRunAnimation = anim8.newAnimation(playergrid(6, 1, 7, 1, 6, 2, 8, 1, 7, 2, 6, 3, 9, 1, 8, 2, 7, 3, 6, 4), 0.08)
+	playerHitReaction = anim8.newAnimation(playergrid(3,2), 0.09)
+	playerCross = anim8.newAnimation(playergrid(5, 2), 0.4, 'pause')
+
+	mainPlayer_kick = anim8.newAnimation(playergrid(3,4, 5,3), {0.15,0.65} )		
+	
 end
 
 

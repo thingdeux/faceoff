@@ -1,4 +1,5 @@
 Class = require("/libraries/class")
+anim8 = require ("/libraries/anim8")
 require("entity")
 require("graphics")
 require("balls")
@@ -35,7 +36,7 @@ function love.load()
 	love.graphics.setPointSize(2)
 
 	--Load level
-	load_level("catch_n_release")		
+	load_level("basic")		
 end
 
 
@@ -49,7 +50,7 @@ function love.update(dt)
 	for __, entity in ipairs(active_entities) do		
 		entity:update(dt*gameSpeed)
 	end
-
+	
 	--Update the debugger instance
 	debugger:update()
 
@@ -89,7 +90,16 @@ function love.keyreleased(key)
 				end
 			end
 		end
+	end
 
+	if key == "a" or key == "d" then
+		for __, player in ipairs(active_players) do
+			if player.playerNumber == "One" then
+				if player.isRunning then
+					player.isRunning = false
+				end
+			end
+		end
 	end
 
 

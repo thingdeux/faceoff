@@ -26,12 +26,30 @@ Player = Class{
 		self.objectsBlockingLineOfSight = {}
 		self.objectsBlockingLineOfSight.level = false
 		self.objectsBlockingLineOfSight.movingRectangle = false
+
+		--Animation variables/objects
+		self.animations = {}
+		self.animations.idle = playerStandStill:clone()
+		self.animations.walk = playerWalk:clone()
+		self.animations.run = playerRunAnimation:clone()
+		self.animations.throw = playerCross:clone()
+		self.animations.catch = playerJab:clone()
+		self.animations.reflect = playerFrontKick:clone()
+		self.animations.hit = playerHitReaction:clone()
+		self.currentAnimation = "idle"
+
+		self.animations.throw:gotoFrame(1)
+		self.animations.catch:gotoFrame(1)
+		self.animations.reflect:gotoFrame(1)
+
+
 		
-		--Status booleans
+		--Status booleans		
 		self.isOnGround = false
 		self.gravitiesPull = 1.8	
 		self.isThrowing = false
 		self.isJumping = false
+		self.isRunning = false
 		self.isDoubleJumping = false
 		self.isCatching = false
 		self.isReflecting = false
@@ -41,6 +59,13 @@ Player = Class{
 		self.isTouching.level = false
 		self.isTouching.movingRectangle = false
 		self.canSeeEnemy = false
+
+		if self.playerNumber == "One" then
+			self.isFacingRight = true
+		elseif self.playerNumber == "Two" then
+			self.isFacingRight = false			
+			self:flipAnimations()
+		end
 		
 		--Created these to track repeated key holds
 		self.canJump = true
@@ -59,8 +84,7 @@ Player = Class{
 		self.cursor.x = 0
 		self.cursor.y = 0		
 		self.cursor.angle = 0
-		self.cursorAngle = 0
-		--self.cursor.speed = 200
+		self.cursorAngle = 0		
 		
 		--Score trackers
 		self.killCount = 0				
@@ -171,8 +195,6 @@ Player = Class{
 			self.timer.reflecting = nil
 		end
 	end;
-
-
 
 	pickupBall = function(self, ballObject)
 		self.ballCount = self.ballCount + 1
@@ -412,7 +434,11 @@ Player = Class{
 		end
 	end;
 
-
+	flipAnimations = function(self)
+		for __, animation in pairs(self.animations) do
+			animation:flipH()
+		end
+	end
 }
 
 Player:include(Entity)

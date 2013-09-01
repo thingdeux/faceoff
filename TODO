@@ -1,14 +1,15 @@
 TODO:
-Kill manual aiming
-Implement auto-aim and raycasting for line of sight
+Fix running to idle for joysticks
 
-Implement Animations
 Add networking/dedicated server "support"
 Play with applyangular impulse for balls bouncing on collision - appears to modify momentum
 
 
 Done:
 ---
+Kill manual aiming
+Implement auto-aim and raycasting for line of sight
+Implement Animations
 Fix Wall cling
 Implement Double Jump (use one second rule timer from ball)
 Fix destroying of ball objects

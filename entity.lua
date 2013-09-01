@@ -4,7 +4,7 @@ Entity = Class{
 		
 
 		--Player Specific Updates
-		if self.type == "player" then			
+		if self.type == "player" then
 			--Get the angle for the cursor, so it rotates			
 			self:determineThrowingAngle()
 			self.cursorAngle = math.angle(self.cursor.x,self.cursor.y , self.body:getX(), self.body:getY())
@@ -203,9 +203,17 @@ Entity = Class{
 
 			--Controller handler for when the player presses right
 			if (love.keyboard.isDown("d") and playerNumber == "One") or
-			   (love.joystick.getAxis(1, 1) > 0.8 and playerNumber == "Two") then			   
+			   (love.joystick.getAxis(1, 1) > 0.8 and playerNumber == "Two") then
+
+			   --Flip the animations the other way if the player is facing left
+			   	if not self.isFacingRight then
+			   		self.isFacingRight = true
+			   		self:flipAnimations()
+			   	end
+
 				if velocity_x < self.maxSpeed then
 					if self.isOnGround then
+						self.isRunning = true
 						self.body:applyForce(self.speed, 0)														
 					else
 						--If player is in the air then they can only move themselves at half the speed
@@ -220,8 +228,16 @@ Entity = Class{
 			--Controller handler for when the player presses left
 			elseif (love.keyboard.isDown("a") and playerNumber =="One") or
 			 	   (love.joystick.getAxis(1, 1) < -0.8 and playerNumber == "Two") then
+
+			 	--Flip the animations the other way if the player is facing left
+			   	if self.isFacingRight then
+			   		self.isFacingRight = false
+			   		self:flipAnimations()
+			   	end
+
 				if velocity_x > -self.maxSpeed then
 					if self.isOnGround then
+						self.isRunning = true
 						self.body:applyForce(-self.speed, 0)						
 					else
 						--If player is in the air then they can only move themselves at half the speed						
@@ -240,7 +256,9 @@ Entity = Class{
 
 				--If player presses the throw button, throw
 				if not self.isThrowing and self.canThrow and self.ballCount > 0 then				
-					self.isThrowing = true		
+					self.isThrowing = true
+					--Go to the start of the throw frame
+					self.animations.throw:gotoFrame(1)	
 				end
 
 			elseif not self.canThrow and not ( love.joystick.isDown(1,3) or love.joystick.isDown(1,6) ) and (self.playerNumber == "Two") then				
@@ -254,6 +272,7 @@ Entity = Class{
 			   
 			   if not self.isCatching then
 			   	  self.isCatching = true
+			   	  self.animations.catch:gotoFrame(1)
 			   end
 
 			end
@@ -264,18 +283,10 @@ Entity = Class{
 			   
 			   if not self.isCatching then
 			   	  self.isReflecting = true
+			   	  self.animations.reflect:gotoFrame(1)
 			   end
 			   
-			end			
-
-			--Make sure the mouse cursor moves along with the player and doesn't go too far outside of a specific zone
-			--if self.playerNumber == "One" then
-				--self:trackMouse(dt)  --Keep this as the very end, updates the mouse location tracker
-				--self:moveCursorWithPlayer("Mouse", dt)						
-			--elseif self.playerNumber == "Two" then
-				--self:trackThumbStick(dt)
-				--self:moveCursorWithPlayer("Stick", dt)
-			--end
+			end
 
 		end
 	end;
@@ -311,7 +322,24 @@ Entity = Class{
 	end;
 
 	--Deal with animations
-	animate = function(self)						
+	animate = function(self, dt)
+
+		
+		if self.isReflecting then
+			self.currentAnimation = "reflect"
+		elseif self.isCatching then
+			self.currentAnimation = "catch"
+		elseif self.isThrowing then
+			self.currentAnimation = "throw"
+		elseif self.isRunning then
+			self.currentAnimation = "run"
+		else
+			self.currentAnimation = "idle"
+		end
+
+		for __, animation in pairs(self.animations) do
+			animation:update(dt)
+		end						
 	
 	end;
 
