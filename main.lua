@@ -28,7 +28,7 @@ function love.load()
 	love.physics.setMeter(64)
 	--create a world for the bodies to exist in with horizontal gravity of 0 and vertical gravity of 9.81
 	world = love.physics.newWorld(0,9.84*64, true)
-	--create the callback handler for collision
+	--create the callback handler ford collision
 	world:setCallbacks(beginContact, endContact, preSolve, postSolve)
 
 	--Set point style (for cursor)
@@ -36,7 +36,7 @@ function love.load()
 	love.graphics.setPointSize(2)
 
 	--Load level
-	load_level("basic")		
+	load_level("single")		
 end
 
 

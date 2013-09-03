@@ -98,6 +98,12 @@ function drawPlayers()
 			else
 				player.animations.hit:draw(playersheet, player.body:getX(), player.body:getY(), player.body:getAngle(), .8, .8, 56, 54)
 			end
+		elseif player.currentAnimation == "jump" then
+			if player.isFacingRight then
+				player.animations.jump:draw(playersheet, player.body:getX(), player.body:getY(), player.body:getAngle(), .8, .8, 43.5, 54)
+			else
+				player.animations.jump:draw(playersheet, player.body:getX(), player.body:getY(), player.body:getAngle(), .8, .8, 56, 54)
+			end
 		end
 	end
 
@@ -199,6 +205,7 @@ function load_graphics()
 	playersheet = love.graphics.newImage("/assets/player_sheet.png")
 	playergrid = anim8.newGrid(99, 110, playersheet:getWidth(), playersheet:getHeight(), 8, 0)		
 	
+	playerJump = anim8.newAnimation(playergrid(4,4), .5)
 	playerStandStill = anim8.newAnimation(playergrid(1,1, 2,1, 1,2), 0.3)
 	playerWalk = anim8.newAnimation(playergrid(10, 1, 9, 2, 8, 3, 7, 4, 10, 2, 9, 3), 0.12)
 	playerJab = anim8.newAnimation(playergrid(3,1, 4,1, 4,1), {0.03, 8.09,0.03} )

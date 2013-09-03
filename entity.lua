@@ -168,6 +168,7 @@ Entity = Class{
 				--If I'm on the ground and not jumping, make me jump
 				if self.isOnGround and not self.isJumping and self.canJump then					
 					self.body:applyLinearImpulse(0, self.jumpForce)
+					self.animations.jump:gotoFrame(1)
 					self.isTouching.movingRectangle = false  --I don't like this being here	
 					self.isJumping = true
 					self.canJump = false					
@@ -187,7 +188,8 @@ Entity = Class{
 								self.body:applyLinearImpulse(0, self.jumpForce*.75)
 								--self.isJumping = false
 								self.canJump = false
-								self.isDoubleJumping = true												
+								self.isDoubleJumping = true
+								self.animations.jump:gotoFrame(1)											
 								self.canDoubleJump = false
 								self.timer.doubleJump = nil
 							end
@@ -224,6 +226,15 @@ Entity = Class{
 						self.body:applyForce(0, 75)						
 					end
 				end
+
+			--Turn running off if the joystick is not being pressed right
+			elseif love.joystick.getAxis(1,1) < 0.8 and love.joystick.getAxis(1,1) > 0 and self.isRunning and 
+				self.playerNumber == "Two" then
+				self.isRunning = false
+			--Turn running off if the joystick is not being pressed left
+			elseif love.joystick.getAxis(1,1) > -0.8 and love.joystick.getAxis(1,1) < 0 and self.isRunning and
+				self.playerNumber == "Two" then				
+				self.isRunning = false
 
 			--Controller handler for when the player presses left
 			elseif (love.keyboard.isDown("a") and playerNumber =="One") or
@@ -283,7 +294,10 @@ Entity = Class{
 			   
 			   if not self.isCatching then
 			   	  self.isReflecting = true
-			   	  self.animations.reflect:gotoFrame(1)
+			   	  if self.currentAnimation ~= "reflect" then
+			   	  	self.animations.reflect:gotoFrame(1)			   	  	
+			   	  end
+			   	  
 			   end
 			   
 			end
@@ -331,8 +345,10 @@ Entity = Class{
 			self.currentAnimation = "catch"
 		elseif self.isThrowing then
 			self.currentAnimation = "throw"
+		elseif self.isJumping or self.isDoubleJumping then
+			self.currentAnimation = "jump"
 		elseif self.isRunning then
-			self.currentAnimation = "run"
+			self.currentAnimation = "run"		
 		else
 			self.currentAnimation = "idle"
 		end

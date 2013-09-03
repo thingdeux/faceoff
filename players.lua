@@ -18,7 +18,7 @@ Player = Class{
 		end
 		self.isAI = ai		
 		self.weight = .1
-		self.catchDuration = .3
+		self.catchDuration = .4
 		self.reflectDuration = .5
 		self.jumpDelay = 1
 		self.doubleJumpDelay = .1
@@ -36,6 +36,7 @@ Player = Class{
 		self.animations.catch = playerJab:clone()
 		self.animations.reflect = playerFrontKick:clone()
 		self.animations.hit = playerHitReaction:clone()
+		self.animations.jump = playerJump:clone()
 		self.currentAnimation = "idle"
 
 		self.animations.throw:gotoFrame(1)
@@ -417,8 +418,13 @@ Player = Class{
 
 		--If you can't see an enemy, aim straight ahead
 		if not self.canSeeEnemy then
-			self.cursor.x = self.body:getX() + 50
-			self.cursor.y = self.body:getY() - 5								
+			if self.isFacingRight then
+				self.cursor.x = self.body:getX() + 50
+				self.cursor.y = self.body:getY() - 5
+			else
+				self.cursor.x = self.body:getX() - 50
+				self.cursor.y = self.body:getY() - 5
+			end
 		elseif self.canSeeEnemy and self.target then
 			--If the player can see an enemy then aim at them						
 			aimAtEnemy(self.target)
