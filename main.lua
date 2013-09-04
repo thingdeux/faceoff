@@ -1,6 +1,10 @@
+--Libraries
 Class = require("/libraries/class")
 anim8 = require ("/libraries/anim8")
+require("/libraries/randomlua")
+--Local Source
 require("entity")
+require("ai")
 require("graphics")
 require("balls")
 require("level")
@@ -12,16 +16,23 @@ require("timers")
 
 build = "0.5"
 
-function love.load()	
+function love.load()
 	--Create a debugger instance
 	debugger = Debugger()
+	--Create a timer instance (to queue events)
 	timer = Timer()
+	--Set gamespeed
 	gameSpeed = 1
 	roundOver = false	
+
+	--Make the mouse go buh bye
 	love.mouse.setVisible(false)
 	love.mouse.setGrab(true)	
 	load_colors()
-	load_graphics()	
+	load_graphics()
+	ranNum = mwc(0)
+
+	--This table will hold references to all active tables/things in the game space
 	active_entities = {}
 
 	--Set the physics distance calculation
@@ -36,7 +47,7 @@ function love.load()
 	love.graphics.setPointSize(2)
 
 	--Load level
-	load_level("basic")		
+	load_level("single")		
 end
 
 
@@ -136,7 +147,7 @@ function love.joystickreleased(joystick, button)
 end
 
 function love.draw()
-	love.graphics.scale(.9, .9)
+	--love.graphics.scale(.9, .9)
 	drawBackground()
 	drawLevel()
 	drawPlayers()

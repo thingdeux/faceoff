@@ -1,5 +1,6 @@
 TODO:
 Tweak double jumping
+Implement some basic AI
 
 Add networking/dedicated server "support"
 Play with applyangular impulse for balls bouncing on collision - appears to modify momentum

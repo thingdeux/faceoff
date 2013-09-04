@@ -133,7 +133,7 @@ function drawPlayers()
 		--Draw player body
 		getPlayerAnimation(player)
 
-		if player.canSeeEnemy then
+		if player.canSeeTarget then
 			--Draw the cursor
 			love.graphics.draw(cursor_image, player.cursor.x, player.cursor.y, -player.cursorAngle, .7, .7, 10, 5)
 		end

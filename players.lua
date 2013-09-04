@@ -16,7 +16,10 @@ Player = Class{
 		else
 			self.ballCount = 5
 		end
-		self.isAI = ai		
+		self.isAI = ai
+		if self.isAI then
+			self:createAIVariables()
+		end	
 		self.weight = .1
 		self.catchDuration = .4
 		self.reflectDuration = .5
@@ -42,9 +45,7 @@ Player = Class{
 		self.animations.throw:gotoFrame(1)
 		self.animations.catch:gotoFrame(1)
 		self.animations.reflect:gotoFrame(1)
-
-
-		
+	
 		--Status booleans		
 		self.isOnGround = false
 		self.gravitiesPull = 1.8	
@@ -59,7 +60,7 @@ Player = Class{
 		self.isTouching = {}
 		self.isTouching.level = false
 		self.isTouching.movingRectangle = false
-		self.canSeeEnemy = false
+		self.canSeeTarget = false
 
 		if self.playerNumber == "One" then
 			self.isFacingRight = true
@@ -389,21 +390,21 @@ Player = Class{
 			if not self.objectsBlockingLineOfSight.level and not self.objectsBlockingLineOfSight.movingRectangle then
 				--If a player is facing right and the enemy is on the right of him, he can see him
 				if (self.isFacingRight) and (self.target.body:getX() > self.body:getX() ) then
-					self.canSeeEnemy = true
+					self.canSeeTarget = true
 				--If a player is facing left and the enemy is on the left of him, he can see him
 				elseif not (self.isFacingRight) and (self.target.body:getX() < self.body:getX() ) then
-					self.canSeeEnemy = true
+					self.canSeeTarget = true
 				else
-					self.canSeeEnemy = false
+					self.canSeeTarget = false
 				end
 			else
-				self.canSeeEnemy = false
+				self.canSeeTarget = false
 			end
 		end
 
 
 		--If you can't see an enemy, aim straight ahead
-		if not self.canSeeEnemy then
+		if not self.canSeeTarget then
 			if self.isFacingRight then
 				self.cursor.x = self.body:getX() + 50
 				self.cursor.y = self.body:getY() - 5
@@ -411,20 +412,14 @@ Player = Class{
 				self.cursor.x = self.body:getX() - 50
 				self.cursor.y = self.body:getY() - 5
 			end
-		elseif self.canSeeEnemy and self.target then
+		elseif self.canSeeTarget and self.target then
 			--If the player can see an enemy then aim at them						
 			aimAtEnemy(self.target)
 		end
 
 	end;
 
-	ai = function(self, velocity_x, velocity_y, playerNumber, dt)		
-		if self.canSeeEnemy then
-			if self.ballCount > 0 and not roundOver then		
-				--self.isThrowing = true
-			end
-		end
-	end;
+	
 
 	flipAnimations = function(self)
 		for __, animation in pairs(self.animations) do
@@ -434,6 +429,7 @@ Player = Class{
 }
 
 Player:include(Entity)
+Player:include(AI)
 
 
 function spawn_players(respawn)
@@ -513,7 +509,7 @@ end
 
 --This is the raycast "handler" or callback function for players
 --It handles what happens with the invisible drawn lines between each player
---If there are no obstructions in the way it will set the 'canSeeEnemy' flag and start auto-targeting
+--If there are no obstructions in the way it will set the 'canSeeTarget' flag and start auto-targeting
 function worldRayCastCallback(fixture, x, y, xn, yn, fraction)
 	local hit = {}
 	hit.fixture = fixture
@@ -542,7 +538,7 @@ function worldRayCastCallback(fixture, x, y, xn, yn, fraction)
 		for __, player in ipairs(active_players) do		
 			player.objectsBlockingLineOfSight.level = false			
 			player.objectsBlockingLineOfSight.movingRectangle = false
-			player.canSeeEnemy = true
+			player.canSeeTarget = true
 		end
 		
 		

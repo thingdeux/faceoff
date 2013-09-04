@@ -6,15 +6,20 @@ Entity = Class{
 		--Player Specific Updates
 		if self.type == "player" then
 			if self.playerNumber == "One" then
-				debugger:keepUpdated("isJumping", self.isJumping)
-				debugger:keepUpdated("isDoubleJumping", self.isDoubleJumping)
-				debugger:keepUpdated("canDoubleJump", self.canDoubleJump)
+				--debugger:keepUpdated("isJumping", self.isJumping)
+				--debugger:keepUpdated("isDoubleJumping", self.isDoubleJumping)
+				--debugger:keepUpdated("canDoubleJump", self.canDoubleJump)
+			else
+				--debugger:keepUpdated("distanceToPlayer.X", self.distanceToPlayer.x)
+				--debugger:keepUpdated("distanceToPlayer.Y", self.distanceToPlayer.y)
+				--debugger:keepUpdated("targetOnTheRight", self.targetOnTheRight)
+				debugger:keepUpdated("isCloseEnoughToAttack", self.isCloseEnoughToAttack )
 			end
 			--Get the angle for the cursor, so it rotates			
 			self:determineThrowingAngle()
 			self.cursorAngle = math.angle(self.cursor.x,self.cursor.y , self.body:getX(), self.body:getY())
 			
-			--Pass the players x/y velocity to a local variable for checking below		
+			--Pass the players x/y velocitdqy to a local variable for checking below		
 			local velocity_x,velocity_y = self.body:getLinearVelocity()
 
 			if velocity_y >= -1 and velocity_y <= 1 and not self.isTouching.level and not self.isJumping then
@@ -68,7 +73,7 @@ Entity = Class{
 				if not self.isAI then								
 					self:controller(velocity_x, velocity_y, self.playerNumber, dt)								
 				else					
-					self:ai(velocity_x, velocity_y, self.playerNumber, dt)
+					self:think(dt)
 				end
 				self.body:setAngle(0)
 			else  --If a player is dead, no control for them!								
@@ -358,11 +363,12 @@ Entity = Class{
 		elseif self.isRunning then
 			self.currentAnimation = "run"		
 		else
+			--Default 'idle animation'
 			self.currentAnimation = "idle"
 		end
 
 		for __, animation in pairs(self.animations) do
-			animation:update(dt*gameSpeed)
+			animation:update(dt)
 		end						
 	
 	end;
