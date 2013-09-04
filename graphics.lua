@@ -104,6 +104,12 @@ function drawPlayers()
 			else
 				player.animations.jump:draw(playersheet, player.body:getX(), player.body:getY(), player.body:getAngle(), .8, .8, 56, 54)
 			end
+		elseif player.currentAnimation == "dead" then
+			if player.isFacingRight then
+				player.animations.hit:draw(playersheet, player.body:getX(), player.body:getY(), player.body:getAngle(), .8, .8, 43.5, 54)
+			else
+				player.animations.hit:draw(playersheet, player.body:getX(), player.body:getY(), player.body:getAngle(), .8, .8, 56, 54)
+			end
 		end
 	end
 
@@ -209,12 +215,12 @@ function load_graphics()
 	playerStandStill = anim8.newAnimation(playergrid(1,1, 2,1, 1,2), 0.3)
 	playerWalk = anim8.newAnimation(playergrid(10, 1, 9, 2, 8, 3, 7, 4, 10, 2, 9, 3), 0.12)
 	playerJab = anim8.newAnimation(playergrid(3,1, 4,1, 4,1), {0.03, 8.09,0.03} )
-	playerFrontKick = anim8.newAnimation(playergrid(4,4, 5,4, 4,4), {0.08,0.2, 0.2})
+	playerFrontKick = anim8.newAnimation(playergrid(4,4, 5,4, 4,4), {0.06,0.2, 0.2})
 	playerRunAnimation = anim8.newAnimation(playergrid(6, 1, 7, 1, 6, 2, 8, 1, 7, 2, 6, 3, 9, 1, 8, 2, 7, 3, 6, 4), 0.08)
 	playerHitReaction = anim8.newAnimation(playergrid(3,2), 0.09)
 	playerCross = anim8.newAnimation(playergrid(5, 2), 0.4, 'pause')
 
-	mainPlayer_kick = anim8.newAnimation(playergrid(3,4, 5,3), {0.15,0.65} )		
+	--mainPlayer_kick = anim8.newAnimation(playergrid(3,4, 5,3), {0.15,0.65} )		
 	
 end
 

@@ -5,7 +5,7 @@ Player = Class{
 
 		self.orientation = 0
 		self.playerNumber = playerNumber		
-		self.maxSpeed = 400
+		self.maxSpeed = 300
 		self.speed = 250
 		self.jumpForce = -40
 		self.friction = 6
@@ -334,7 +334,8 @@ Player = Class{
 		--Cut the gamespeed down and go into slow mo 
 		gameSpeed = .3
 		--Turn off the fixed rotation so the player will spin after they're hit
-		--WEEEEEEEEEEEEEEEEEEEEE		
+		--WEEEEEEEEEEEEEEEEEEEEE
+		self.animations.hit:gotoFrame(1)
 		self.body:setFixedRotation(false)
 		self.fixture:setRestitution(.3)
 
@@ -349,30 +350,6 @@ Player = Class{
 		self.canDoubleJump = false		
 		self.isDoubleJumping = false
 		self.timer.doubleJump = nil
-	end;
-
-	findThrowPath = function(self)	
-		self.timer.pathFinderDelay = love.timer.getTime() + self.pathFinderDelay
-		--Spawn a tracker ball
-		local trackerBall = Ball({self.body:getX(), self.body:getY()}, true)
-		--Set the ball to not collide with anything but the level mask
-		trackerBall.fixture:setMask(2)		
-		trackerBall.isBeingHeld = false
-
-		--Set the ball to have no owner and not be dangerous
-		trackerBall.isOwned = false
-		trackerBall.owner = nil
-		trackerBall.isDangerous = false	
-		trackerBall.trackingOwner = self
-		
-		--Find the angle at which the ball should be thrown (determined by cursor)
-		local ballx, bally = trackerBall.body:getPosition()
-		self.throwForce.angle = math.angle(self.body:getX(), self.body:getY(), self.cursor.x, self.cursor.y)									
-		trackerBall.body:setPosition( ballx + math.sin(self.throwForce.angle), bally )
-		trackerBall.body:setPosition( ballx, bally + math.cos(self.throwForce.angle) )
-
-		--Apply linear velocity to the ball - ie: make it SHOOT in a direction
-		trackerBall.body:applyLinearImpulse(math.sin(self.throwForce.angle)*(self.throwForce.speed+self.throwForce.speedModifier), math.cos(self.throwForce.angle)*(self.throwForce.speed+self.throwForce.speedModifier) )
 	end;
 
 	determineThrowingAngle = function(self)
@@ -408,8 +385,17 @@ Player = Class{
 		--Check a constantly running raycast and see if an object is in between the players
 		if self.target then
 			checkLineOfSightToEnemy(self.target)
+			--if no level objects or moving rects are inbetween the players
 			if not self.objectsBlockingLineOfSight.level and not self.objectsBlockingLineOfSight.movingRectangle then
-				self.canSeeEnemy = true
+				--If a player is facing right and the enemy is on the right of him, he can see him
+				if (self.isFacingRight) and (self.target.body:getX() > self.body:getX() ) then
+					self.canSeeEnemy = true
+				--If a player is facing left and the enemy is on the left of him, he can see him
+				elseif not (self.isFacingRight) and (self.target.body:getX() < self.body:getX() ) then
+					self.canSeeEnemy = true
+				else
+					self.canSeeEnemy = false
+				end
 			else
 				self.canSeeEnemy = false
 			end
@@ -435,7 +421,7 @@ Player = Class{
 	ai = function(self, velocity_x, velocity_y, playerNumber, dt)		
 		if self.canSeeEnemy then
 			if self.ballCount > 0 and not roundOver then		
-				self.isThrowing = true
+				--self.isThrowing = true
 			end
 		end
 	end;

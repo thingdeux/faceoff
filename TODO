@@ -1,5 +1,5 @@
 TODO:
-Fix running to idle for joysticks
+Tweak double jumping
 
 Add networking/dedicated server "support"
 Play with applyangular impulse for balls bouncing on collision - appears to modify momentum
@@ -7,6 +7,8 @@ Play with applyangular impulse for balls bouncing on collision - appears to modi
 
 Done:
 ---
+Player canSeeThe an enemy only if he's facing them.
+Fix running to idle for joysticks
 Kill manual aiming
 Implement auto-aim and raycasting for line of sight
 Implement Animations
@@ -19,6 +21,7 @@ Implement Catching
 Implement Reflecting
 Setup 3 bounce deactivation
 ----------
+
 
 
 

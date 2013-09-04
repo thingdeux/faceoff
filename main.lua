@@ -19,7 +19,7 @@ function love.load()
 	gameSpeed = 1
 	roundOver = false	
 	love.mouse.setVisible(false)
-	love.mouse.setGrab(true)
+	love.mouse.setGrab(true)	
 	load_colors()
 	load_graphics()	
 	active_entities = {}
@@ -36,7 +36,7 @@ function love.load()
 	love.graphics.setPointSize(2)
 
 	--Load level
-	load_level("single")		
+	load_level("basic")		
 end
 
 
@@ -135,7 +135,8 @@ function love.joystickreleased(joystick, button)
 	end
 end
 
-function love.draw()	
+function love.draw()
+	love.graphics.scale(.9, .9)
 	drawBackground()
 	drawLevel()
 	drawPlayers()

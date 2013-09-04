@@ -5,6 +5,11 @@ Entity = Class{
 
 		--Player Specific Updates
 		if self.type == "player" then
+			if self.playerNumber == "One" then
+				debugger:keepUpdated("isJumping", self.isJumping)
+				debugger:keepUpdated("isDoubleJumping", self.isDoubleJumping)
+				debugger:keepUpdated("canDoubleJump", self.canDoubleJump)
+			end
 			--Get the angle for the cursor, so it rotates			
 			self:determineThrowingAngle()
 			self.cursorAngle = math.angle(self.cursor.x,self.cursor.y , self.body:getX(), self.body:getY())
@@ -184,8 +189,10 @@ Entity = Class{
 							--Double Jump - I don't want the character to be able to double jump without
 							--Letting go of the initial jump button, so there's a keyrelease function in
 							--The main thread that sets "canDoubleJump" to true						
-							if self.canDoubleJump then								
-								self.body:applyLinearImpulse(0, self.jumpForce*.75)
+							if self.canDoubleJump then
+								local x, y = self.body:getLinearVelocity()
+								self.body:setLinearVelocity(x,0)
+								self.body:applyLinearImpulse(0, self.jumpForce)
 								--self.isJumping = false
 								self.canJump = false
 								self.isDoubleJumping = true
@@ -269,7 +276,7 @@ Entity = Class{
 				if not self.isThrowing and self.canThrow and self.ballCount > 0 then				
 					self.isThrowing = true
 					--Go to the start of the throw frame
-					self.animations.throw:gotoFrame(1)	
+					self.animations.throw:gotoFrame(1)
 				end
 
 			elseif not self.canThrow and not ( love.joystick.isDown(1,3) or love.joystick.isDown(1,6) ) and (self.playerNumber == "Two") then				
@@ -338,8 +345,9 @@ Entity = Class{
 	--Deal with animations
 	animate = function(self, dt)
 
-		
-		if self.isReflecting then
+		if self.isDead then
+			self.currentAnimation = "dead"
+		elseif self.isReflecting then
 			self.currentAnimation = "reflect"
 		elseif self.isCatching then
 			self.currentAnimation = "catch"
@@ -354,7 +362,7 @@ Entity = Class{
 		end
 
 		for __, animation in pairs(self.animations) do
-			animation:update(dt)
+			animation:update(dt*gameSpeed)
 		end						
 	
 	end;

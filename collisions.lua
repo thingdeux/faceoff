@@ -109,7 +109,7 @@ function beginContact(a, b, coll)
 			if levely < (playery + 75) then  --If the top of a level object is above a players foot
 				playerObject.isTouching.level = true
 			elseif levely > (playery + 75) then  --If the top of a level object is lower than the players foot
-				--playerObject.isTouching.level = false
+				playerObject.isTouching.level = false
 			end
 
 		end

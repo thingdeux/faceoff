@@ -6,5 +6,5 @@ function love.conf(window)
 	window.screen.height = screenHeight
 	window.title = "Faceoff"
 	window.author = "Joshua Johnson"	
-	window.vsync = true
+	window.vsync = true	
 end
