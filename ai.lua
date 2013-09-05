@@ -4,16 +4,19 @@ AI = Class{
 		--Analyze surroundings
 		self:checkSurroundings(dt)
 
+		--Strategize		
+		self:studyPlayer(dt)
+		self:referencePlayerKnowledge(dt)
+		
 		--React
-		self:react(dt)
+		self:act(dt)
 
-		--Strategize
-		--Move
-		--Learn?
+		
+		--Move		
 		--ranNum:random(1,100) --Random number betwixt 1,100
 	end;
 
-	checkSurroundings = function(self, dt)
+	checkSurroundings = function(self)
 		if self.target then
 			local function determineIfTargetIsOnLeftOrRight(targetx, selfx)
 				if targetx > selfx then
@@ -63,6 +66,34 @@ AI = Class{
 		end
 	end;
 
+	referencePlayerKnowledge = function(self)
+	end;
+
+	studyPlayer = function(self)		
+		local function tallyAction(boolean, timer)
+			if boolean and not timer then				
+				return 1
+			else
+				return 0				
+			end
+		end
+
+		self.playerStudy.jumps = self.playerStudy.jumps + tallyAction(self.target.isJumping, self.target.timer.jumping)
+		self.playerStudy.reflects.count = self.playerStudy.reflects.count + tallyAction(self.target.isReflecting, self.target.timer.reflecting)
+		self.playerStudy.catches.count = self.playerStudy.catches.count + tallyAction(self.target.isCatching, self.target.timer.catching)
+	
+		--Display all of the AI's tracking variables
+		for i, trackeditem in pairs(self.playerStudy) do
+			if type(trackeditem) == "table" then
+				for tablename, trackedtableitem in pairs(trackeditem) do
+					debugger:keepUpdated(tostring(i) .. "." .. tostring(tablename), trackedtableitem)
+				end
+			else
+				debugger:keepUpdated(tostring(i), trackeditem)
+			end
+		end
+
+	end;
 
 
 	gaugeSuccess = function(self)
@@ -70,10 +101,10 @@ AI = Class{
 
 
 
-	react = function(self, dt)		
+	act = function(self, dt)		
 		if self.canSeeTarget and self.isCloseEnoughToAttack then
 			if self.ballCount > 0 and not roundOver then		
-				--self.isThrowing = true
+				self.isThrowing = true
 			end
 		end
 	end;
@@ -103,16 +134,20 @@ AI = Class{
 
 		--Memory
 		self.playerStudy = {}
-		self.playerStudy.timeToThrow = 0  --Time player usually takes to throw
+		self.playerStudy.timeToThrow = 0  --Time player usually takes to throw after spotting me
 		self.playerStudy.reflects = {}
+		self.playerStudy.reflects.count = 0
 		self.playerStudy.reflects.succesful = 0  --Players succesful reflects
 		self.playerStudy.reflects.failed = 0  --Players failed reflects
 		self.playerStudy.catches = {}
+		self.playerStudy.catches.count = 0
 		self.playerStudy.catches.succesful = 0  --Players succesful catches
 		self.playerStudy.catches.failed = 0  --Players failed catches
 		self.playerStudy.jumps = 0 --Player jumpiness tracker
-
-
+		self.playerStudy.angle = {}
+		self.playerStudy.angle.above = 0
+		self.playerStudy.angle.below = 0
+		self.playerStudy.angle.level = 0
 	end;
 }
 
@@ -190,6 +225,8 @@ X < 700 - Close enough to throw
 Y  < 400
 
 
+
+playerStudy
 
 timers:
 	playerInRangeAndNotThrowing

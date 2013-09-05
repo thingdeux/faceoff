@@ -1,6 +1,6 @@
 TODO:
-Tweak double jumping
 Implement some basic AI
+Countdown Clock at start of round
 
 Add networking/dedicated server "support"
 Play with applyangular impulse for balls bouncing on collision - appears to modify momentum
@@ -8,6 +8,7 @@ Play with applyangular impulse for balls bouncing on collision - appears to modi
 
 Done:
 ---
+Tweak double jumping
 Player canSeeThe an enemy only if he's facing them.
 Fix running to idle for joysticks
 Kill manual aiming
@@ -32,9 +33,6 @@ Setup 3 bounce deactivation
 
 *Ideas
 ---------------
-Allow the player to hide his/her directional cursor
-
-
 Level Ideas:
 
 A level that slowly pushes a wall down on you - like a trash compacter - so you have to hurry up and get the other guy
@@ -71,18 +69,4 @@ Lava Pit level - and balls don't kill you they just push you into the lava
 *NO* Lava pit gamemode - American gladiators with flare
 
 
----
---can use a variation of this for auto-aim
-x, y = self.body:getLinearVelocity()
-
-			if x > 0 then
-				self.thumbStickTracker.x = self.thumbStickTracker.x + x*dt
-			elseif x < 0 then
-				self.thumbStickTracker.x = self.thumbStickTracker.x + x*dt
-			end
-
-			if y > 0 then
-				love.mouse.setPosition(love.mouse.getX(), love.mouse.getY() + (y+30)*dt)
-			elseif y < 0 then
-				love.mouse.setPosition(love.mouse.getX(), love.mouse.getY() + (y+30)*dt )
-			end
+--

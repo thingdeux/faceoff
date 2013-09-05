@@ -66,9 +66,22 @@ Entity = Class{
 					end
 				end
 
-			end				
+			end
+
+			if self.isThrowing or self.timer.recentlyThrownBall then
+				self:throw(dt) --Throw has to come before animate												
+			end
+
+			if self.isCatching then
+				self:catch(dt)
+			elseif self.isReflecting then
+				self:reflect(dt)
+			end	
 			
+			
+
 			--If the player isn't dead allow control
+			--This should remain at the very end of the player update loop
 			if not self.isDead then
 				if not self.isAI then								
 					self:controller(velocity_x, velocity_y, self.playerNumber, dt)								
@@ -81,18 +94,7 @@ Entity = Class{
 					spawn_players(true)
 				end
 			end
-			
-
-			if self.isThrowing or self.timer.recentlyThrownBall then
-				self:throw(dt) --Throw has to come before animate												
-			end
-
-			if self.isCatching then
-				self:catch(dt)
-			elseif self.isReflecting then
-				self:reflect(dt)
-			end
-
+					
 			self:animate(dt)
 		end
 
@@ -181,7 +183,7 @@ Entity = Class{
 					self.animations.jump:gotoFrame(1)
 					self.isTouching.movingRectangle = false  --I don't like this being here	
 					self.isJumping = true
-					self.canJump = false					
+					self.canJump = false				
 
 				elseif not self.isOnGround and self.isJumping then					
 					--After the first jump X amount of time must pass before double jumping
