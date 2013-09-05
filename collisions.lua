@@ -47,12 +47,13 @@ function beginContact(a, b, coll)
 				local ballBody = colliders.ball:getBody()
 				local ballvelocityx, ballvelocity = ballBody:getLinearVelocity()
 				
+				if not playerObject.caught then
+					playerObject.caught = true --Set for AI tracking, super hacky			
+				end
+
 				ballBody:setLinearVelocity(ballvelocityx*.25,0)							
 				playerObject:pickupBall(ballObject)
 			end
-			
-			
-
 		else
 			--Player picks up the ball if no one owns it
 			if not ballObject.isOwned and not playerObject.isReflecting then				
@@ -65,6 +66,11 @@ function beginContact(a, b, coll)
 			local ballBody = colliders.ball:getBody()
 			--Get the balls current velocity
 			local reversedVelocityX, reversedVelocityY = ballBody:getLinearVelocity()
+			
+			if not playerObject.reflected then
+				playerObject.reflected = true  --Set for AI tracking, super hacky
+			end
+
 
 			--Change ownership of ball
 			ballObject.owner = playerObject

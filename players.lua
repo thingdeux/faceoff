@@ -54,6 +54,8 @@ Player = Class{
 		self.isRunning = false
 		self.isDoubleJumping = false
 		self.isCatching = false
+		self.reflected = false
+		self.caught = false
 		self.isReflecting = false
 		self.isDead = false
 		self.isFallingTooFast = false
@@ -199,12 +201,12 @@ Player = Class{
 	end;
 
 	pickupBall = function(self, ballObject)
-		self.ballCount = self.ballCount + 1
+		self.ballCount = self.ballCount + 1				
 		ballObject.isBeingHeld = true				
 		ballObject.body:destroy()
 		ballObject.fixture:destroy()
 		ballObject.body:isActive(false)
-		ballObject:destroyObject()
+		ballObject:destroyObject()		
 	end;
 
 	trackMouse = function(self)

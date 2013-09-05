@@ -13,7 +13,7 @@ Entity = Class{
 				--debugger:keepUpdated("distanceToPlayer.X", self.distanceToPlayer.x)
 				--debugger:keepUpdated("distanceToPlayer.Y", self.distanceToPlayer.y)
 				--debugger:keepUpdated("targetOnTheRight", self.targetOnTheRight)
-				debugger:keepUpdated("isCloseEnoughToAttack", self.isCloseEnoughToAttack )
+				--debugger:keepUpdated("isCloseEnoughToAttack", self.isCloseEnoughToAttack )
 			end
 			--Get the angle for the cursor, so it rotates			
 			self:determineThrowingAngle()
@@ -77,24 +77,23 @@ Entity = Class{
 			elseif self.isReflecting then
 				self:reflect(dt)
 			end	
-			
-			
-
+						
 			--If the player isn't dead allow control
 			--This should remain at the very end of the player update loop
 			if not self.isDead then
 				if not self.isAI then								
 					self:controller(velocity_x, velocity_y, self.playerNumber, dt)								
 				else					
-					self:think(dt)
+					self:think(dt)					
 				end
 				self.body:setAngle(0)
 			else  --If a player is dead, no control for them!								
 				if love.timer.getTime() > self.timer.deathTimer then					
 					spawn_players(true)
 				end
-			end
-					
+			end			
+
+			--Update Anim8 objects
 			self:animate(dt)
 		end
 

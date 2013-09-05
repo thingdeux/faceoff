@@ -60,7 +60,7 @@ AI = Class{
 			self.distanceToTarget.x = math.distOnePlane(self.body:getX(), targetx)
 			self.distanceToTarget.y = math.distOnePlane(self.body:getY(), targety)
 			self.targetOnTheRight = determineIfTargetIsOnLeftOrRight(targetx, selfx)			
-			self.isBeneathPlayer = determineifTargetIsAboveOrBelow(targety, selfy)
+			self.isBeneathTarget = determineifTargetIsAboveOrBelow(targety, selfy)
 			self.isOnTargetsLevel = determineIfTargetIsOnMyLevel(targety, selfy)
 			self.isCloseEnoughToAttack = determineIfTargetIsCloseEnoughToAttack(self.distanceToTarget.x, self.distanceToTarget.y)	
 		end
@@ -95,9 +95,7 @@ AI = Class{
 
 				--Reset tracker
 				self.playerStudy.timeTargetLockedOnNotThrowing = 0
-			end
-			
-			
+			end	
 		end
 
 		local function calculateAverageLockOnThrowingTime()
@@ -110,16 +108,44 @@ AI = Class{
 			--Return the average of the times found in the tracker table.
 			return (sum / count)
 		end
-		
+
+		local function trackTargetThrowingAngle(target)
+			if target.isThrowing and not target.timer.throwing then
+				if self.isBeneathTarget == true then					
+					self.playerStudy.angle.below = self.playerStudy.angle.below + 1
+				elseif self.isBeneathTarget == false then					
+					self.playerStudy.angle.above = self.playerStudy.angle.above + 1
+				elseif self.isOnTargetsLevel then					
+					self.playerStudy.angle.level = self.playerStudy.angle.level + 1
+				end
+			end
+		end
+
+		local function trackTargetSuccessFailureRate(target)
+			--Turn off the caught and reflected flags (for use with ai counting) --*SIGH* SUPER HACKY
+			if target.caught then
+				self.playerStudy.catches.succesful = self.playerStudy.catches.succesful + 1				
+				self.target.caught = false
+			elseif target.reflected then
+				self.playerStudy.reflects.succesful = self.playerStudy.reflects.succesful + 1				
+				self.target.reflected = false
+			end
+
+			--Calculate the failure count
+			self.playerStudy.catches.failed = self.playerStudy.catches.count - self.playerStudy.catches.succesful
+			self.playerStudy.reflects.failed = self.playerStudy.reflects.count - self.playerStudy.reflects.succesful
+		end
+
 		trackTargetThrowingDelay(self.target)
+		trackTargetThrowingAngle(self.target)
+		trackTargetSuccessFailureRate(self.target)
 		--Calculate the average time it takes the player to throw a ball at me when he is locked on.
 		self.playerStudy.averageTimeUntilTargetThrows = calculateAverageLockOnThrowingTime()			
 		self.playerStudy.jumps = self.playerStudy.jumps + tallyAction(self.target.isJumping, self.target.timer.jumping)
 		self.playerStudy.reflects.count = self.playerStudy.reflects.count + tallyAction(self.target.isReflecting, self.target.timer.reflecting)
 		self.playerStudy.catches.count = self.playerStudy.catches.count + tallyAction(self.target.isCatching, self.target.timer.catching)
-
-
-		
+						
+		self:debugTrackingValues()		
 	end;
 
 
@@ -131,7 +157,7 @@ AI = Class{
 	act = function(self, dt)		
 		if self.canSeeTarget and self.isCloseEnoughToAttack then
 			if self.ballCount > 0 and not roundOver then		
-				--self.isThrowing = true
+				self.isThrowing = true
 			end
 		end
 	end;
@@ -139,7 +165,7 @@ AI = Class{
 	debugTrackingValues = function(self)
 		--Display all of the AI's tracking variables
 		for i, trackeditem in pairs(self.playerStudy) do
-			if type(trackeditem) == "table" then
+			if type(trackeditem) == "table" and i ~= "timesUntilTargetThrowsAfterLockOn" then
 				for tablename, trackedtableitem in pairs(trackeditem) do
 					debugger:keepUpdated(tostring(i) .. "." .. tostring(tablename), trackedtableitem)
 				end
@@ -166,7 +192,7 @@ AI = Class{
 		self.mood.isDefensive = false		
 
 		--Trackers
-		self.isBeneathPlayer = false
+		self.isBeneathTarget = false
 		self.isOnTargetsLevel = false
 		self.targetOnTheRight = false
 		self.distanceToTarget = {}
