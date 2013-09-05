@@ -78,9 +78,17 @@ AI = Class{
 			end
 		end
 
+		local function trackTargetThrowingDelay(target)
+			if not target.isThrowing and not target.timer.throwing then
+				--self.playerStudy.timeTargetLockedOnNotThrowing = self.playerStudy.timeTargetLockedOnNotThrowing +
+			end
+		end
+
+		trackTargetThrowingDelay(self.target)
 		self.playerStudy.jumps = self.playerStudy.jumps + tallyAction(self.target.isJumping, self.target.timer.jumping)
 		self.playerStudy.reflects.count = self.playerStudy.reflects.count + tallyAction(self.target.isReflecting, self.target.timer.reflecting)
 		self.playerStudy.catches.count = self.playerStudy.catches.count + tallyAction(self.target.isCatching, self.target.timer.catching)
+		
 	
 		--Display all of the AI's tracking variables
 		for i, trackeditem in pairs(self.playerStudy) do
@@ -134,7 +142,8 @@ AI = Class{
 
 		--Memory
 		self.playerStudy = {}
-		self.playerStudy.timeToThrow = 0  --Time player usually takes to throw after spotting me
+		self.playerStudy.timeTargetLockedOnNotThrowing = 0		
+		self.playerStudy.timeToThrow = {}  --Time player usually takes to throw after spotting me
 		self.playerStudy.reflects = {}
 		self.playerStudy.reflects.count = 0
 		self.playerStudy.reflects.succesful = 0  --Players succesful reflects
@@ -231,6 +240,34 @@ playerStudy
 timers:
 	playerInRangeAndNotThrowing
 
+
+
+If No Info
+	Ammo good?
+		Move Towards Player
+			Good Range for more than half a sec?
+				Throw
+	(Learn)		TargetReflected?
+				FastEnoughToCatch/Reflect?
+					(Percentage chance increases with range)
+					Chance for failure
+					Reflect/Catch
+					-or-
+					Die
+
+
+If info on target
+	if veryJumpy and AnglesAboveOften
+		gain distance for increasing reflect chance
+
+	if levelOften and shortThrowTimeAverage
+		Go defensive and try reflecting often
+
+	if doesn't reflect or catch
+		Bombard
+
+	if catches often or reflects often
+		go defensive and try juggling and mixup
 
 
 

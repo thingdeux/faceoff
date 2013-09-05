@@ -147,7 +147,7 @@ function love.joystickreleased(joystick, button)
 end
 
 function love.draw()
-	--love.graphics.scale(.9, .9)
+	love.graphics.scale(.9, .9)
 	drawBackground()
 	drawLevel()
 	drawPlayers()
