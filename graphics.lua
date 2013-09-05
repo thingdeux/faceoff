@@ -40,7 +40,7 @@ function drawBalls()
 					end
 				else
 					--White ball for non-owned ball
-					love.graphics.setColor(color.white)
+					love.graphics.setColor(color.lightred)
 				end
 				
 				

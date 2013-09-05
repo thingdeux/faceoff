@@ -452,14 +452,9 @@ function spawn_players(respawn)
 			debugger:insert("No Joysticks Detected, AI Opponent")
 			Player({getSpawnPoint("Bottom Right")}, "Two", true)
 		end
-	else		
-		--Delete all active balls
-		for __, ball in ipairs(active_balls) do			
-			ball.isBeingHeld = true
-			ball.isOwned = false
-			ball.owner = false
-			ball.body:setActive(false)		
-		end
+	else
+		--Destroy all active balls		
+		destroyAllBalls(active_balls, active_entities)	
 
 		if active_spawners then
 			--Reset the spawners
@@ -467,7 +462,6 @@ function spawn_players(respawn)
 				spawner:setSpawnerAmmo(level.spawnerBallCount)
 			end
 		end
-
 
 		for __, player in pairs(active_players) do
 			--Set the number of balls the players respawn with
@@ -497,8 +491,7 @@ function spawn_players(respawn)
 			end
 
 			--Give the player a lil' shove downwards so they fall after spawn
-			player.body:applyLinearImpulse(0,1)
-			
+			player.body:applyLinearImpulse(0,1)			
 		end		
 
 		gameSpeed = 1

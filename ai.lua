@@ -1,13 +1,13 @@
 AI = Class{	
 	--The brain, will coordinate actions
 	think = function(self, dt)
-		
+		debugger:keepUpdated("goingToBeHit", self.isGoingToBeHit)
 		--Analyze surroundings
 		self:checkSurroundings(dt)
-
+		self:referencePlayerKnowledge(dt) --Modify strategies if needed based on players actionss
+		self:react(dt)  --If in danger react
 		--Strategize		
-		self:studyPlayer(dt)
-		self:referencePlayerKnowledge(dt)
+		self:studyPlayer(dt)		
 		
 		--React
 		self:act(dt)
@@ -15,7 +15,7 @@ AI = Class{
 		--Move
 
 		--self:debugTrackingValues()
-		--ranNum:random(1,100) --Random number betwixt 1,100
+		
 	end;
 
 	checkSurroundings = function(self)
@@ -56,15 +56,51 @@ AI = Class{
 				end
 			end
 
+			local function checkDangerousBallRangeToMe(ball)
+				ballx, bally = ball.body:getPosition()
+				selfx, selfy = self.body:getPosition()
+												
+				if math.dist(ballx, bally, selfx, selfy) < 60 then					
+					return true
+				else
+					return false
+				end
+			end
+
+			--Check the active balls that belong to the target and are dangerous
+			local function trackThrownBalls()										
+				self.targetsBalls = {}
+
+				if active_balls then
+					for __, ball in ipairs(active_balls) do
+						--If the ball is dangerous and owned by someone other than me
+						if ball.isDangerous and ball.owner ~= self then
+							table.insert(self.targetsBalls, ball)							
+							self.isGoingToBeHit = checkDangerousBallRangeToMe(ball) --Check to see if it's close to me							
+							if self.isGoingToBeHit then								
+								return 0
+							end
+						end
+					end
+				end
+
+				if #self.targetsBalls == 0 then
+					self.isGoingToBeHit = false
+				end
+			end
+
+			
+
 			local targetx, targety = self.target.body:getPosition()
 			local selfx, selfy = self.body:getPosition()		
-				
+
+			trackThrownBalls()
 			self.distanceToTarget.x = math.distOnePlane(self.body:getX(), targetx)
 			self.distanceToTarget.y = math.distOnePlane(self.body:getY(), targety)
 			self.targetOnTheRight = determineIfTargetIsOnLeftOrRight(targetx, selfx)			
 			self.isBeneathTarget = determineifTargetIsAboveOrBelow(targety, selfy)
 			self.isOnTargetsLevel = determineIfTargetIsOnMyLevel(targety, selfy)
-			self.isCloseEnoughToAttack = determineIfTargetIsCloseEnoughToAttack(self.distanceToTarget.x, self.distanceToTarget.y)	
+			self.isCloseEnoughToAttack = determineIfTargetIsCloseEnoughToAttack(self.distanceToTarget.x, self.distanceToTarget.y)			
 		end
 	end;
 
@@ -148,16 +184,25 @@ AI = Class{
 		self.playerStudy.catches.count = self.playerStudy.catches.count + tallyAction(self.target.isCatching, self.target.timer.catching)							
 	end;
 
-	gaugeSuccess = function(self)
+	move = function(self, direction)
 	end;
 
-	move = function(self, direction)
+	react = function(self, dt)
+
+		
+		if self.isGoingToBeHit then
+			if not self.isReflecting then
+				self.isReflecting = true						
+			end
+		end
+		
+			
 	end;
 
 	act = function(self, dt)		
 		if self.canSeeTarget and self.isCloseEnoughToAttack then
 			if self.ballCount > 0 and not roundOver then		
-				self.isThrowing = true
+				--self.isThrowing = true
 			end
 		end
 	end;
@@ -178,33 +223,34 @@ AI = Class{
 
 	createAIVariables = function(self)
 		--Seed the random number generator
-		ranNum:randomseed( ranNum:random(1, 100000000000) )		
+		ranNum:randomseed( ranNum:random(1, 100000000000) )
+
 		--States
 		self.reactionSpeed = 1
 		self.reflectionSuccessChance = .4
-		self.catchSuccessChange = .4
+		self.catchSuccessChance = .4
 		self.canSeeBallSpawn = false
 		self.isCloseEnoughToAttack = false
 		self.isFeelingLucky = false
 		self.isLowOnAmmo = false
-		self.mood = {}		
-		self.mood.isAggressive = false
-		self.mood.isDefensive = false		
+		self.isGoingToBeHit = false
+		self.isGoingToCatch = false
+		self.isGoingToReflect = false
+		self.targetsBalls = {}
 
-		--Trackers
+		--Target Trackers
 		self.isBeneathTarget = false
 		self.isOnTargetsLevel = false
 		self.targetOnTheRight = false
 		self.distanceToTarget = {}
 		self.distanceToTarget.x = 0
-		self.distanceToTarget.y = 0
+		self.distanceToTarget.y = 0		
 
-		--Memory
+		--Target Study Memory
 		self.playerStudy = {}		
 		self.playerStudy.timesUntilTargetThrowsAfterLockOn = {}  --Time player usually takes to throw after spotting me
 		self.playerStudy.timeTargetLockedOnNotThrowing = 0
-		self.playerStudy.averageTimeUntilTargetThrows = 0
-		
+		self.playerStudy.averageTimeUntilTargetThrows = 0		
 		self.playerStudy.reflects = {}
 		self.playerStudy.reflects.count = 0
 		self.playerStudy.reflects.succesful = 0  --Players succesful reflects
@@ -219,19 +265,33 @@ AI = Class{
 		self.playerStudy.angle.below = 0
 		self.playerStudy.angle.level = 0
 
-		--Strategy Variables
+		--Strategy Booleans
 		self.strategy = {}
-		self.strategy.generalOffensive
-		self.strategy.generalDefensive
-		self.strategy.HighThrower
-		self.strategy.LevelThrower
-		self.strategy.LowThrower
-		self.strategy.jumpy
-		self.strategy.reflecting
-		self.strategy.notACatcher
-		self.strategy.notAReflector
-		self.strategy.veryCatchy
-		self.strategy.veryReflecty
+		self.strategy.random = true
+		self.strategy.generalOffensive = false
+		self.strategy.generalDefensive = false
+		self.strategy.HighThrower = false
+		self.strategy.LevelThrower = false
+		self.strategy.LowThrower = false
+		self.strategy.jumpy = false
+		self.strategy.reflecting = false
+		self.strategy.notACatcher = false
+		self.strategy.notAReflector = false
+		self.strategy.veryCatchy = false
+		self.strategy.veryReflecty = false
+		self.strategy.desperate = false
+	end;
+
+	calculateChance = function(self, modifier, succesfulChanceNumber)
+		local chanceNumber = ranNum:random(1,100) --Random number betwixt 1,100
+		chanceNumber = chanceNumber + modifier
+
+		if chanceNumber >= succesfulChanceNumber then
+			return true
+		else
+			return false
+		end
+
 	end;
 }
 

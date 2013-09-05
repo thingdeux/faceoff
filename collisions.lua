@@ -29,10 +29,10 @@ function beginContact(a, b, coll)
 		   end
 		
 		--If the ball is dangerous (ie: thrown by an opponent) and hits an opposing player
-		elseif ballObject.isDangerous and not (ballObject.owner == playerObject) and not playerObject.isDead then									
+		elseif ballObject.isDangerous and ballObject.owner ~= playerObject and not playerObject.isDead then									
 			
 			--If the player isn't catching or reflecting, THEY DEAD			
-			if not playerObject.isCatching and not playerObject.isReflecting and not roundOver then
+			if not playerObject.isCatching and not playerObject.isReflecting and not roundOver then				
 				--Kill the hit player
 				playerObject:die()			
 				--Using this to prevent throwing after "slowmo" kicks in
@@ -72,8 +72,9 @@ function beginContact(a, b, coll)
 			end
 
 
-			--Change ownership of ball
+			--Change ownership of ball			
 			ballObject.owner = playerObject
+			ballObject.isOwned = true
 			ballObject.wallsHit = 0
 			ballObject.isDangerous = true
 			

@@ -4,17 +4,7 @@ Entity = Class{
 		
 
 		--Player Specific Updates
-		if self.type == "player" then
-			if self.playerNumber == "One" then
-				--debugger:keepUpdated("isJumping", self.isJumping)
-				--debugger:keepUpdated("isDoubleJumping", self.isDoubleJumping)
-				--debugger:keepUpdated("canDoubleJump", self.canDoubleJump)
-			else
-				--debugger:keepUpdated("distanceToPlayer.X", self.distanceToPlayer.x)
-				--debugger:keepUpdated("distanceToPlayer.Y", self.distanceToPlayer.y)
-				--debugger:keepUpdated("targetOnTheRight", self.targetOnTheRight)
-				--debugger:keepUpdated("isCloseEnoughToAttack", self.isCloseEnoughToAttack )
-			end
+		if self.type == "player" then			
 			--Get the angle for the cursor, so it rotates			
 			self:determineThrowingAngle()
 			self.cursorAngle = math.angle(self.cursor.x,self.cursor.y , self.body:getX(), self.body:getY())
@@ -128,6 +118,7 @@ Entity = Class{
 			if self.isOwned and self.wallsHit > 2 then
 				self.isDangerous = false
 				self.isOwned = false
+				self.owner = nil
 			end
 
 			--Destroy a ball if it gets accidentally pushed outside of the screen world
@@ -317,37 +308,7 @@ Entity = Class{
 
 		end
 	end;
-
-
-	destroyObject = function(self)
-
-		--delete ball from active_balls table
-		if self.type == "ball" then
-			if not self.isTracker then
-				for i, ball in ipairs(active_balls) do		
-					if ball.id == self.id then
-						table.remove(active_balls, i)					
-					end
-				end
-			else
-				for i, ball in ipairs(active_trackers) do		
-					if ball.id == self.id then
-						table.remove(active_trackers, i)					
-					end
-				end
-			end
-		end
-
-		--delete ball from active_entities table
-		for i, entity in ipairs(active_entities) do
-			if entity.type == "ball" and entity.id == self.id then				
-				table.remove(active_entities, i)	
-			end
-		end
-		
-		self = nil
-	end;
-
+	
 	--Deal with animations
 	animate = function(self, dt)
 
@@ -370,9 +331,30 @@ Entity = Class{
 
 		for __, animation in pairs(self.animations) do
 			animation:update(dt)
-		end						
-	
+		end							
 	end;
+
+	destroyObject = function(self)
+
+        --delete ball from active_balls table
+        if self.type == "ball" then            
+            for i, ball in ipairs(active_balls) do          
+                if ball.id == self.id then
+                	ball.body:destroy()
+                    table.remove(active_balls, i)                                   
+                end
+            end            
+        end
+
+        --delete ball from active_entities table
+        for i, entity in ipairs(active_entities) do
+            if entity.type == "ball" and entity.id == self.id then                          
+                table.remove(active_entities, i)
+            end
+        end
+        
+        self = nil
+end;
 
 }
 

@@ -104,7 +104,7 @@ Level = Class{
 Level:include(Entity)
 
 function load_level(name)
-	if name == "basic" then
+	if name == "Crappy First Level" then
 		level = {}
 		level.name = name
 		level.spawnerBallCount = 5
@@ -140,7 +140,7 @@ function load_level(name)
 		--Objects (Spawning)
 		Object({screenWidth - 50, screenHeight - 500}, "spawner")
 		Object({50, screenHeight - 500}, "spawner")		
-	elseif name == "single" then
+	elseif name == "Podium" then
 		level = {}
 		level.name = name
 		level.spawnerBallCount = 1
@@ -182,7 +182,7 @@ function load_level(name)
 
 		Level({screenWidth-210, screenHeight - 150}, "movingRectangle", 10, 100, "vertical", 600)  --Right Block next to bottom right start
 		Level({210, screenHeight - 450}, "movingRectangle", 10, 100, "vertical", 600)  --Left Block next to bottom right start	
-	elseif name == "catch_n_release" then
+	elseif name == "Catch n' Release" then
 		level = {}
 		level.name = name
 		level.spawnerBallCount = 5
@@ -200,6 +200,21 @@ function load_level(name)
 		Level({screenWidth/2 + 230, screenHeight/2 + 100}, "rectangle", 10, 100) --Right Wall
 
 		Level({screenWidth/2 - 85, screenHeight/2 + 150}, "movingRectangle", 5, 20, "vertical", 100)  --Left Elevator
+	elseif name == "Four Walls All Balls" then
+		level = {}
+		level.name = name
+		level.spawnerBallCount = 5
+		level.playerBallCount = 20
+		level.spawnPoints = {}
+		level.timer = {}
+
+		table.insert(level.spawnPoints, {["x"] = 10, ["y"] = screenHeight -100, ["name"] = "Bottom Left"})		
+		table.insert(level.spawnPoints, {["x"] = screenWidth - 30, ["y"] = screenHeight -100, ["name"] = "Bottom Right"})
+
+		Level({0, screenHeight - 10}, "rectangle", screenWidth, 10) --Ground		
+		Level({0, 0}, "rectangle", screenWidth, 10) --Roof		
+		Level({0, 0}, "rectangle", 10, screenHeight) --Left Wall		
+		Level({screenWidth - 10, 0}, "rectangle", 10, screenHeight) --Right Wall
 	end
 
 	--Spawn players
