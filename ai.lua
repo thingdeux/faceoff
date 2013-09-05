@@ -69,7 +69,8 @@ AI = Class{
 	referencePlayerKnowledge = function(self)
 	end;
 
-	studyPlayer = function(self)		
+	studyPlayer = function(self)
+		--Used to keep track of booleans and see when they change (see usage below) - used for tracking isJumping and isReflecting ... etc
 		local function tallyAction(boolean, timer)
 			if boolean and not timer then				
 				return 1
@@ -78,29 +79,47 @@ AI = Class{
 			end
 		end
 
+		--Track how long it takes for the target to throw a ball at me even though he's locked on
 		local function trackTargetThrowingDelay(target)
 			if not target.isThrowing and not target.timer.throwing then
-				--self.playerStudy.timeTargetLockedOnNotThrowing = self.playerStudy.timeTargetLockedOnNotThrowing +
+
+				--Start tallying time when target can see player
+				if target.canSeeTarget then
+					self.playerStudy.timeTargetLockedOnNotThrowing = self.playerStudy.timeTargetLockedOnNotThrowing + love.timer.getDelta()
+				end
+			else
+				--Place the current time it took for a player to throw into the tracking table
+				if self.playerStudy.timeTargetLockedOnNotThrowing > 0 then
+					table.insert(self.playerStudy.timesUntilTargetThrowsAfterLockOn, self.playerStudy.timeTargetLockedOnNotThrowing )					
+				end
+
+				--Reset tracker
+				self.playerStudy.timeTargetLockedOnNotThrowing = 0
 			end
+			
+			
 		end
 
+		local function calculateAverageLockOnThrowingTime()
+			local sum, count = 0, #self.playerStudy.timesUntilTargetThrowsAfterLockOn			
+			for __, number in pairs(self.playerStudy.timesUntilTargetThrowsAfterLockOn) do
+				--Go through the table and add each number to the sum variable
+				sum = sum + number				
+			end
+
+			--Return the average of the times found in the tracker table.
+			return (sum / count)
+		end
+		
 		trackTargetThrowingDelay(self.target)
+		--Calculate the average time it takes the player to throw a ball at me when he is locked on.
+		self.playerStudy.averageTimeUntilTargetThrows = calculateAverageLockOnThrowingTime()			
 		self.playerStudy.jumps = self.playerStudy.jumps + tallyAction(self.target.isJumping, self.target.timer.jumping)
 		self.playerStudy.reflects.count = self.playerStudy.reflects.count + tallyAction(self.target.isReflecting, self.target.timer.reflecting)
 		self.playerStudy.catches.count = self.playerStudy.catches.count + tallyAction(self.target.isCatching, self.target.timer.catching)
-		
-	
-		--Display all of the AI's tracking variables
-		for i, trackeditem in pairs(self.playerStudy) do
-			if type(trackeditem) == "table" then
-				for tablename, trackedtableitem in pairs(trackeditem) do
-					debugger:keepUpdated(tostring(i) .. "." .. tostring(tablename), trackedtableitem)
-				end
-			else
-				debugger:keepUpdated(tostring(i), trackeditem)
-			end
-		end
 
+
+		
 	end;
 
 
@@ -112,9 +131,23 @@ AI = Class{
 	act = function(self, dt)		
 		if self.canSeeTarget and self.isCloseEnoughToAttack then
 			if self.ballCount > 0 and not roundOver then		
-				self.isThrowing = true
+				--self.isThrowing = true
 			end
 		end
+	end;
+
+	debugTrackingValues = function(self)
+		--Display all of the AI's tracking variables
+		for i, trackeditem in pairs(self.playerStudy) do
+			if type(trackeditem) == "table" then
+				for tablename, trackedtableitem in pairs(trackeditem) do
+					debugger:keepUpdated(tostring(i) .. "." .. tostring(tablename), trackedtableitem)
+				end
+			else
+				debugger:keepUpdated(tostring(i), trackeditem)
+			end
+		end
+		-----------------------
 	end;
 
 	createAIVariables = function(self)
@@ -141,9 +174,11 @@ AI = Class{
 		self.distanceToTarget.y = 0
 
 		--Memory
-		self.playerStudy = {}
-		self.playerStudy.timeTargetLockedOnNotThrowing = 0		
-		self.playerStudy.timeToThrow = {}  --Time player usually takes to throw after spotting me
+		self.playerStudy = {}		
+		self.playerStudy.timesUntilTargetThrowsAfterLockOn = {}  --Time player usually takes to throw after spotting me
+		self.playerStudy.timeTargetLockedOnNotThrowing = 0
+		self.playerStudy.averageTimeUntilTargetThrows = 0
+		
 		self.playerStudy.reflects = {}
 		self.playerStudy.reflects.count = 0
 		self.playerStudy.reflects.succesful = 0  --Players succesful reflects
@@ -196,7 +231,7 @@ defensive:
 	        Close Distance(F)
 
 states:
-	canSeePlayer
+	canSeeTarget
 	canSeeBallSpawn
 	isCloseEnoughToAttack
 	isFeelingLucky
