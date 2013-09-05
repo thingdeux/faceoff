@@ -1,6 +1,7 @@
 AI = Class{	
 	--The brain, will coordinate actions
 	think = function(self, dt)
+		
 		--Analyze surroundings
 		self:checkSurroundings(dt)
 
@@ -10,9 +11,10 @@ AI = Class{
 		
 		--React
 		self:act(dt)
-
 		
-		--Move		
+		--Move
+
+		--self:debugTrackingValues()
 		--ranNum:random(1,100) --Random number betwixt 1,100
 	end;
 
@@ -97,7 +99,7 @@ AI = Class{
 				self.playerStudy.timeTargetLockedOnNotThrowing = 0
 			end	
 		end
-
+		--Calculate the targets average throw time
 		local function calculateAverageLockOnThrowingTime()
 			local sum, count = 0, #self.playerStudy.timesUntilTargetThrowsAfterLockOn			
 			for __, number in pairs(self.playerStudy.timesUntilTargetThrowsAfterLockOn) do
@@ -108,7 +110,7 @@ AI = Class{
 			--Return the average of the times found in the tracker table.
 			return (sum / count)
 		end
-
+		--Track the angle (above or below the AI) the target throws the ball from
 		local function trackTargetThrowingAngle(target)
 			if target.isThrowing and not target.timer.throwing then
 				if self.isBeneathTarget == true then					
@@ -120,7 +122,7 @@ AI = Class{
 				end
 			end
 		end
-
+		--Track success or failure of catches/reflects
 		local function trackTargetSuccessFailureRate(target)
 			--Turn off the caught and reflected flags (for use with ai counting) --*SIGH* SUPER HACKY
 			if target.caught then
@@ -143,16 +145,14 @@ AI = Class{
 		self.playerStudy.averageTimeUntilTargetThrows = calculateAverageLockOnThrowingTime()			
 		self.playerStudy.jumps = self.playerStudy.jumps + tallyAction(self.target.isJumping, self.target.timer.jumping)
 		self.playerStudy.reflects.count = self.playerStudy.reflects.count + tallyAction(self.target.isReflecting, self.target.timer.reflecting)
-		self.playerStudy.catches.count = self.playerStudy.catches.count + tallyAction(self.target.isCatching, self.target.timer.catching)
-						
-		self:debugTrackingValues()		
+		self.playerStudy.catches.count = self.playerStudy.catches.count + tallyAction(self.target.isCatching, self.target.timer.catching)							
 	end;
-
 
 	gaugeSuccess = function(self)
 	end;
 
-
+	move = function(self, direction)
+	end;
 
 	act = function(self, dt)		
 		if self.canSeeTarget and self.isCloseEnoughToAttack then
@@ -218,6 +218,20 @@ AI = Class{
 		self.playerStudy.angle.above = 0
 		self.playerStudy.angle.below = 0
 		self.playerStudy.angle.level = 0
+
+		--Strategy Variables
+		self.strategy = {}
+		self.strategy.generalOffensive
+		self.strategy.generalDefensive
+		self.strategy.HighThrower
+		self.strategy.LevelThrower
+		self.strategy.LowThrower
+		self.strategy.jumpy
+		self.strategy.reflecting
+		self.strategy.notACatcher
+		self.strategy.notAReflector
+		self.strategy.veryCatchy
+		self.strategy.veryReflecty
 	end;
 }
 
@@ -331,6 +345,19 @@ If info on target
 		go defensive and try juggling and mixup
 
 
+
+
+strategy.generalOffensive
+strategy.generalDefensive
+strategy.HighThrower
+strategy.LevelThrower
+strategy.LowThrower
+strategy.jumpy
+strategy.reflecting
+strategy.notACatcher
+strategy.notAReflector
+strategy.veryCatchy
+strategy.veryReflecty
 
 
 ]]--
