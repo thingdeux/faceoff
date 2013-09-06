@@ -11,12 +11,12 @@ AI = Class{
 		self:studyPlayer()	
 		
 		--Act
+		self:makeDecisions()
 		self:doActions()
 		
 		--Move
 		self:movement()
-		--self:debugTrackingValues()
-		
+		--self:debugTrackingValues()		
 	end;
 
 	checkSurroundings = function(self)
@@ -236,6 +236,9 @@ AI = Class{
 						self.body:applyForce(-self.speed/2, 0)						
 					end
 				end
+
+			elseif direction == "Idle" then
+				self.isRunning = false
 			end
 
 			if self.isTouching.level then
@@ -263,6 +266,8 @@ AI = Class{
 				end
 			elseif self.move.towardsBallSpawn then
 			elseif self.move.awayFromBallSpawn then
+			else
+				return("Idle")
 			end
 		end
 
@@ -326,8 +331,26 @@ AI = Class{
 		checkIfReacting()		
 	end;
 
+	makeDecisions = function(self)
+		local function movementDecisions(target)			
+			if not self.isCloseEnoughToAttack then				
+				self.move.towardsTarget = true
+			else
+								
+				self.move.towardsTarget = false
+
+				--If the strategy is more aggresive/offensive then get really close to the target
+				if self.distanceToTarget.x >= 400 and self.strategy.generalOffensive then
+					self.move.towardsTarget = true
+				end
+			end
+		end
+
+		movementDecisions(self.target)
+	end;
+
 	doActions = function(self, dt)		
-		if self.canSeeTarget and self.isCloseEnoughToAttack then
+		if self.canSeeTarget and self.isCloseEnoughToAttack and self.strategy.generalOffensive then
 			if self.ballCount > 0 and not roundOver then		
 				self.isThrowing = true
 			end
@@ -388,19 +411,27 @@ AI = Class{
 
 		--Strategy Booleans
 		self.strategy = {}
-		self.strategy.random = true
-		self.strategy.generalOffensive = false
+		
+		
+		self.strategy.generalOffensive = true
 		self.strategy.generalDefensive = false
 		self.strategy.HighThrower = false
-		self.strategy.LevelThrower = false
-		self.strategy.LowThrower = false
-		self.strategy.jumpy = false
-		self.strategy.reflecting = false
+		self.strategy.LevelThrower = false		
+		self.strategy.LowThrower = false		
+		self.strategy.jumpy = false		
+		self.strategy.reflecting = false		
 		self.strategy.notACatcher = false
 		self.strategy.notAReflector = false
 		self.strategy.veryCatchy = false
-		self.strategy.veryReflecty = false
+		self.strategy.veryReflecty = false		
 		self.strategy.desperate = false
+		self.strategy.random = false
+
+		for i, thing in pairs(self.strategy) do
+			if i ~= "random" then
+				print(i)
+			end
+		end
 	end;
 
 	calculateChance = function(self, modifier, succesfulChanceNumber)
