@@ -148,7 +148,6 @@ function drawLevel()
 	if current_level then
 		for __, levelPiece in ipairs(current_level) do
 			
-
 			love.graphics.setColor(color.white)
 			if levelPiece.type_of_object == "rectangle" then
 				love.graphics.polygon("fill", levelPiece.body:getWorldPoints(levelPiece.shape:getPoints()))

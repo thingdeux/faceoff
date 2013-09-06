@@ -1,19 +1,20 @@
 AI = Class{	
 	--The brain, will coordinate actions
-	think = function(self, dt)
-		debugger:keepUpdated("goingToBeHit", self.isGoingToBeHit)
+	think = function(self, dt)		
 		--Analyze surroundings
-		self:checkSurroundings(dt)
-		self:referencePlayerKnowledge(dt) --Modify strategies if needed based on players actionss
-		self:react(dt)  --If in danger react
-		--Strategize		
-		self:studyPlayer(dt)		
-		
+		self:checkSurroundings()   --Track players and balls movements/activities...etc		
 		--React
-		self:act(dt)
+		self:react()  --If in danger react
+		
+		--Strategize
+		self:referencePlayerKnowledge() --Modify strategies if needed based on players actionss
+		self:studyPlayer()	
+		
+		--Act
+		self:doActions()
 		
 		--Move
-
+		self:movement()
 		--self:debugTrackingValues()
 		
 	end;
@@ -67,6 +68,10 @@ AI = Class{
 				end
 			end
 
+			local function trackTimeBallHasTraveled(ball)
+
+			end
+
 			--Check the active balls that belong to the target and are dangerous
 			local function trackThrownBalls()										
 				self.targetsBalls = {}
@@ -75,9 +80,22 @@ AI = Class{
 					for __, ball in ipairs(active_balls) do
 						--If the ball is dangerous and owned by someone other than me
 						if ball.isDangerous and ball.owner ~= self then
-							table.insert(self.targetsBalls, ball)							
-							self.isGoingToBeHit = checkDangerousBallRangeToMe(ball) --Check to see if it's close to me							
-							if self.isGoingToBeHit then								
+							table.insert(self.targetsBalls, ball)														
+							self.isGoingToBeHit = checkDangerousBallRangeToMe(ball) --Check to see if it's close to me
+
+							--If the AI is not going to be hit, keep track of how long the ball has been in the air
+							--Determines how much time the AI has to respond to the throw
+							if not self.isGoingToBeHit then
+								if not self.timeBallHasBeenTravelling[ball.id] then
+									self.timeBallHasBeenTravelling[ball.id] = 0
+								else
+									self.timeBallHasBeenTravelling[ball.id] = self.timeBallHasBeenTravelling[ball.id] + love.timer.getDelta()									
+								end
+							elseif self.isGoingToBeHit then
+								if self.timeBallHasBeenTravelling[ball.id] ~= nil then									
+									self.reactionSpeed = self.timeBallHasBeenTravelling[ball.id] --Time the AI has had to watch the ball come at him
+								end
+								self.timeBallHasBeenTravelling[ball.id] = nil								
 								return 0
 							end
 						end
@@ -87,9 +105,7 @@ AI = Class{
 				if #self.targetsBalls == 0 then
 					self.isGoingToBeHit = false
 				end
-			end
-
-			
+			end			
 
 			local targetx, targety = self.target.body:getPosition()
 			local selfx, selfy = self.body:getPosition()		
@@ -184,41 +200,138 @@ AI = Class{
 		self.playerStudy.catches.count = self.playerStudy.catches.count + tallyAction(self.target.isCatching, self.target.timer.catching)							
 	end;
 
-	move = function(self, direction)
+	movement = function(self)
+		local function moveDirection(target, direction)
+			velocity_x, velocity_y = self.body:getLinearVelocity()
+
+			if direction == "Right" then
+				--Flip the animations the other way if the player is facing left
+			   	if not self.isFacingRight then
+			   		self.isFacingRight = true
+			   		self:flipAnimations()
+			   	end
+
+				if velocity_x < self.maxSpeed then
+					if self.isOnGround then
+						self.isRunning = true
+						self.body:applyForce(self.speed, 0)													
+					else
+						--If player is in the air then they can only move themselves at half the speed
+						self.body:applyForce(self.speed/2, 0)						
+					end
+				end
+			elseif direction == "Left" then
+				--Flip the animations the other way if the player is facing left
+			   	if self.isFacingRight then
+			   		self.isFacingRight = false
+			   		self:flipAnimations()
+			   	end
+
+				if velocity_x > -self.maxSpeed then
+					if self.isOnGround then
+						self.isRunning = true
+						self.body:applyForce(-self.speed, 0)														
+					else
+						--If player is in the air then they can only move themselves at half the speed
+						self.body:applyForce(-self.speed/2, 0)						
+					end
+				end
+			end
+
+			if self.isTouching.level then
+				self.body:applyForce(0, 75)						
+			end
+		end
+
+		local function determineMoveDirection(target)
+			targetx, targety = target.body:getPosition()
+			selfx, selfy = self.body:getPosition()
+
+			if self.move.towardsTarget then
+				--If target is to the left move towards them
+				if targetx < selfx then
+					return ("Left")				
+				else --If target is to the right move towards them
+					return ("Right")
+				end
+			elseif self.move.awayFromTarget then
+				--If target is to the left move towards them
+				if targetx < selfx then
+					return ("Right")		
+				else --If target is to the right move towards them
+					return ("Left")
+				end
+			elseif self.move.towardsBallSpawn then
+			elseif self.move.awayFromBallSpawn then
+			end
+		end
+
+
+		local direction = determineMoveDirection(self.target)		
+		moveDirection(self.target, direction)
 	end;
 
 	react = function(self, dt)
+		local function randomlyChooseToReflectOrCatch()
+			local catchOrReflect = ranNum:random(1, 2)
 
-		
-		if self.isGoingToBeHit then
-			if not self.isReflecting then
-				self.isReflecting = true						
-			end
+			if catchOrReflect == 1 then
+				self.isGoingToCatch = true
+				self.isGoingToReflect = false
+			else
+				self.isGoingToReflect = true
+				self.isGoingToCatch = false
+			end		
 		end
-		
+
+		local function doCatchOrReflect()
 			
-	end;
-
-	act = function(self, dt)		
-		if self.canSeeTarget and self.isCloseEnoughToAttack then
-			if self.ballCount > 0 and not roundOver then		
-				--self.isThrowing = true
+			if self.isGoingToReflect then
+				if not self.isReflecting then
+					self.isReflecting = true						
+				end
+				
+			elseif self.isGoingToCatch then
+				if not self.isCatching then
+					self.isCatching = true						
+				end
 			end
 		end
-	end;
 
-	debugTrackingValues = function(self)
-		--Display all of the AI's tracking variables
-		for i, trackeditem in pairs(self.playerStudy) do
-			if type(trackeditem) == "table" and i ~= "timesUntilTargetThrowsAfterLockOn" then
-				for tablename, trackedtableitem in pairs(trackeditem) do
-					debugger:keepUpdated(tostring(i) .. "." .. tostring(tablename), trackedtableitem)
+		local function checkIfReacting()
+			if self.isGoingToBeHit and not self.timer.reaction then
+				self.timer.reaction = love.timer.getTime() + gameSpeed*.1
+				
+				--If the AI isn't low on ammo 50/50 shot at catching or reflecting
+				if not self.isLowOnAmmo then  
+					randomlyChooseToReflectOrCatch()
+				end
+				
+				--Calculate successful chance to catch or reflect
+				--Increased chance to catch the longer the AI has had to watch the ball fly		
+				if self:calculateChance( (self.reactionSpeed * 125), 100) then				
+					doCatchOrReflect()											
 				end
 			else
-				debugger:keepUpdated(tostring(i), trackeditem)
+				if self.timer.reaction then
+					if love.timer.getTime() > self.timer.reaction then
+						self.timer.reaction = nil
+					end
+
+				end					
+			end		
+		end
+		
+		--This checks to see if the 'isGoingToBeHit' [By a ball] flag is set and runs checks and calculates percentage  to react (then does the reaction)		
+		checkIfReacting()		
+	end;
+
+	doActions = function(self, dt)		
+		if self.canSeeTarget and self.isCloseEnoughToAttack then
+			if self.ballCount > 0 and not roundOver then		
+				self.isThrowing = true
 			end
 		end
-		-----------------------
 	end;
 
 	createAIVariables = function(self)
@@ -227,8 +340,9 @@ AI = Class{
 
 		--States
 		self.reactionSpeed = 1
-		self.reflectionSuccessChance = .4
-		self.catchSuccessChance = .4
+		self.difficulty = 50
+		self.reflectionSuccessChance = 1
+		self.catchSuccessChance = 1
 		self.canSeeBallSpawn = false
 		self.isCloseEnoughToAttack = false
 		self.isFeelingLucky = false
@@ -237,6 +351,13 @@ AI = Class{
 		self.isGoingToCatch = false
 		self.isGoingToReflect = false
 		self.targetsBalls = {}
+		self.timeBallHasBeenTravelling = {}
+		self.move = {}
+		self.move.towardsTarget = false
+		self.move.awayFromTarget = false
+		self.move.towardsBallSpawn = false
+		self.move.awayFromBallSpawn = false
+
 
 		--Target Trackers
 		self.isBeneathTarget = false
@@ -283,15 +404,46 @@ AI = Class{
 	end;
 
 	calculateChance = function(self, modifier, succesfulChanceNumber)
-		local chanceNumber = ranNum:random(1,100) --Random number betwixt 1,100
-		chanceNumber = chanceNumber + modifier
+		local numberToBeat = ranNum:random(1,succesfulChanceNumber) --Random number betwixt 1,100
+		local chanceNumber = modifier + self.difficulty*.25
 
-		if chanceNumber >= succesfulChanceNumber then
+		--debugger:insert("Does " .. tostring(chanceNumber) .. " beat " .. tostring(numberToBeat))
+		
+		if chanceNumber >= numberToBeat then
 			return true
 		else
 			return false
 		end
+	end;
 
+	setDifficulty = function(self, value)
+		if value == "Very Easy" then
+			self.difficulty = 20
+		elseif value == "Easy" then
+			self.difficulty = 30
+		elseif value == "Normal" then
+			self.difficulty = 50
+		elseif value == "Hard" then
+			self.difficulty = 70
+		elseif value == "Very Hard" then
+			self.difficulty = 90
+		else
+			self.difficulty = 100
+		end
+	end;
+
+	debugTrackingValues = function(self)
+		--Display all of the AI's tracking variables
+		for i, trackeditem in pairs(self.playerStudy) do
+			if type(trackeditem) == "table" and i ~= "timesUntilTargetThrowsAfterLockOn" then
+				for tablename, trackedtableitem in pairs(trackeditem) do
+					debugger:keepUpdated(tostring(i) .. "." .. tostring(tablename), trackedtableitem)
+				end
+			else
+				debugger:keepUpdated(tostring(i), trackeditem)
+			end
+		end
+		-----------------------
 	end;
 }
 
@@ -418,6 +570,9 @@ strategy.notACatcher
 strategy.notAReflector
 strategy.veryCatchy
 strategy.veryReflecty
+
+
+If AI is low on ammo try to catch more than reflect
 
 
 ]]--

@@ -8,6 +8,8 @@ Play with applyangular impulse for balls bouncing on collision - appears to modi
 
 Done:
 ---
+AI now reacts and tries to catch/reflect a ball based on its distance thrownand skill
+
 Tweak double jumping
 Player canSeeThe an enemy only if he's facing them.
 Fix running to idle for joysticks
