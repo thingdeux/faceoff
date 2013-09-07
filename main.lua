@@ -47,7 +47,7 @@ function love.load()
 	love.graphics.setPointSize(2)
 
 	--Load level
-	load_level("Four Walls All Balls")		
+	load_level("Podium")		
 end
 
 

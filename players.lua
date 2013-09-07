@@ -19,7 +19,9 @@ Player = Class{
 		self.isAI = ai
 		if self.isAI then
 			self:createAIVariables()
-		end	
+		end
+
+		self.color = color.white
 		self.weight = .1
 		self.catchDuration = .4
 		self.reflectDuration = .5
@@ -79,7 +81,7 @@ Player = Class{
 		--Throw variables
 		self.throwDelay = .3
 		self.throwForce = {}		
-		self.throwForce.speed = 100
+		self.throwForce.speed = 75  --100
 		self.throwForce.angle = 0
 		self.throwForce.speedModifier = 0
 
@@ -427,7 +429,13 @@ Player = Class{
 		for __, animation in pairs(self.animations) do
 			animation:flipH()
 		end
-	end
+	end;
+
+	setColor = function(self, color)
+		if color then
+			self.color = color
+		end
+	end;
 }
 
 Player:include(Entity)
@@ -438,11 +446,13 @@ function spawn_players(respawn)
 
 	if not respawn then
 		--Create Player 1	
-		Player({getSpawnPoint("Bottom Left")}, "One")
+		local p1 = Player({getSpawnPoint("Bottom Left")}, "One")		
+		p1:setColor(color.cyan)
 		
 		--If a joystick is enabled, two characters will spawn
 		if checkForJoystick() == "One Joystick" then
-			Player({getSpawnPoint("Bottom Right")}, "Two")
+			local p2 = Player({getSpawnPoint("Bottom Right")}, "Two")
+			p2:setColor(color.brightyellow)
 			--Create Player 2
 			--Player({getSpawnPoint("Bottom Right")}, "Two")
 			--debugger:insert("One Joystick Detected")		
@@ -450,7 +460,8 @@ function spawn_players(respawn)
 			--debugger:insert("Two Joysticks Detected")
 		else
 			debugger:insert("No Joysticks Detected, AI Opponent")
-			Player({getSpawnPoint("Bottom Right")}, "Two", true)
+			local p2 = Player({getSpawnPoint("Bottom Right")}, "Two", true)
+			p2:setColor(color.brightyellow)
 		end
 	else
 		--Destroy all active balls		

@@ -143,6 +143,7 @@ function load_level(name)
 	elseif name == "Podium" then
 		level = {}
 		level.name = name
+		level.playerBallCount = 5
 		level.spawnerBallCount = 1
 		level.spawnPoints = {}
 		level.timer = {}	
@@ -180,8 +181,8 @@ function load_level(name)
 		spawner = Object({screenWidth/2, screenHeight - 280}, "spawner")
 		spawner:setSpawnerAmmo(level.spawnerBallCount)
 
-		Level({screenWidth-210, screenHeight - 150}, "movingRectangle", 10, 100, "vertical", 600)  --Right Block next to bottom right start
-		Level({210, screenHeight - 450}, "movingRectangle", 10, 100, "vertical", 600)  --Left Block next to bottom right start	
+		Level({screenWidth-210, screenHeight - 150}, "movingRectangle", 10, 100, "vertical", 300)  --Right Block next to bottom right start
+		Level({210, screenHeight - 450}, "movingRectangle", 10, 100, "vertical", 300)  --Left Block next to bottom right start	
 	elseif name == "Catch n' Release" then
 		level = {}
 		level.name = name
@@ -204,7 +205,7 @@ function load_level(name)
 		level = {}
 		level.name = name
 		level.spawnerBallCount = 5
-		level.playerBallCount = 20
+		level.playerBallCount = 8
 		level.spawnPoints = {}
 		level.timer = {}
 

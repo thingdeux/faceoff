@@ -426,12 +426,7 @@ AI = Class{
 		self.strategy.veryReflecty = false		
 		self.strategy.desperate = false
 		self.strategy.random = false
-
-		for i, thing in pairs(self.strategy) do
-			if i ~= "random" then
-				print(i)
-			end
-		end
+		
 	end;
 
 	calculateChance = function(self, modifier, succesfulChanceNumber)

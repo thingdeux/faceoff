@@ -31,13 +31,7 @@ function drawBalls()
 				--love.graphics.circle("fill", ball.body:getX(), ball.body:getY(), ball.shape:getRadius())
 				
 				if ball.isOwned then
-					if ball.owner.playerNumber == "One" then
-						--Blue ball for P1					
-						love.graphics.setColor(color.blue)
-					elseif ball.owner.playerNumber == "Two" then
-						--Pee Yellow ball for P2
-						love.graphics.setColor(color.brightyellow)											
-					end
+					love.graphics.setColor(ball.owner.color)
 				else
 					--White ball for non-owned ball
 					love.graphics.setColor(color.lightred)
@@ -124,11 +118,7 @@ function drawPlayers()
 		--love.graphics.point(player.cursor.x, player.cursor.y)
 		--debugger:keepUpdated("Player " .. tostring(player.playerNumber) .. " Knockouts", player.killCount)
 
-		if player.playerNumber == "One" then
-			love.graphics.setColor(color.white)
-		elseif player.playerNumber == "Two" then
-			love.graphics.setColor(color.brightyellow)	
-		end
+		love.graphics.setColor(player.color)
 		
 		--Draw player body
 		getPlayerAnimation(player)
@@ -240,15 +230,8 @@ function drawBuild()
 	local xLocation = screenWidth - 300
 
 	love.graphics.setColor(color.red)	
-	love.graphics.print("Enable a 360 controller for 2 player.", xLocation, 10 )
-	love.graphics.print("Move with Left Stick, Aim with Right Stick", xLocation, 20 )
-	love.graphics.print("LB to Jump, RB to throw", xLocation, 30 )
-
-	love.graphics.print("Player 1 moves with WASD", xLocation, 60 )
-	love.graphics.print("Aim with Mouse", xLocation, 70)
-	love.graphics.print("Throw with left-click", xLocation, 80 )
-
-	love.graphics.print("The longer you hold throw, the harder you do", xLocation, 100 )
+	love.graphics.print("Enable a 360 controller for 2 player Mode.", xLocation, 10 )	
+	love.graphics.print("LB to Jump, RB to throw", xLocation, 20 )
 
 	love.graphics.print("Prototype Build: " .. tostring(build), 0, screenHeight - 12 )
 	love.graphics.print("FPS: " .. tostring(love.timer.getFPS()), 20, 0)
