@@ -4,7 +4,12 @@ Entity = Class{
 		
 
 		--Player Specific Updates
-		if self.type == "player" then			
+		if self.type == "player" then
+
+			if self.body:getY() > screenHeight + 50 and not self.isDead then				
+				self:die()
+				roundOver = true
+			end
 			--Get the angle for the cursor, so it rotates			
 			self:determineThrowingAngle()
 			self.cursorAngle = math.angle(self.cursor.x,self.cursor.y , self.body:getX(), self.body:getY())
@@ -140,6 +145,11 @@ Entity = Class{
 			end
 
 			if self.movementShape then
+				--If a table of tables is used when creating a movingRectangle instead of a direction
+				--This will iterate over the points passed in the table and make the rectangle move
+				--a certain amount of pixels then stop, then move another amount.
+				--Ex: {50, 0}, {0, -50}, {-50, -100} --Would move the platform in a repeating triangle
+
 				local function pushPlatformInDirection(movedDistance, direction, plane )
 					local velx, vely = self.body:getLinearVelocity()
 
@@ -178,7 +188,9 @@ Entity = Class{
 					end
 				end
 
+				--When both of these are set to true the platform will have travelled its tables distance
 				local xReady, yReady = false				
+
 
 				if checkMaxMovement(self.movedDistance.x, self.movementShape[self.movementShapePosition][1]) then					
 					self.movedDistance.x = pushPlatformInDirection(self.movedDistance.x, self.movementShape[self.movementShapePosition][1], "x")
@@ -194,11 +206,9 @@ Entity = Class{
 
 				if xReady and yReady then
 					self.body:setLinearVelocity(0, 0) --Stop the platform and prepare for new movement
-					if self.movementShapePosition < #self.movementShape then						
-						debugger:insert("Moving up one")					
+					if self.movementShapePosition < #self.movementShape then															
 						self.movementShapePosition = self.movementShapePosition + 1						
-					else
-						debugger:insert("Starting Over")					
+					else						
 						self.movementShapePosition = 1
 					end
 					self.movedDistance.x = 0

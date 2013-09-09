@@ -77,11 +77,13 @@ Ball:include(Entity)
 
 function destroyAllBalls(active_balls, active_entities)
 	--Delete all of the balls from the active_balls table first
-	if #active_balls > 0 then
-		active_balls[1].isBeingHeld = true		
-		active_balls[1].body:destroy()
-		table.remove(active_balls, 1)
-		destroyAllBalls(active_balls, active_entities)
+	if active_balls then
+		if #active_balls > 0 then
+			active_balls[1].isBeingHeld = true		
+			active_balls[1].body:destroy()
+			table.remove(active_balls, 1)
+			destroyAllBalls(active_balls, active_entities)
+		end
 	end
 	
 	local foundBall = false

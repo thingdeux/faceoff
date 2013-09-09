@@ -338,6 +338,9 @@ Player = Class{
 	die = function(self)
 		--Cut the gamespeed down and go into slow mo 
 		gameSpeed = .3
+		--Using this to prevent throwing after "slowmo" kicks in			
+		roundOver = true
+		
 		--Turn off the fixed rotation so the player will spin after they're hit
 		--WEEEEEEEEEEEEEEEEEEEEE
 		self.animations.hit:gotoFrame(1)

@@ -82,6 +82,24 @@ Level = Class{
 			--Fixture parameters
 			self.fixture:setFilterData(3, 3, 3)
 			table.insert(active_entities, self)		
+		elseif self.type_of_object == "bouncyBox" then
+			self.width = width
+			self.height = height
+			self.x = coords[1] --Starting X point of the line
+			self.y = coords[2] --Starting Y point of the line
+			self.type = "level"
+			self.color = color.red
+			self.bounciness = 15
+			
+			--The shape (the rectangle we create next) anchors to the body from its center, so we have to move it to (650/2, 650-50/2)		
+			self.body = love.physics.newBody(world, self.x + self.width/2, self.y + self.height/2, "static")
+			--make a rectangle with a width of width and a height of height
+			self.shape = love.physics.newRectangleShape(self.width, self.height)
+			--attach shape to body (think, skeleton)
+			self.fixture = love.physics.newFixture(self.body, self.shape)			
+
+			--Set the level filter mask to 3 so level pieces won't collide with each other
+			self.fixture:setFilterData(3, 3, -3)
 		end
 		
 		
@@ -235,20 +253,46 @@ function load_level(name)
 		level.playerBallCount = 10
 		level.spawnPoints = {}
 		level.timer = {}
+		level.platformSpeed = 150
 
-		table.insert(level.spawnPoints, {["x"] = 10, ["y"] = screenHeight -100, ["name"] = "Bottom Left"})		
-		table.insert(level.spawnPoints, {["x"] = screenWidth - 30, ["y"] = screenHeight -100, ["name"] = "Bottom Right"})
+		table.insert(level.spawnPoints, {["x"] = 10, ["y"] = 0, ["name"] = "Bottom Left"})		
+		table.insert(level.spawnPoints, {["x"] = screenWidth - 20, ["y"] = 0, ["name"] = "Bottom Right"})
 
-		Level({0, screenHeight - 10}, "rectangle", screenWidth, 10) --Ground		
-		Level({0, 0}, "rectangle", screenWidth, 10) --Roof		
+		--Level({0, screenHeight - 10}, "rectangle", screenWidth, 10) --Ground		
+		--Level({0, 0}, "rectangle", screenWidth, 10) --Roof		
 		Level({0, 0}, "rectangle", 10, screenHeight) --Left Wall		
 		Level({screenWidth - 10, 0}, "rectangle", 10, screenHeight) --Right Wall
 
-		Level({screenWidth/2 - 300, screenHeight/2 + 350}, "movingRectangle", 80, 15, { {0, -400}, 
-																					 {400, 0},
-																				 	 {0, 400},
-																				 	 {-400, 0},
-																							 }, 100)  --Test Hotfoot Platform
+		Level({0, 70}, "rectangle", 50, 10) --P1 Diving Board (left)
+		Level({screenWidth - 50, 70}, "rectangle", 50, 10) --P2 Diving Board (right)
+
+
+		--Moving Platform that starts at bottom left and moves clockwise
+		Level({screenWidth/2 - 400, screenHeight/2 + 350}, "movingRectangle", 80, 15, { {0, -600}, 
+																					 {640, 0},
+																				 	 {0, 600},
+																				 	 {-640, 0},
+																							 }, level.platformSpeed)
+		--Moving Platform that starts at top left and moves in an clockwise
+		Level({screenWidth/2 - 400, screenHeight - 740}, "movingRectangle", 80, 15, { {640, 0}, 
+																					 {0, 600},
+																				 	 {-640, 0},
+																				 	 {0, -600},
+																							 }, level.platformSpeed)
+		--Moving Platform that starts at top right and moves in an clockwise
+		Level({screenWidth/2 + 200, screenHeight - 740}, "movingRectangle", 80, 15, { {0, 600}, 
+																					 {-640, 0},
+																				 	 {0, -600},
+																				 	 {640, 0},
+																							 }, level.platformSpeed)
+		--Moving Platform that starts at bottom right and moves in an clockwise
+		Level({screenWidth/2 + 200, screenHeight/2 + 350}, "movingRectangle", 80, 15, { {-640, 0}, 
+																					 {0, -600},
+																				 	 {640, 0},
+																				 	 {0, 600},
+																							 }, level.platformSpeed)
+
+		Level({10.40, screenHeight - 10}, "bouncyBox", screenWidth - 20, 10)
 	end
 
 	--Spawn players

@@ -144,7 +144,9 @@ function drawLevel()
 				love.graphics.point(levelPiece.body:getX() + 20, levelPiece.body:getY() - levelPiece.body:getY())
 			elseif levelPiece.type_of_object == "edge" then
 				love.graphics.line(levelPiece.body:getWorldPoints(levelPiece.shape:getPoints()))				
-			elseif levelPiece.type_of_object == "movingRectangle" and not levelPiece.isInvisible then
+			elseif levelPiece.type_of_object == "movingRectangle" then
+				love.graphics.polygon("fill", levelPiece.body:getWorldPoints(levelPiece.shape:getPoints()))
+			elseif levelPiece.type_of_object == "bouncyBox" then
 				love.graphics.polygon("fill", levelPiece.body:getWorldPoints(levelPiece.shape:getPoints()))
 			end
 

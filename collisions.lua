@@ -34,9 +34,7 @@ function beginContact(a, b, coll)
 			--If the player isn't catching or reflecting, THEY DEAD			
 			if not playerObject.isCatching and not playerObject.isReflecting and not roundOver then				
 				--Kill the hit player
-				playerObject:die()			
-				--Using this to prevent throwing after "slowmo" kicks in
-				roundOver = true
+				playerObject:die()							
 
 				if ballObject.owner then
 					--Add to the score of the person who threw the ball
@@ -106,9 +104,9 @@ function beginContact(a, b, coll)
 	--Handler for when a player is colliding with a level
 	if colliders.player and colliders.level then
 		local playerObject = colliders.player:getUserData()
-		local levelObject = colliders.level:getUserData()		
+		local levelObject = colliders.level:getUserData()	
 
-		if coll:isTouching() then			
+		if coll:isTouching() and not levelObject.bounciness then --If the player is touching the level			
 			local playerx, playery = playerObject.body:getWorldPoints( playerObject.shape:getPoints() )
 			local levelx, levely = levelObject.body:getWorldPoints( levelObject.shape:getPoints() )
 
@@ -119,6 +117,10 @@ function beginContact(a, b, coll)
 				playerObject.isTouching.level = false
 			end
 
+		elseif coll:isTouching() and levelObject.bounciness then --If there's a bouncy object BOUNCE the thing			
+			local velx, vely = playerObject.body:getLinearVelocity()
+			vely = vely * -1
+			playerObject.body:applyLinearImpulse(0, vely*.12)
 		end
 
 		--If the player is falling really fast - kill them
