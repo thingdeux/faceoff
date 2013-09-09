@@ -1,9 +1,14 @@
 TODO:
-Implement some basic AI
+Create hotfoot game mode
+Create Hotfoot level
 Countdown Clock at start of round
 
+
+
+*PostPonedImplement some basic AI
+
+
 Add networking/dedicated server "support"
-Play with applyangular impulse for balls bouncing on collision - appears to modify momentum
 
 
 Done:

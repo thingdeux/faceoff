@@ -138,7 +138,7 @@ function drawLevel()
 	if current_level then
 		for __, levelPiece in ipairs(current_level) do
 			
-			love.graphics.setColor(color.white)
+			love.graphics.setColor(levelPiece.color)
 			if levelPiece.type_of_object == "rectangle" then
 				love.graphics.polygon("fill", levelPiece.body:getWorldPoints(levelPiece.shape:getPoints()))
 				love.graphics.point(levelPiece.body:getX() + 20, levelPiece.body:getY() - levelPiece.body:getY())
@@ -152,9 +152,7 @@ function drawLevel()
 			local levelx, levely = levelPiece.body:getWorldPoints( levelPiece.shape:getPoints() )
 			love.graphics.setColor(color.red)
 			love.graphics.point(levelx, levely)
-			--]]
-
-			
+			--]]		
 
 		end
 	end

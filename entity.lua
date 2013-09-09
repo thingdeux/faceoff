@@ -74,7 +74,7 @@ Entity = Class{
 				if not self.isAI then								
 					self:controller(velocity_x, velocity_y, self.playerNumber, dt)								
 				else					
-					self:think(dt)					
+					--self:think(dt)					
 				end
 				self.body:setAngle(0)
 			else  --If a player is dead, no control for them!								
@@ -132,10 +132,79 @@ Entity = Class{
 		end
 
 		if self.type == "movingRectangle" then
+
 			if self.direction == "horizontal" then
 				self.body:setLinearVelocity(self.speed, 0)
 			elseif self.direction == "vertical" then
 				self.body:setLinearVelocity(0, self.speed)
+			end
+
+			if self.movementShape then
+				local function pushPlatformInDirection(movedDistance, direction, plane )
+					local velx, vely = self.body:getLinearVelocity()
+
+					if direction < 0 and plane == "y" then  --If this is being used on the y axis
+						self.body:setLinearVelocity(velx, -self.speed)
+						return (movedDistance - self.speed*dt)
+					elseif direction > 0 and plane == "y" then
+						self.body:setLinearVelocity(velx, self.speed)
+						return (movedDistance + self.speed*dt)						
+					end
+
+					if direction < 0 and plane == "x" then --If this is being used on the x axis
+						self.body:setLinearVelocity(-self.speed, vely)						
+						return (movedDistance - self.speed*dt)
+					elseif direction > 0 and plane == "x" then							
+						self.body:setLinearVelocity(self.speed, vely)						
+						return (movedDistance + self.speed*dt)							
+					end
+				end
+
+				local function checkMaxMovement(current, max)					
+					if max > 0 then
+						if current < max then
+							return true
+						else
+							return false
+						end					
+					elseif max < 0 then --If the direction is going to be negative then flip the comparison
+						if current > max then
+							return true
+						else
+							return false
+						end
+					elseif max == 0 then
+						return false
+					end
+				end
+
+				local xReady, yReady = false				
+
+				if checkMaxMovement(self.movedDistance.x, self.movementShape[self.movementShapePosition][1]) then					
+					self.movedDistance.x = pushPlatformInDirection(self.movedDistance.x, self.movementShape[self.movementShapePosition][1], "x")
+				else
+					xReady = true
+				end
+
+				if checkMaxMovement(self.movedDistance.y, self.movementShape[self.movementShapePosition][2]) then
+					self.movedDistance.y = pushPlatformInDirection(self.movedDistance.y, self.movementShape[self.movementShapePosition][2], "y")
+				else
+					yReady = true
+				end				
+
+				if xReady and yReady then
+					self.body:setLinearVelocity(0, 0) --Stop the platform and prepare for new movement
+					if self.movementShapePosition < #self.movementShape then						
+						debugger:insert("Moving up one")					
+						self.movementShapePosition = self.movementShapePosition + 1						
+					else
+						debugger:insert("Starting Over")					
+						self.movementShapePosition = 1
+					end
+					self.movedDistance.x = 0
+					self.movedDistance.y = 0
+				end
+
 			end
 		end
 
@@ -223,7 +292,7 @@ Entity = Class{
 						self.body:applyForce(self.speed, 0)														
 					else
 						--If player is in the air then they can only move themselves at half the speed
-						self.body:applyForce(self.speed/2, 0)						
+						self.body:applyForce(self.speed, 0)						
 					end
 
 					if self.isTouching.level then
@@ -256,7 +325,7 @@ Entity = Class{
 						self.body:applyForce(-self.speed, 0)						
 					else
 						--If player is in the air then they can only move themselves at half the speed						
-						self.body:applyForce(-self.speed/2, 0)						
+						self.body:applyForce(-self.speed, 0)						
 					end
 				end
 

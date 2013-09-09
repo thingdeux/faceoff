@@ -217,7 +217,7 @@ AI = Class{
 						self.body:applyForce(self.speed, 0)													
 					else
 						--If player is in the air then they can only move themselves at half the speed
-						self.body:applyForce(self.speed/2, 0)						
+						self.body:applyForce(self.speed, 0)						
 					end
 				end
 			elseif direction == "Left" then
@@ -233,7 +233,7 @@ AI = Class{
 						self.body:applyForce(-self.speed, 0)														
 					else
 						--If player is in the air then they can only move themselves at half the speed
-						self.body:applyForce(-self.speed/2, 0)						
+						self.body:applyForce(-self.speed, 0)						
 					end
 				end
 

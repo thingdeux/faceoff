@@ -1,7 +1,8 @@
 Level = Class{
-	init = function(self, coords, type_of_object, width, height, direction, speed, isInvisible)
+	init = function(self, coords, type_of_object, width, height, direction, speed)
 		self.type_of_object = type_of_object
-		
+		self.color = color.white
+
 		if self.type_of_object == "rectangle" then
 			self.width = width
 			self.height = height
@@ -38,14 +39,25 @@ Level = Class{
 
 			--Set the level filter mask to 3 so level pieces won't collide with each other
 			self.fixture:setFilterData(3, 3, -3)
-		elseif self.type_of_object == "movingRectangle" then			
+		elseif self.type_of_object == "movingRectangle" then		
 			self.width = width
 			self.height = height
-			self.isInvisible = isInvisible
+
+			--Made up of a table, assumes the 1st segment of the table is the first movement distance
+			--If the table starts off with {-100, 0} then the shape will move exactly 100 pixels up
+			--Then move to the 2nd table element and follow its directions
+			if type(direction) == "table" then			
+				self.movementShapePosition = 1
+				self.movementShape = direction
+				self.movedDistance = {}
+				self.movedDistance.x = 0
+				self.movedDistance.y = 0
+			else
+				self.direction = direction
+			end
 			self.x = coords[1] --Starting X point of the line
 			self.y = coords[2] --Starting Y point of the line
-			self.type = "movingRectangle"
-			self.direction = direction
+			self.type = "movingRectangle"			
 			self.speed = speed
 			self.mass = 10000000
 			self.currentDirection = "right"
@@ -216,6 +228,27 @@ function load_level(name)
 		Level({0, 0}, "rectangle", screenWidth, 10) --Roof		
 		Level({0, 0}, "rectangle", 10, screenHeight) --Left Wall		
 		Level({screenWidth - 10, 0}, "rectangle", 10, screenHeight) --Right Wall
+	elseif name == "Hot Footin' It" then
+		level = {}
+		level.name = name
+		level.spawnerBallCount = 0
+		level.playerBallCount = 10
+		level.spawnPoints = {}
+		level.timer = {}
+
+		table.insert(level.spawnPoints, {["x"] = 10, ["y"] = screenHeight -100, ["name"] = "Bottom Left"})		
+		table.insert(level.spawnPoints, {["x"] = screenWidth - 30, ["y"] = screenHeight -100, ["name"] = "Bottom Right"})
+
+		Level({0, screenHeight - 10}, "rectangle", screenWidth, 10) --Ground		
+		Level({0, 0}, "rectangle", screenWidth, 10) --Roof		
+		Level({0, 0}, "rectangle", 10, screenHeight) --Left Wall		
+		Level({screenWidth - 10, 0}, "rectangle", 10, screenHeight) --Right Wall
+
+		Level({screenWidth/2 - 300, screenHeight/2 + 350}, "movingRectangle", 80, 15, { {0, -400}, 
+																					 {400, 0},
+																				 	 {0, 400},
+																				 	 {-400, 0},
+																							 }, 100)  --Test Hotfoot Platform
 	end
 
 	--Spawn players
