@@ -6,6 +6,7 @@ Entity = Class{
 		--Player Specific Updates
 		if self.type == "player" then
 
+			--if the player falls off of the screen, kill them
 			if self.body:getY() > screenHeight + 50 and not self.isDead then				
 				self:die()
 				roundOver = true
@@ -15,7 +16,7 @@ Entity = Class{
 			self.cursorAngle = math.angle(self.cursor.x,self.cursor.y , self.body:getX(), self.body:getY())
 			
 			--Pass the players x/y velocitdqy to a local variable for checking below		
-			local velocity_x,velocity_y = self.body:getLinearVelocity()
+			local velocity_x,velocity_y = self.body:getLinearVelocity()			
 
 			if velocity_y >= -1 and velocity_y <= 1 and not self.isTouching.level and not self.isJumping then
 				self.isOnGround = true
@@ -242,8 +243,7 @@ Entity = Class{
 			if love.timer.getTime() > level.timer.colorChange then								
 				changePlatformColors()
 				level.timer.colorChange = nil
-			end		
-			
+			end					
 		end
 		
 	end;
@@ -296,7 +296,7 @@ Entity = Class{
 
 			--Controller handler for when the player slides
 			elseif (love.keyboard.isDown("s") and playerNumber =="One") then
-				self.body:applyForce(0, 0)
+				--self.body:setLinearVelocity(0, 0)
 			end
 
 			--Controller handler for when the player presses right
@@ -368,7 +368,8 @@ Entity = Class{
 					self.animations.throw:gotoFrame(1)
 				end
 
-			elseif not self.canThrow and not ( love.joystick.isDown(1,3) or love.joystick.isDown(1,6) ) and (self.playerNumber == "Two") then				
+			elseif not self.canThrow and not ( love.joystick.isDown(1,3) or love.joystick.isDown(1,6) ) and (self.playerNumber == "Two") 
+				and not level.gameType == "Hot Foot" then				
 				self.canThrow = true
 			end
 

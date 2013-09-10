@@ -331,15 +331,6 @@ changePlatformColors = function(self)
 	end
 
 	local function setPlatforms(makeup)
-		debugger:insert("Config: " .. tostring(makeup[1]) .. "," .. tostring(makeup[2]))
-		local function resetPlatforms()
-			for __, platform in ipairs(current_level) do
-				if platform.type == "movingRectangle" then
-					platform.color = color.white
-				end
-			end
-		end
-
 		--Recursive function that finds unused platforms to give color
 		local function findUnusedPlatforms(platformsLeftToActivate, playerNumber, platformsToUse)				
 			local platformsLeft = platformsLeftToActivate
@@ -385,7 +376,7 @@ changePlatformColors = function(self)
 		end
 
 		--Reset each platform to neutral
-		resetPlatforms()
+		resetPlatformColors()
 		if player1Count > 0 then
 			findUnusedPlatforms(player1Count, "One", activePlatformTable)
 		end
@@ -404,4 +395,12 @@ changePlatformColors = function(self)
 	--ex: {2, 1} would be 2 platforms for Player 1, 1 platform for player 2
 	setPlatforms( determinePlatformMakeup() )
 
+end
+
+function resetPlatformColors()
+	for __, platform in ipairs(current_level) do
+		if platform.type == "movingRectangle" then
+			platform.color = color.white
+		end
+	end
 end

@@ -340,7 +340,7 @@ Player = Class{
 		gameSpeed = .3
 		--Using this to prevent throwing after "slowmo" kicks in			
 		roundOver = true
-		
+
 		--Turn off the fixed rotation so the player will spin after they're hit
 		--WEEEEEEEEEEEEEEEEEEEEE
 		self.animations.hit:gotoFrame(1)
@@ -483,6 +483,11 @@ function spawn_players(respawn)
 				player.ballCount = level.playerBallCount
 			else
 				player.ballCount = 5
+			end
+
+			if level.currentPlatformConfiguration then
+				level.currentPlatformConfiguration = 0
+				resetPlatformColors()
 			end
 
 			--If a player has died reset some parameters and let THEM LIVE!

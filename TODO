@@ -2,7 +2,7 @@ TODO:
 Create hotfoot game mode
 Countdown Clock at start of round
 Fix unnecessary bounciness on bounce stuff
-
+Fix wall stickiness (start with collisions line 107)
 
 *PostponedImplement some basic AI
 

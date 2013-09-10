@@ -92,13 +92,11 @@ function beginContact(a, b, coll)
 
 	--Handler for when a player is colliding with a movingRectangle
 	if colliders.player and colliders.movingRectangle then
-		local playerObject = colliders.player:getUserData()
+		local playerObject = colliders.player:getUserData()	
 		
 		if coll:isTouching() then
-			playerObject.isTouching.movingRectangle = true			
-		else
-			playerObject.isTouching.movingRectangle = false
-		end		
+			playerObject.isTouching.movingRectangle = true
+		end
 	end
 
 	--Handler for when a player is colliding with a level
@@ -120,7 +118,7 @@ function beginContact(a, b, coll)
 		elseif coll:isTouching() and levelObject.bounciness then --If there's a bouncy object BOUNCE the thing			
 			local velx, vely = playerObject.body:getLinearVelocity()
 			vely = vely * -1
-			playerObject.body:applyLinearImpulse(0, vely*.12)
+			playerObject.body:applyLinearImpulse(0, vely*.12)			
 		end
 
 		--If the player is falling really fast - kill them
@@ -169,6 +167,10 @@ function endContact(a, b, coll)
 	if colliders.movingRectangle and colliders.player then		
 		local playerObject = colliders.player:getUserData()		
 		playerObject.isTouching.movingRectangle = false
+
+		if level.gameType == "Hot Foot" then			
+			playerObject.canThrow = false
+		end
 	end
 
 	if colliders.player and colliders.level then
@@ -192,9 +194,27 @@ end
 function preSolve(a, b, coll)
 end
 
-function postSolve(a, b, coll)	
-end
+function postSolve(a, b, coll)
+	local colliders = determineCollision(a,b)
+	
+	--Only perform this check if 'Hot Foot' is the game mode	
+	if level.gameType == "Hot Foot" then
+		--Check to see if a player is making contact with a movingRectangle that's their color		
+		if colliders.player and colliders.movingRectangle then
+			local playerObject = colliders.player:getUserData()		
+			local levelObject = colliders.movingRectangle:getUserData()
+			
+			--Allows the player to throw if they're on their color
+			if levelObject.color == playerObject.color then
+				playerObject.canThrow = true				
+			else
+				playerObject.canThrow = false				
+			end
 
+		end
+	end
+
+end
 
 function determineCollision(collider1, collider2, passedLocalVariables)
 	--local ball, ball2, level, level2, movingRectangle,movingRectangle2, player, player2 = false

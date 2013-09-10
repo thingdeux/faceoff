@@ -14,7 +14,7 @@ require("debugger")
 require("objects")
 require("timers")
 
-build = "0.5"
+build = "0.56"
 
 function love.load()
 	--Create a debugger instance
@@ -81,7 +81,7 @@ function love.keyreleased(key)
 	
 	if key == " " then
 		for __, player in ipairs(active_players) do
-			if player.playerNumber == "One" then
+			if player.playerNumber == "One" and not level.gameType == "Hot Foot" then
 				player.canThrow = true
 			end
 		end
@@ -120,7 +120,7 @@ end
 function love.mousereleased(x, y, button)
 	if button == "l" then
 		for __, player in ipairs(active_players) do
-			if player.playerNumber == "One" then
+			if player.playerNumber == "One" and not level.gameType == "Hot Foot" then
 				player.canThrow = true
 			end
 		end
