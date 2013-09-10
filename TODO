@@ -1,11 +1,10 @@
 TODO:
 Create hotfoot game mode
-Create Hotfoot level
 Countdown Clock at start of round
+Fix unnecessary bounciness on bounce stuff
 
 
-
-*PostPonedImplement some basic AI
+*PostponedImplement some basic AI
 
 
 Add networking/dedicated server "support"
@@ -14,7 +13,7 @@ Add networking/dedicated server "support"
 Done:
 ---
 AI now reacts and tries to catch/reflect a ball based on its distance thrownand skill
-
+Create Hotfoot level
 Tweak double jumping
 Player canSeeThe an enemy only if he's facing them.
 Fix running to idle for joysticks

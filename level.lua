@@ -2,6 +2,7 @@ Level = Class{
 	init = function(self, coords, type_of_object, width, height, direction, speed)
 		self.type_of_object = type_of_object
 		self.color = color.white
+		self.timer = {}
 
 		if self.type_of_object == "rectangle" then
 			self.width = width
@@ -51,7 +52,7 @@ Level = Class{
 				self.movementShape = direction
 				self.movedDistance = {}
 				self.movedDistance.x = 0
-				self.movedDistance.y = 0
+				self.movedDistance.y = 0				
 			else
 				self.direction = direction
 			end
@@ -88,7 +89,7 @@ Level = Class{
 			self.x = coords[1] --Starting X point of the line
 			self.y = coords[2] --Starting Y point of the line
 			self.type = "level"
-			self.color = color.red
+			self.color = color.orange
 			self.bounciness = 15
 			
 			--The shape (the rectangle we create next) anchors to the body from its center, so we have to move it to (650/2, 650-50/2)		
@@ -128,6 +129,7 @@ Level = Class{
 		--Flip the speed from positive to negative or vice-versa
 		self.speed = self.speed * -1	
 	end;
+	
 
 }
 
@@ -254,6 +256,13 @@ function load_level(name)
 		level.spawnPoints = {}
 		level.timer = {}
 		level.platformSpeed = 150
+		level.gameType = "Hot Foot"
+		level.platformConfigurations = {
+									{1,1}, {1,1}, {1,0}, {0,1},
+									{2,2}, {2,2}, {0,2}, {2,0},
+									{2,2}, {2,2}, {1,2}, {2,1},
+									{1,2}, {2,1}, {3, 1}, {1, 3}
+									}		
 
 		table.insert(level.spawnPoints, {["x"] = 10, ["y"] = 0, ["name"] = "Bottom Left"})		
 		table.insert(level.spawnPoints, {["x"] = screenWidth - 20, ["y"] = 0, ["name"] = "Bottom Right"})
@@ -306,4 +315,93 @@ function getSpawnPoint(name)
 
 		end
 	end
+end
+
+
+changePlatformColors = function(self)
+	local function determinePlatformMakeup()
+		--If I haven't reached the end of the configuration list
+		if level.currentPlatformConfiguration < #level.platformConfigurations then
+			level.currentPlatformConfiguration = level.currentPlatformConfiguration + 1				
+		else
+			level.currentPlatformConfiguration = 1
+		end
+
+		return (level.platformConfigurations[level.currentPlatformConfiguration])	
+	end
+
+	local function setPlatforms(makeup)
+		debugger:insert("Config: " .. tostring(makeup[1]) .. "," .. tostring(makeup[2]))
+		local function resetPlatforms()
+			for __, platform in ipairs(current_level) do
+				if platform.type == "movingRectangle" then
+					platform.color = color.white
+				end
+			end
+		end
+
+		--Recursive function that finds unused platforms to give color
+		local function findUnusedPlatforms(platformsLeftToActivate, playerNumber, platformsToUse)				
+			local platformsLeft = platformsLeftToActivate
+			local playerIndex = false
+			local platformsToUse = platformsToUse
+			local playerNumber = playerNumber			
+
+			--Get the table reference pointer for the active player number passed in playernumber
+			for __, player in ipairs(active_players) do				
+				if player.playerNumber == playerNumber then					
+					playerIndex = player
+				end
+			end				
+
+			--Get a random number between 1 and the length of the passed active Platforms
+			local randomNumber = ranNum:random(1, #platformsToUse)
+			--Assign that platform a color
+			platformsToUse[randomNumber].color = playerIndex.color
+			--Remove the platform from the active list
+			table.remove(platformsToUse, randomNumber)						
+			
+			--If there's at least 1 more platform left to assign to a player
+			if (platformsLeft - 1) > 0 then
+				--take away from the amount of platforms left and recursively run the function again				
+				platformsLeft = platformsLeft - 1							
+				findUnusedPlatforms(platformsLeft, playerNumber, platformsToUse)
+				
+			else
+				return 0
+			end
+		end
+
+		--Take the amount of colored platforms the chosen player should have
+		player1Count = makeup[1]
+		player2Count = makeup[2]
+		local activePlatformTable = {}					
+
+		--Insert the active platform references into a table
+		for __, level in ipairs(current_level) do
+			if level.type == "movingRectangle" then
+				table.insert(activePlatformTable, level)				
+			end
+		end
+
+		--Reset each platform to neutral
+		resetPlatforms()
+		if player1Count > 0 then
+			findUnusedPlatforms(player1Count, "One", activePlatformTable)
+		end
+
+		if player2Count > 0 then
+			findUnusedPlatforms(player2Count, "Two", activePlatformTable)
+		end
+	end
+
+	--Create the currentPlatformConfiguration variable - hacky...ughs
+	if not level.currentPlatformConfiguration then
+		level.currentPlatformConfiguration = 0
+	end
+	
+	--This will get the current configuration from the level.platformConfigurations table and dole out the color assignments
+	--ex: {2, 1} would be 2 platforms for Player 1, 1 platform for player 2
+	setPlatforms( determinePlatformMakeup() )
+
 end

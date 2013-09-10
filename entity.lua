@@ -128,8 +128,8 @@ Entity = Class{
 
 			--Destroy a ball if it gets accidentally pushed outside of the screen world
 			if not self.isBeingHeld then
-				if (self.body:getX() > screenWidth or self.body:getX() < 0) or
-			   (self.body:getY() > screenHeight or self.body:getY() < 0) then
+				if (self.body:getX() > screenWidth + 40 or self.body:getX() < 0 - 40) or
+			   (self.body:getY() > screenHeight + 40 or self.body:getY() < 0 - 200) then
 
 				self:destroyObject()				
 				end			
@@ -231,6 +231,19 @@ Entity = Class{
 					
 				end				
 			end
+		end
+
+		--If the gametype is hot foot, prepare to start changing platform colors
+		if level.gameType == "Hot Foot" and not level.timer.colorChange then			
+			level.timer.colorChange = love.timer.getTime() + 4			
+
+		elseif level.gameType == "Hot Foot" and level.timer.colorChange then
+			--If the colorChange timer has elapsed then change colors
+			if love.timer.getTime() > level.timer.colorChange then								
+				changePlatformColors()
+				level.timer.colorChange = nil
+			end		
+			
 		end
 		
 	end;

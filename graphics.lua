@@ -223,6 +223,7 @@ function load_colors()
 	color.cyan = {39, 181, 252, 255}
 	color.brightyellow = {255, 255, 158, 255}
 	color.white = {255,255,255,255}
+	color.orange = {255,97,3,255}
 end
 
 
