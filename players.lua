@@ -97,7 +97,24 @@ Player = Class{
 
 		self.type = "player"
 		self.timer = {}
-		self.activeBall = nil		
+		self.activeBall = nil	
+
+		--Create particle emitter
+
+		self.particleSystem = love.graphics.newParticleSystem(string_particle, 1000)
+		self.particleSystem:setEmissionRate(100)
+		self.particleSystem:setSpeed(1, 200)
+		self.particleSystem:setRotation(3.14)
+		--self.particleSystem:setDirection(math.rad(180) )		
+
+		--Makes some variation in size as it emits
+		self.particleSystem:setSizes(4, 2, 1)		
+		self.particleSystem:setColors(self.color[1], self.color[2], self.color[3], self.color[4])	
+		self.particleSystem:setLifetime(1)
+		self.particleSystem:setParticleLife(1)	
+		self.particleSystem:setSpread(2)
+		self.particleSystem:setRadialAcceleration(0)		
+		self.particleSystem:stop()
 
 		self.body = love.physics.newBody(world, self.x, self.y, "dynamic")
 		self.shape = love.physics.newRectangleShape(self.width, self.height)
@@ -251,9 +268,7 @@ Player = Class{
 		elseif self.thumbStickTracker.current.y > 0 and not
 			self:keepCursorNearPlayer(self.body:getX(), self.cursor.y + self.thumbStickTracker.y, "stick", dt) then
 			self.thumbStickTracker.y = self.thumbStickTracker.y + self.cursor.speed*dt
-		end
-		
-				
+		end		
 	end;
 
 	keepCursorNearPlayer = function(self, x, y, controlType, dt)
@@ -437,6 +452,7 @@ Player = Class{
 	setColor = function(self, color)
 		if color then
 			self.color = color
+			self.particleSystem:setColors(self.color[1], self.color[2], self.color[3], self.color[4] - 200)
 		end
 	end;
 }
@@ -519,6 +535,14 @@ function spawn_players(respawn)
 
 	roundOver = true
 	timer:queueBoolean(1.5, "roundOver")
+end
+
+function returnPlayerIndexByNumber(number)
+	for __, player in ipairs(active_players) do
+		if player.playerNumber == number then
+			return player
+		end
+	end
 end
 
 --This is the raycast "handler" or callback function for players

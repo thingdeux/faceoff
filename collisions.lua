@@ -8,8 +8,7 @@ function beginContact(a, b, coll)
 	--The collision function does not easily determine what two things are colliding
 	--This function will make it nice and easy to work with the colliders by giving them
 	--Local variable names by type	
-	local colliders = determineCollision(a,b)
-	
+	local colliders = determineCollision(a,b)	
 	
 	------Player Collision Handlers START--------------------
 
@@ -85,17 +84,16 @@ function beginContact(a, b, coll)
 			--Apply reversed velocity
 			ballBody:applyLinearImpulse(reversedVelocityX, reversedVelocityY)		
 		end
-
 	end
 
 	
 
 	--Handler for when a player is colliding with a movingRectangle
 	if colliders.player and colliders.movingRectangle then
-		local playerObject = colliders.player:getUserData()	
+		local playerObject = colliders.player:getUserData()			
 		
 		if coll:isTouching() then
-			playerObject.isTouching.movingRectangle = true
+			playerObject.isTouching.movingRectangle = true		
 		end
 	end
 
@@ -116,9 +114,12 @@ function beginContact(a, b, coll)
 			end
 
 		elseif coll:isTouching() and levelObject.bounciness then --If there's a bouncy object BOUNCE the thing			
-			local velx, vely = playerObject.body:getLinearVelocity()
-			vely = vely * -1
-			playerObject.body:applyLinearImpulse(0, vely*.12)			
+			local velx, vely = playerObject.body:getLinearVelocity()			
+			
+			if vely > 800 then
+				vely = vely * -1			
+				playerObject.body:applyLinearImpulse(0, vely*.12)
+			end
 		end
 
 		--If the player is falling really fast - kill them
@@ -133,7 +134,6 @@ function beginContact(a, b, coll)
 		end
 
 	end
-
 	-------Player Collision Handlers END--------------------
 
 
@@ -169,7 +169,10 @@ function endContact(a, b, coll)
 		playerObject.isTouching.movingRectangle = false
 
 		if level.gameType == "Hot Foot" then			
-			playerObject.canThrow = false
+			
+			if not playerObject.canThrow then							
+				playerObject.canThrow = false
+			end
 		end
 	end
 
@@ -183,9 +186,7 @@ function endContact(a, b, coll)
 		if levely < (playery + 75) then  --If the top of a level object is lower than the players foot
 			playerObject.isTouching.level = false
 		end
-
-
-		--playerObject.isTouching.level = false
+	
 	end	
 
 	-----------Player Collision Handlers END--------------------

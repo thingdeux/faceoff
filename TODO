@@ -1,17 +1,17 @@
 TODO:
-Create hotfoot game mode
 Countdown Clock at start of round
 Fix unnecessary bounciness on bounce stuff
-Fix wall stickiness (start with collisions line 107)
+Fix wall stickiness
 
 *PostponedImplement some basic AI
-
 
 Add networking/dedicated server "support"
 
 
 Done:
 ---
+Create hotfoot game mode
+Added some Sweet sweet particle effects
 AI now reacts and tries to catch/reflect a ball based on its distance thrownand skill
 Create Hotfoot level
 Tweak double jumping

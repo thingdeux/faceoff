@@ -20,16 +20,18 @@ function love.load()
 	--Create a debugger instance
 	debugger = Debugger()
 	--Create a timer instance (to queue events)
-	timer = Timer()
+	timer = Timer()	
 	--Set gamespeed
 	gameSpeed = 1
 	roundOver = false	
 
 	--Make the mouse go buh bye
 	love.mouse.setVisible(false)
-	love.mouse.setGrab(true)	
+	love.mouse.setGrab(true)
+	load_fonts()
 	load_colors()
 	load_graphics()
+
 	ranNum = mwc(0)
 
 	--This table will hold references to all active tables/things in the game space
@@ -67,11 +69,10 @@ function love.update(dt)
 
 	--Update any timers
 	timer:update()
-
 end
 
 function love.keypressed(key)
-	if key == "q" then
+	if key == "escape" then
 		love.event.push("quit") -- Quit the game
 	end
 end

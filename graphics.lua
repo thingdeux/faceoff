@@ -44,8 +44,6 @@ function drawBalls()
 			end
 		end
 	end
-
-
 end
 
 function drawPlayers()
@@ -118,6 +116,9 @@ function drawPlayers()
 		--love.graphics.point(player.cursor.x, player.cursor.y)
 		--debugger:keepUpdated("Player " .. tostring(player.playerNumber) .. " Knockouts", player.killCount)
 
+		--Draw player Particles	
+		love.graphics.draw(player.particleSystem, 0, 0)
+
 		love.graphics.setColor(player.color)
 		
 		--Draw player body
@@ -126,10 +127,11 @@ function drawPlayers()
 		if player.canSeeTarget then
 			--Draw the cursor
 			love.graphics.draw(cursor_image, player.cursor.x, player.cursor.y, -player.cursorAngle, .7, .7, 10, 5)
-		end
+		end	
 
+		love.graphics.setFont(avengers_font)
 		--Draw text that shows how many balls the player has
-		love.graphics.print("Balls: " .. tostring(player.ballCount), player.body:getX() - 20, player.body:getY() - 55)											
+		love.graphics.print("Balls: " .. tostring(player.ballCount), player.body:getX() - 20, player.body:getY() - 65)											
 	end
 end
 
@@ -162,8 +164,17 @@ function drawLevel()
 
 end
 
-function drawBackground()
-	
+function drawBackground()	
+	--Draw score
+	love.graphics.setColor(color.orange)
+	love.graphics.setFont(scoreboard_font)
+	love.graphics.print("Player 1", 200, 40)
+	local p1 = returnPlayerIndexByNumber("One")
+	love.graphics.print(p1.killCount, 270, 80)
+
+	local p2 = returnPlayerIndexByNumber("Two")
+	love.graphics.print(p2.killCount, 970, 80)
+	love.graphics.print("Player 2", 900, 40)
 
 end
 
@@ -185,6 +196,7 @@ end
 
 function load_graphics()
 	ball_sheet = love.graphics.newImage("/assets/ball.png")
+	string_particle = love.graphics.newImage("/assets/stringParticle.png")
 	bottom_squish = love.graphics.newQuad(0, 0, 20, 20, 64, 64)
 	top_squish = love.graphics.newQuad(20, 40, 20, 20, 64, 64)
 	fast_horizontal = love.graphics.newQuad(20, 0, 20, 20, 64, 64)
@@ -224,16 +236,25 @@ function load_colors()
 	color.brightyellow = {255, 255, 158, 255}
 	color.white = {255,255,255,255}
 	color.orange = {255,97,3,255}
+	color.black = {0,0,0,255}
 end
 
 
 function drawBuild()
 	local xLocation = screenWidth - 300
 
+	love.graphics.setColor(color.black)	
+	--love.graphics.print("Enable a 360 controller for 2 player Mode.", xLocation, 10 )	
+	--love.graphics.print("LB to Jump, RB to throw", xLocation, 20 )
+	love.graphics.setFont(avengers_font_smaller)
+	love.graphics.print("Prototype Build: " .. tostring(build), 0, screenHeight - 10 )
 	love.graphics.setColor(color.red)	
-	love.graphics.print("Enable a 360 controller for 2 player Mode.", xLocation, 10 )	
-	love.graphics.print("LB to Jump, RB to throw", xLocation, 20 )
+	love.graphics.setFont(avengers_font)
+	love.graphics.print("FPS: " .. tostring(love.timer.getFPS()), screenWidth - 75, screenHeight - 30)
+end
 
-	love.graphics.print("Prototype Build: " .. tostring(build), 0, screenHeight - 12 )
-	love.graphics.print("FPS: " .. tostring(love.timer.getFPS()), 20, 0)
+function load_fonts()
+	scoreboard_font = love.graphics.newFont("/assets/fonts/scoreboard.ttf", 40)
+	avengers_font = love.graphics.newFont("/assets/fonts/avengers.ttf", 25)
+	avengers_font_smaller = love.graphics.newFont("/assets/fonts/avengers.ttf", 15)
 end

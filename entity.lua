@@ -2,15 +2,10 @@ Entity = Class{
 
 	update = function(self, dt)
 		
-
 		--Player Specific Updates
 		if self.type == "player" then
-
-			--if the player falls off of the screen, kill them
-			if self.body:getY() > screenHeight + 50 and not self.isDead then				
-				self:die()
-				roundOver = true
-			end
+			--debugger:keepUpdated("Active", self.particleSystem:isActive())
+			--debugger:keepUpdated("Particles", self.particleSystem:count())
 			--Get the angle for the cursor, so it rotates			
 			self:determineThrowingAngle()
 			self.cursorAngle = math.angle(self.cursor.x,self.cursor.y , self.body:getX(), self.body:getY())
@@ -52,6 +47,19 @@ Entity = Class{
 				--self.isFallingTooFast = true
 			end
 
+			--Move particle emitter with player
+			if level.gameType == "Hot Foot" and self.canThrow then
+				if self.killCount > 9 then
+					self.roundOver = true
+					self.gameOver = true
+				end				
+				self.particleSystem:setPosition(self.body:getX(), self.body:getY())
+				self.particleSystem:setDirection(self.cursorAngle)
+				self.particleSystem:start()
+			elseif level.gameType == "Hot Foot" and not self.canThrow then
+				self.particleSystem:stop()
+			end
+
 			if self.isJumping then
 				if not self.timer.jumping then
 					self.timer.jumping = love.timer.getTime() + gameSpeed*self.jumpDelay
@@ -62,7 +70,7 @@ Entity = Class{
 					end
 				end
 
-			end
+			end			
 
 			if self.isThrowing or self.timer.recentlyThrownBall then
 				self:throw(dt) --Throw has to come before animate												
@@ -73,6 +81,12 @@ Entity = Class{
 			elseif self.isReflecting then
 				self:reflect(dt)
 			end	
+
+			--if the player falls off of the screen, kill them
+			if self.body:getY() > screenHeight + 50 and not self.isDead then				
+				self:die()
+				roundOver = true
+			end
 						
 			--If the player isn't dead allow control
 			--This should remain at the very end of the player update loop
@@ -424,7 +438,10 @@ Entity = Class{
 
 		for __, animation in pairs(self.animations) do
 			animation:update(dt)
-		end							
+		end
+
+		--Updated particles
+		self.particleSystem:update(dt)		
 	end;
 
 	destroyObject = function(self)
