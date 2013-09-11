@@ -13,7 +13,7 @@ Entity = Class{
 			local velocity_x,velocity_y = self.body:getLinearVelocity()			
 
 			if self.playerNumber == "One" then
-				debugger:keepUpdated("Vely", velocity_y)
+				--debugger:keepUpdated("Vely", velocity_y)
 			end
 
 			if velocity_y >= -1 and velocity_y <= 1 and not self.isTouching.level and not self.isJumping then
@@ -262,6 +262,13 @@ Entity = Class{
 				level.timer.colorChange = nil
 			end					
 		end
+
+		--Checks to see if there is a roundstart level timer (used for animating round starts)
+		if level.timer.roundStart then
+			if love.timer.getTime() > level.timer.roundStart then
+				level.timer.roundStart = nil
+			end
+		end
 		
 	end;
 
@@ -408,9 +415,11 @@ Entity = Class{
 					self.animations.throw:gotoFrame(1)
 				end
 
-			elseif not self.canThrow and not ( love.joystick.isDown(1,3) or love.joystick.isDown(1,6) ) and (self.playerNumber == "Two") 
-				and not level.gameType == "Hot Foot" then				
-				self.canThrow = true
+			elseif not self.canThrow and not ( love.joystick.isDown(1,3) or love.joystick.isDown(1,6) ) and (self.playerNumber == "Two") then
+				
+				if not level.gameType then					
+					self.canThrow = true
+				end
 			end
 
 

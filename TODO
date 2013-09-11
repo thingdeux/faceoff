@@ -1,15 +1,18 @@
 TODO:
-Fix wall stickiness
-Countdown Clock at start of round
+Wall stickiness tweaks on 'small level overhangs' and thin walls
+
+
 *Postponed: Implement some basic AI
 Add networking/dedicated server "support"
 
 
 Done:
 ---
+Fix wall stickiness
 Fix unnecessary bounciness on bounce stuff
 Create hotfoot game mode
 Added some Sweet sweet particle effects
+Countdown Clock at start of round
 AI now reacts and tries to catch/reflect a ball based on its distance thrownand skill
 Create Hotfoot level
 Tweak double jumping

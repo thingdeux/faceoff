@@ -532,15 +532,15 @@ function spawn_players(respawn)
 
 			--Give the player a lil' shove downwards so they fall after spawn
 			player.body:applyLinearImpulse(0,1)			
-		end		
+		end
 
-		gameSpeed = 1
-		roundOver = false
+		gameSpeed = 1		
 	end
 
 	--Starts the round after a brief wait
 	roundOver = true
-	timer:queueBoolean(1.5, "roundOver")
+	timer:queueBoolean(3, "roundOver")		
+	level.timer.roundStart = love.timer.getTime() + 3
 end
 
 function returnPlayerIndexByNumber(number)
@@ -589,4 +589,14 @@ function worldRayCastCallback(fixture, x, y, xn, yn, fraction)
 	end
 
 	return 1
+end
+
+function checkIfAPlayerIsDead()
+	for __, player in ipairs(active_players) do
+		if player.isDead then
+			return true
+		end
+	end	
+
+	return false	
 end

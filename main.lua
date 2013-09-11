@@ -55,7 +55,6 @@ end
 
 
 function love.update(dt)	
-
 	--Update the physics world
 	world:update(dt*gameSpeed)	
 
@@ -82,8 +81,8 @@ function love.keyreleased(key)
 	
 	if key == " " then
 		for __, player in ipairs(active_players) do
-			if player.playerNumber == "One" and not level.gameType == "Hot Foot" then
-				player.canThrow = true
+			if player.playerNumber == "One" and not level.gameType then								
+				player.canThrow = true				
 			end
 		end
 	end
@@ -121,7 +120,7 @@ end
 function love.mousereleased(x, y, button)
 	if button == "l" then
 		for __, player in ipairs(active_players) do
-			if player.playerNumber == "One" and not level.gameType == "Hot Foot" then
+			if player.playerNumber == "One" and not level.gameType then
 				player.canThrow = true
 			end
 		end

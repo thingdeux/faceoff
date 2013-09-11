@@ -264,13 +264,13 @@ function load_level(name)
 									{1,2}, {2,1}, {3, 1}, {1, 3}
 									}		
 
-		table.insert(level.spawnPoints, {["x"] = 10, ["y"] = 0, ["name"] = "Bottom Left"})		
+		table.insert(level.spawnPoints, {["x"] = 25, ["y"] = 0, ["name"] = "Bottom Left"})		
 		table.insert(level.spawnPoints, {["x"] = screenWidth - 20, ["y"] = 0, ["name"] = "Bottom Right"})
 
 		--Level({0, screenHeight - 10}, "rectangle", screenWidth, 10) --Ground		
-		--Level({0, 0}, "rectangle", screenWidth, 10) --Roof		
-		Level({0, 0}, "rectangle", 10, screenHeight) --Left Wall		
-		Level({screenWidth - 10, 0}, "rectangle", 10, screenHeight) --Right Wall
+		Level({0, -150}, "rectangle", screenWidth, 10) --Roof		
+		Level({0, -150}, "rectangle", 10, screenHeight + 150) --Left Wall		
+		Level({screenWidth - 10, -150}, "rectangle", 10, screenHeight + 150) --Right Wall
 
 		Level({0, 70}, "rectangle", 50, 10) --P1 Diving Board (left)
 		Level({screenWidth - 50, 70}, "rectangle", 50, 10) --P2 Diving Board (right)
@@ -303,7 +303,7 @@ function load_level(name)
 
 		Level({10.40, screenHeight - 10}, "bouncyBox", screenWidth - 20, 10)
 	end
-
+	
 	--Spawn players
 	spawn_players()
 end

@@ -127,11 +127,12 @@ function drawPlayers()
 		if player.canSeeTarget then
 			--Draw the cursor
 			love.graphics.draw(cursor_image, player.cursor.x, player.cursor.y, -player.cursorAngle, .7, .7, 10, 5)
-		end	
+		end			
 
 		love.graphics.setFont(avengers_font)
 		--Draw text that shows how many balls the player has
-		love.graphics.print("Balls: " .. tostring(player.ballCount), player.body:getX() - 20, player.body:getY() - 65)											
+		love.graphics.print("Balls: " .. tostring(player.ballCount), player.body:getX() - 20, player.body:getY() - 65)		
+
 	end
 end
 
@@ -176,6 +177,10 @@ function drawBackground()
 	love.graphics.print(p2.killCount, 970, 80)
 	love.graphics.print("Player 2", 900, 40)
 
+
+	if roundOver and level.timer.roundStart then
+		love.graphics.print("Round Starting in: " .. tostring(math.floor(level.timer.roundStart - love.timer.getTime() ) + 1 ), screenWidth/2- 200, screenHeight/2)
+	end
 end
 
 function drawDebugInfo()
