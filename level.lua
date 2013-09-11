@@ -277,25 +277,25 @@ function load_level(name)
 
 
 		--Moving Platform that starts at bottom left and moves clockwise
-		Level({screenWidth/2 - 400, screenHeight/2 + 350}, "movingRectangle", 80, 15, { {0, -600}, 
+		Level({screenWidth/2 - 375, screenHeight/2 + 350}, "movingRectangle", 80, 15, { {0, -600}, 
 																					 {640, 0},
 																				 	 {0, 600},
 																				 	 {-640, 0},
 																							 }, level.platformSpeed)
 		--Moving Platform that starts at top left and moves in an clockwise
-		Level({screenWidth/2 - 400, screenHeight - 740}, "movingRectangle", 80, 15, { {640, 0}, 
+		Level({screenWidth/2 - 375, screenHeight - 740}, "movingRectangle", 80, 15, { {640, 0}, 
 																					 {0, 600},
 																				 	 {-640, 0},
 																				 	 {0, -600},
 																							 }, level.platformSpeed)
 		--Moving Platform that starts at top right and moves in an clockwise
-		Level({screenWidth/2 + 200, screenHeight - 740}, "movingRectangle", 80, 15, { {0, 600}, 
+		Level({screenWidth/2 + 225, screenHeight - 740}, "movingRectangle", 80, 15, { {0, 600}, 
 																					 {-640, 0},
 																				 	 {0, -600},
 																				 	 {640, 0},
 																							 }, level.platformSpeed)
 		--Moving Platform that starts at bottom right and moves in an clockwise
-		Level({screenWidth/2 + 200, screenHeight/2 + 350}, "movingRectangle", 80, 15, { {-640, 0}, 
+		Level({screenWidth/2 + 225, screenHeight/2 + 350}, "movingRectangle", 80, 15, { {-640, 0}, 
 																					 {0, -600},
 																				 	 {640, 0},
 																				 	 {0, 600},

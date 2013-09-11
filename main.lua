@@ -153,8 +153,7 @@ function love.draw()
 	drawLevel()
 	drawPlayers()
 	drawBalls()	
-	drawDebugInfo()
-	drawBuild()
+	drawDebugInfo()	
 end
 
 

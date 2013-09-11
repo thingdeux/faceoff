@@ -179,6 +179,7 @@ function drawBackground()
 end
 
 function drawDebugInfo()
+	love.graphics.setFont(avengers_font_smaller)
 	love.graphics.setColor(color.red)
 	local position = 10
 	for __, info in pairs(active_debugging_text) do
@@ -192,6 +193,21 @@ function drawDebugInfo()
 		love.graphics.print(tostring(varName) .. ": " .. tostring(text), 720, updated_position) --Should be 400
 		updated_position = updated_position + 10
 	end
+
+	
+	--Draw FPS
+	love.graphics.setColor(color.red)	
+	love.graphics.setFont(avengers_font)
+	love.graphics.print("FPS: " .. tostring(love.timer.getFPS()), screenWidth - 75, screenHeight - 30)
+
+
+	local xLocation = screenWidth - 300
+	--Build Info
+	love.graphics.setColor(color.black)	
+	--love.graphics.print("Enable a 360 controller for 2 player Mode.", xLocation, 10 )	
+	--love.graphics.print("LB to Jump, RB to throw", xLocation, 20 )
+	love.graphics.setFont(avengers_font_smaller)
+	love.graphics.print("Prototype Build: " .. tostring(build), 0, screenHeight - 10 )	
 end
 
 function load_graphics()
@@ -241,16 +257,7 @@ end
 
 
 function drawBuild()
-	local xLocation = screenWidth - 300
-
-	love.graphics.setColor(color.black)	
-	--love.graphics.print("Enable a 360 controller for 2 player Mode.", xLocation, 10 )	
-	--love.graphics.print("LB to Jump, RB to throw", xLocation, 20 )
-	love.graphics.setFont(avengers_font_smaller)
-	love.graphics.print("Prototype Build: " .. tostring(build), 0, screenHeight - 10 )
-	love.graphics.setColor(color.red)	
-	love.graphics.setFont(avengers_font)
-	love.graphics.print("FPS: " .. tostring(love.timer.getFPS()), screenWidth - 75, screenHeight - 30)
+	
 end
 
 function load_fonts()

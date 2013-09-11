@@ -3,15 +3,18 @@ Entity = Class{
 	update = function(self, dt)
 		
 		--Player Specific Updates
-		if self.type == "player" then
-			--debugger:keepUpdated("Active", self.particleSystem:isActive())
-			--debugger:keepUpdated("Particles", self.particleSystem:count())
+		if self.type == "player" then			
+			
 			--Get the angle for the cursor, so it rotates			
 			self:determineThrowingAngle()
 			self.cursorAngle = math.angle(self.cursor.x,self.cursor.y , self.body:getX(), self.body:getY())
 			
 			--Pass the players x/y velocitdqy to a local variable for checking below		
 			local velocity_x,velocity_y = self.body:getLinearVelocity()			
+
+			if self.playerNumber == "One" then
+				debugger:keepUpdated("Vely", velocity_y)
+			end
 
 			if velocity_y >= -1 and velocity_y <= 1 and not self.isTouching.level and not self.isJumping then
 				self.isOnGround = true
@@ -264,9 +267,32 @@ Entity = Class{
 
 	controller = function(self, velocity_x, velocity_y, playerNumber, dt)
 		if self.type == "player" then	
+			local function movePlayerLeftorRight(self, direction)
+				local speed = self.speed				
+				if direction == "Right" then					
+					if velocity_x < self.maxSpeed then						
+						if self.isOnGround then
+							self.isRunning = true						
+							self.body:applyForce(speed, 0)						
+						else
+							--If player is in the air then they can only move themselves at half the speed
+							self.body:applyForce(speed*self.airControl, 0)						
+						end
+					end
 
-			if love.keyboard.isDown("f") then
-				self.throwForce.speedModifier = 50
+				elseif direction == "Left" then
+					speed = self.speed*-1
+					
+					if velocity_x > -self.maxSpeed then
+						if self.isOnGround then
+							self.isRunning = true						
+							self.body:applyForce(speed, 0)						
+						else
+							--If player is in the air then they can only move themselves at half the speed
+							self.body:applyForce(speed*self.airControl, 0)						
+						end
+					end
+				end			
 			end
 
 			--Controller handler for when the player jumps
@@ -323,17 +349,16 @@ Entity = Class{
 			   		self:flipAnimations()
 			   	end
 
-				if velocity_x < self.maxSpeed then
-					if self.isOnGround then
-						self.isRunning = true
-						self.body:applyForce(self.speed, 0)														
-					else
-						--If player is in the air then they can only move themselves at half the speed
-						self.body:applyForce(self.speed, 0)						
-					end
+			   	--If the player isn't touching a wall
+			   	if not self.isTouching.level then
+					movePlayerLeftorRight(self, "Right")
+				elseif self.isTouching.level and self.isTouching.levelLeft then
+					movePlayerLeftorRight(self, "Right")
 
-					if self.isTouching.level then
-						self.body:applyForce(0, 75)						
+				--Player is sliding on the right wall if they are pushing right and touching a right wall
+				elseif self.isTouching.level and self.isTouching.levelRight and not self.isOnGround then
+					if velocity_y > self.wallSlideSpeed then --I want the player to slide down the wall at at least this speed						
+						self.body:applyForce(0, self.wallSlideStoppingForce)
 					end
 				end
 
@@ -356,19 +381,20 @@ Entity = Class{
 			   		self:flipAnimations()
 			   	end
 
-				if velocity_x > -self.maxSpeed then
-					if self.isOnGround then
-						self.isRunning = true
-						self.body:applyForce(-self.speed, 0)						
-					else
-						--If player is in the air then they can only move themselves at half the speed						
-						self.body:applyForce(-self.speed, 0)						
+			   	if not self.isTouching.level then
+					movePlayerLeftorRight(self, "Left")
+				elseif self.isTouching.level and self.isTouching.levelRight then
+					movePlayerLeftorRight(self, "Left")
+
+				--Player is sliding on the left wall if they are pushing left and touching a left wall
+				elseif self.isTouching.level and self.isTouching.levelLeft and not self.isOnGround then
+					if velocity_y > 0 then --Prevents the player from sliding up the wall						
+						if velocity_y > self.wallSlideSpeed then
+							self.body:applyForce(0, self.wallSlideStoppingForce)
+						end
 					end
 				end
-
-				if self.isTouching.level then
-					self.body:applyForce(0, 75)					
-				end
+				
 			end			
 
 			--Controller handler for when the player presses the throw button

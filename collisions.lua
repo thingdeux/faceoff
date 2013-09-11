@@ -106,11 +106,19 @@ function beginContact(a, b, coll)
 			local playerx, playery = playerObject.body:getWorldPoints( playerObject.shape:getPoints() )
 			local levelx, levely = levelObject.body:getWorldPoints( levelObject.shape:getPoints() )
 
+
 			--This prevents the level touch flag from being triggered by the ground beneath the players feet
-			if levely < (playery + 75) then  --If the top of a level object is above a players foot
+			if levely < (playery + 75) then  --If the top of a level object is above a players foot				
 				playerObject.isTouching.level = true
+				--Set whether the player is touching a left wall or a right wall
+				if levelx < playerx then
+					playerObject.isTouching.levelLeft = true
+				else
+					playerObject.isTouching.levelRight = true
+				end
+
 			elseif levely > (playery + 75) then  --If the top of a level object is lower than the players foot
-				playerObject.isTouching.level = false
+				playerObject.isTouching.level = false			
 			end
 
 		elseif coll:isTouching() and levelObject.bounciness then --If there's a bouncy object BOUNCE the thing			
@@ -185,6 +193,8 @@ function endContact(a, b, coll)
 		--This prevents the level touch flag from being triggered by the ground beneath the players feet		
 		if levely < (playery + 75) then  --If the top of a level object is lower than the players foot
 			playerObject.isTouching.level = false
+			playerObject.isTouching.levelLeft = false			
+			playerObject.isTouching.levelRight = false
 		end
 	
 	end	

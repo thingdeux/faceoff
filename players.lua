@@ -23,6 +23,9 @@ Player = Class{
 
 		self.color = color.white
 		self.weight = .1
+		self.airControl = 0.75
+		self.wallSlideSpeed = 200
+		self.wallSlideStoppingForce = -75
 		self.catchDuration = .4
 		self.reflectDuration = .5
 		self.jumpDelay = 1
@@ -485,14 +488,13 @@ function spawn_players(respawn)
 	else
 		--Destroy all active balls		
 		destroyAllBalls(active_balls, active_entities)	
-
-		if active_spawners then
-			--Reset the spawners
+		--Reset the spawners
+		if active_spawners then			
 			for __, spawner in ipairs(active_spawners) do
 				spawner:setSpawnerAmmo(level.spawnerBallCount)
 			end
 		end
-
+		--Reset player info
 		for __, player in pairs(active_players) do
 			--Set the number of balls the players respawn with
 			if level.playerBallCount then
@@ -501,9 +503,12 @@ function spawn_players(respawn)
 				player.ballCount = 5
 			end
 
-			if level.currentPlatformConfiguration then
-				level.currentPlatformConfiguration = 0
-				resetPlatformColors()
+			if level.gameType == "Hot Foot" then
+				--reset the platform configuration (if playing on hot foot)
+				if level.currentPlatformConfiguration then
+					level.currentPlatformConfiguration = 0
+					resetPlatformColors()
+				end
 			end
 
 			--If a player has died reset some parameters and let THEM LIVE!
@@ -533,6 +538,7 @@ function spawn_players(respawn)
 		roundOver = false
 	end
 
+	--Starts the round after a brief wait
 	roundOver = true
 	timer:queueBoolean(1.5, "roundOver")
 end
