@@ -236,18 +236,21 @@ Entity = Class{
 			end
 		end
 
-		if self.type == "object" then			
-			if not self.timer.spawnTimer then								
-				self.timer.spawnTimer = self.timer.spawnTimer + self.spawnRate				
-			else 
-				if love.timer.getTime() > self.timer.spawnTimer then
-					if self.ammoLeft > 0 then
-						self:spawnBall()																	
-						self.ammoLeft = self.ammoLeft - 1
-						self.timer.spawnTimer = self.timer.spawnTimer + self.spawnRate
-					end
-					
-				end				
+		if self.type == "object" then
+			if self.isSpawner then		
+				if not self.timer.spawnTimer then				
+					self.timer.spawnTimer = self.timer.spawnTimer + self.spawnRate			
+				else 
+					if love.timer.getTime() > self.timer.spawnTimer then					
+						if self.type_of_object == "spawner" then
+							self:spawnBall()																								
+							self.timer.spawnTimer = self.timer.spawnTimer + self.spawnRate
+						elseif self.type_of_object == "oil trap" then
+							self:spawnOil()
+							self.timer.spawnTimer = self.timer.spawnTimer + self.spawnRate
+						end										
+					end				
+				end
 			end
 		end
 

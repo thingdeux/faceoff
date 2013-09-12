@@ -14,7 +14,7 @@ require("debugger")
 require("objects")
 require("timers")
 
-build = "0.56"
+build = "0.57"
 
 function love.load()
 	--Create a debugger instance
@@ -22,7 +22,7 @@ function love.load()
 	--Create a timer instance (to queue events)
 	timer = Timer()	
 	--Set gamespeed
-	gameSpeed = 1
+	gameSpeed = .1
 	roundOver = false	
 
 	--Make the mouse go buh bye
@@ -49,7 +49,7 @@ function love.load()
 	love.graphics.setPointSize(2)
 
 	--Load level
-	load_level("Hot Footin' It")		
+	load_level("Four Walls All Balls")		
 end
 
 
@@ -150,8 +150,8 @@ function love.draw()
 	--love.graphics.scale(.9, .9)
 	drawBackground()
 	drawLevel()
-	drawPlayers()
-	drawBalls()	
+	drawPlayers()	
+	drawObjects()	
 	drawDebugInfo()	
 end
 

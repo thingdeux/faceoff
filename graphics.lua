@@ -1,4 +1,4 @@
-function drawBalls()
+function drawObjects()
 	love.graphics.setColor(255,255,255,255)
 
 	local function chooseAnimation(ball)
@@ -20,8 +20,7 @@ function drawBalls()
 		end
 	end
 
-
-
+	--Draw balls
 	if active_balls then
 		
 		for __, ball in ipairs(active_balls) do
@@ -42,6 +41,24 @@ function drawBalls()
 				chooseAnimation(ball)
 				
 			end
+		end
+	end
+
+	if active_traps then
+			
+		for __, trap in ipairs(active_traps) do
+			for __, joint in ipairs(trap.oilJoints) do
+				love.graphics.setColor(color.red)
+				--love.graphics.line(joint:getAnchors())
+			end
+
+			love.graphics.setColor(color.white)
+			for __, oilPoint in ipairs(trap.oilBlobPoints) do								
+				love.graphics.drawq(oil_sheet, no_squish, oilPoint.body:getX(), oilPoint.body:getY(), oilPoint.body:getAngle(), .65, .65, 10, 10)
+				--love.graphics.circle("fill", oilPoint.body:getX(), oilPoint.body:getY(), oilPoint.shape:getRadius())
+				--love.graphics.draw(oil_image, oilPoint.body:getX(), oilPoint.body:getY(), oilPoint.body:getAngle(), 20, 20, 0, 0)								
+			end
+			
 		end
 	end
 end
@@ -217,16 +234,18 @@ end
 
 function load_graphics()
 	ball_sheet = love.graphics.newImage("/assets/ball.png")
+	oil_sheet = love.graphics.newImage("/assets/oil.png")	
 	string_particle = love.graphics.newImage("/assets/stringParticle.png")
+	
 	bottom_squish = love.graphics.newQuad(0, 0, 20, 20, 64, 64)
 	top_squish = love.graphics.newQuad(20, 40, 20, 20, 64, 64)
 	fast_horizontal = love.graphics.newQuad(20, 0, 20, 20, 64, 64)
 	fast_vertical = love.graphics.newQuad(40, 0, 20, 20, 64, 64)
 	left_squish = love.graphics.newQuad(0, 20, 20, 20, 64, 64)
 	right_squish = love.graphics.newQuad(20, 20, 20, 20, 64, 64)
-	no_squish = love.graphics.newQuad(0, 40, 20, 20, 64, 64)
-
+	no_squish = love.graphics.newQuad(0, 40, 20, 20, 64, 64)	
 	cursor_image = love.graphics.newImage("/assets/cursor.png")
+
 
 
 	--stationary = love.graphics.newQuad(0,0, 99, 110, 1024, 512)
@@ -263,6 +282,9 @@ end
 
 function drawBuild()
 	
+end
+
+function drawTraps()
 end
 
 function load_fonts()

@@ -231,7 +231,7 @@ function determineCollision(collider1, collider2, passedLocalVariables)
 	--local ball, ball2, level, level2, movingRectangle,movingRectangle2, player, player2 = false
 	--local colliderName1 = collider1:getUserData()
 	--local colliderName2 = collider2:getUserData()
-	local returnedTable = {}
+	local returnedTable = {}	
 
 	local function classifyType(collider)
 		local colliderName = collider:getUserData()		
@@ -261,6 +261,12 @@ function determineCollision(collider1, collider2, passedLocalVariables)
 			else
 				returnedTable["player2"] = collider
 			end
+		elseif colliderName.type == "oil" then
+			if not returnedTable.player then
+				returnedTable["oil"] = collider
+			else
+				returnedTable["oil2"] = collider
+			end
 		end
 	end
 	
@@ -268,5 +274,4 @@ function determineCollision(collider1, collider2, passedLocalVariables)
 	classifyType(collider2)
 		
 	return ( returnedTable )
-
 end
