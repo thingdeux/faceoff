@@ -6,6 +6,15 @@ Object = Class{
 		self.type_of_object = type_of_object
 		self.timer = {}		
 
+		if not totalObjectsSpawned then
+			totalObjectsSpawned = 1
+		else
+			totalObjectsSpawned = totalObjectsSpawned + 1
+		end
+
+		--Assign the object an ID (for use in deletion)
+		self.id = totalObjectsSpawned
+
 		if self.type_of_object == "spawner" then
 			self.isSpawner = true
 			self.ammoLeft = 0
@@ -40,6 +49,7 @@ Object = Class{
 				local point = {}
 				point.type = "oil"
 				point.isOilBlob = true
+				point.isActive = true
 				point.body = love.physics.newBody(world, x, y, "dynamic")
 				if size then			
 					point.shape = love.physics.newCircleShape(size)  --Ball shape has a radius of 3
@@ -76,7 +86,7 @@ Object = Class{
 															                       previousPoint.body:getX(), previousPoint.body:getY(), true)
 						joint:setDampingRatio(self.parameters.dampingRatio)
 						joint:setFrequency(self.parameters.frequencyHz)
-						joint:setLength(self.parameters.Length)
+						joint:setLength(self.parameters.Length)						
 
 						--Insert the current joint into the oilJoints table
 						table.insert(self.oilJoints, joint)
@@ -87,7 +97,7 @@ Object = Class{
 															                       primePoint.body:getX(), primePoint.body:getY(), true)
 						joint:setDampingRatio(self.parameters.dampingRatio)
 						joint:setFrequency(self.parameters.frequencyHz)
-						joint:setLength(self.parameters.Length)
+						joint:setLength(self.parameters.Length)						
 						--Insert the current joint into the oilJoints table
 						table.insert(self.oilJoints, joint)
 
@@ -98,7 +108,7 @@ Object = Class{
 															                       primePoint.body:getX(), primePoint.body:getY(), false)
 							joint:setDampingRatio(self.parameters.dampingRatio)
 							joint:setFrequency(self.parameters.frequencyHz)
-							joint:setLength(self.parameters.Length)
+							joint:setLength(self.parameters.Length)							
 							
 							--Insert the current joint into the oilJoints table
 							table.insert(self.oilJoints, joint)
@@ -113,6 +123,10 @@ Object = Class{
 			end
 
 			self.type = "oil"
+			self.isOil = true
+			self.isActive = true
+			self.drawJoints = true
+			self.drawPoints = true
 			self.oilPattern = {
 								{["x"] = self.x, ["y"] = self.y},
 
@@ -172,8 +186,6 @@ Object = Class{
 		end
 
 		table.insert(active_entities, self)
-
-
 	end;
 
 

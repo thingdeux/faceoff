@@ -248,18 +248,15 @@ function load_level(name)
 		Level({0, 0}, "rectangle", screenWidth, 10) --Roof		
 		Level({0, 0}, "rectangle", 10, screenHeight) --Left Wall		
 		Level({screenWidth - 10, 0}, "rectangle", 10, screenHeight) --Right Wall
-
-		--Level({screenWidth/2 - 100, screenHeight - 200}, "rectangle", 120, 10) --Ground
-		--Level({screenWidth/2, screenHeight - 300}, "rectangle", 20, 10) --Ground
-		--Level({screenWidth/2, screenHeight/2 + 150}, "movingRectangle", 50, 10, "vertical", 100)  --Left Elevator
-		Level({screenWidth/2, screenHeight/2 + 250}, "movingRectangle", 200, 15, "horizontal", 200)  --Left Elevator
-		Level({screenWidth/2 - 300, screenHeight/2-100}, "movingRectangle", 200, 15, "horizontal", 200)  --Left Elevator
-		Level({screenWidth/2 - 200, screenHeight/2 - 50}, "movingRectangle", 200, 15, "horizontal", 200)  --Left Elevator
-		Level({screenWidth/2 - 50, screenHeight/2}, "movingRectangle", 200, 15, "horizontal", 200)  --Left Elevator
+		
+		Level({screenWidth/2, screenHeight/2 + 250}, "movingRectangle", 200, 15, "horizontal", 200) 
+		Level({screenWidth/2 - 300, screenHeight/2-100}, "movingRectangle", 200, 15, "horizontal", 200) 
+		Level({screenWidth/2 - 200, screenHeight/2 - 50}, "movingRectangle", 200, 15, "horizontal", 200)  
+		Level({screenWidth/2 - 50, screenHeight/2}, "movingRectangle", 200, 15, "horizontal", 200)  
 
 		local oily = Object({screenWidth/2, screenHeight/2 - 200}, "oil trap")
-		oily:setSpawnRate(1)
-		oily:setSpawnerAmmo(60)		
+		oily:setSpawnRate(6)
+		oily:setSpawnerAmmo(15)		
 	elseif name == "Hot Footin' It" then
 		level = {}
 		level.name = name

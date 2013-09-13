@@ -51,18 +51,23 @@ function drawObjects()
 		jointCount = 0
 		blobCount = 0
 		for __, trap in ipairs(active_traps) do
-			for __, joint in ipairs(trap.oilJoints) do								
-				love.graphics.line(joint:getAnchors())
-				jointCount = jointCount + 1
-			end
-						
-			for __, oilPoint in ipairs(trap.oilBlobPoints) do												
-				--love.graphics.drawq(oil_sheet, no_squish, oilPoint.body:getX(), oilPoint.body:getY(), oilPoint.body:getAngle(), .65, .65, 10, 10)
-				--love.graphics.drawq(oil_sheet, no_squish, oilPoint.body:getX(), oilPoint.body:getY(), 0, .65, .65, 10, 10)
-				love.graphics.circle("fill", oilPoint.body:getX(), oilPoint.body:getY(), oilPoint.shape:getRadius())				
-				blobCount = blobCount + 1
+			if trap.drawJoints then
+				for __, joint in ipairs(trap.oilJoints) do								
+					love.graphics.line(joint:getAnchors())
+					jointCount = jointCount + 1				
+				end
 			end
 			
+			if trap.drawPoints then		
+				for __, oilPoint in ipairs(trap.oilBlobPoints) do
+					if oilPoint.isActive then			
+						love.graphics.drawq(oil_sheet, no_squish, oilPoint.body:getX(), oilPoint.body:getY(), oilPoint.body:getAngle(), .65, .65, 10, 10)						
+						--love.graphics.circle("fill", oilPoint.body:getX(), oilPoint.body:getY(), oilPoint.shape:getRadius())				
+						blobCount = blobCount + 1
+					end
+				end
+			end
+
 		end
 	end
 

@@ -15,7 +15,7 @@ require("objects")
 require("timers")
 require("decals")
 
-build = "0.57"
+build = "0.60"
 
 function love.load()
 	--Create a debugger instance

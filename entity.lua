@@ -253,11 +253,49 @@ Entity = Class{
 							self.timer.spawnTimer = self.timer.spawnTimer + self.spawnRate
 						elseif self.type_of_object == "oil trap" then
 							self:spawnOil()
-							self.timer.spawnTimer = self.timer.spawnTimer + self.spawnRate
+							self.timer.spawnTimer = self.timer.spawnTimer + self.spawnRate						
 						end										
 					end				
-				end			
+				end				
 			end
+
+			if self.oilPattern then
+
+			end
+		end
+
+		if self.type == "oil" then
+			local function setTimerToDestroyJointsOrPoints()
+				if not self.timer.timeToDestroyJoints then
+					if self.drawJoints then  --If joints are still active and being drawn
+						--Once an oil blob spawns a timer is set for 4 seconds
+						self.timer.timeToDestroyJoints = love.timer.getTime() + 8										
+					end
+				elseif self.timer.timeToDestroyJoints then
+					if love.timer.getTime() > self.timer.timeToDestroyJoints then						
+						self.drawJoints = false  --prevent graphics from trying to draw joints
+						self.timer.timeToDestroyJoints = nil
+						self:destroyObject()
+					end
+				end
+				
+				--Joints have now been deleted, queue up point deletion
+				if not self.timer.timeToDestroyPoints and not self.drawJoints then
+					if self.drawPoints then --If points are still active and being drawn									
+						self.timer.timeToDestroyPoints = love.timer.getTime() + 6
+					end
+				elseif self.timer.timeToDestroyPoints then
+					if love.timer.getTime() > self.timer.timeToDestroyPoints then
+						self.drawPoints = false  --Prevent graphics from trying to draw points
+						self:destroyObject()											
+						self.timer.timeToDestroyPoints = nil
+					end				
+				end
+			end
+
+
+			setTimerToDestroyJointsOrPoints()
+			
 		end
 
 		if self.type == "decal" then
@@ -496,15 +534,50 @@ Entity = Class{
 	end;
 
 	destroyObject = function(self)
+		local function removeFromTableById(self, passedTable)
+			for i, itemToRemove in ipairs(passedTable) do       
+                if itemToRemove.id == self.id then
+                	--print("Removing #" .. tostring(i) .. " " .. tostring(itemToRemove) .. " onTable: " .. tostring(passedTable) )
+                    table.remove(passedTable, i)                                   
+                end
+            end
+		end
 
         --delete ball from active_balls table
-        if self.type == "ball" then            
+        if self.type == "ball" then           
             for i, ball in ipairs(active_balls) do          
                 if ball.id == self.id then
                 	ball.body:destroy()
                     table.remove(active_balls, i)                                   
                 end
-            end            
+            end
+        elseif self.type == "oil" then        	
+        	for __, oil in ipairs(active_traps) do --Iterate through the active traps and find the one that is requesting a deletion
+        		if oil == self then
+        			
+        			if not self.drawJoints and self.drawPoints then  --If the joints are still being drawn, delete them all        				
+        				for __, oilJoint in ipairs(self.oilJoints) do        				
+        					oilJoint:destroy() --destroy distance joint        					
+        				end
+        				--Kill the big center circle in the oilBlobPoints Table
+        				self.oilBlobPoints[1].isActive = false
+        				self.oilBlobPoints[1].body:destroy()
+        				table.remove(self.oilBlobPoints, 1)
+        				self.oilJoints = nil
+
+        			elseif not self.drawJoints and not self.drawPoints then --Delete oil body points        				
+        				for i, oilPoint in ipairs(self.oilBlobPoints) do        					
+        					oilPoint.body:destroy()  --Destroy oil points
+        				end
+        				self.oilBlobPoints = nil  --Remove the oilBlopPointsTable
+						
+						removeFromTableById(self, active_traps)
+						removeFromTableById(self, active_entities)
+
+        			end
+        			
+        		end
+        	end
         end
 
         --delete ball from active_entities table
