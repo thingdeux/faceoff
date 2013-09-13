@@ -236,7 +236,7 @@ function load_level(name)
 	elseif name == "Four Walls All Balls" then
 		level = {}
 		level.name = name
-		level.spawnerBallCount = 5
+		level.spawnerBallCount = 10
 		level.playerBallCount = 8
 		level.spawnPoints = {}
 		level.timer = {}
@@ -252,15 +252,14 @@ function load_level(name)
 		--Level({screenWidth/2 - 100, screenHeight - 200}, "rectangle", 120, 10) --Ground
 		--Level({screenWidth/2, screenHeight - 300}, "rectangle", 20, 10) --Ground
 		--Level({screenWidth/2, screenHeight/2 + 150}, "movingRectangle", 50, 10, "vertical", 100)  --Left Elevator
-		Level({screenWidth/2, screenHeight/2 + 250}, "movingRectangle", 200, 10, "horizontal", 400)  --Left Elevator
-		Level({screenWidth/2 - 300, screenHeight/2-100}, "movingRectangle", 200, 10, "horizontal", 400)  --Left Elevator
-		Level({screenWidth/2 - 200, screenHeight/2 - 50}, "movingRectangle", 200, 10, "horizontal", 400)  --Left Elevator
-		Level({screenWidth/2 - 50, screenHeight/2}, "movingRectangle", 200, 10, "horizontal", 400)  --Left Elevator
+		Level({screenWidth/2, screenHeight/2 + 250}, "movingRectangle", 200, 15, "horizontal", 200)  --Left Elevator
+		Level({screenWidth/2 - 300, screenHeight/2-100}, "movingRectangle", 200, 15, "horizontal", 200)  --Left Elevator
+		Level({screenWidth/2 - 200, screenHeight/2 - 50}, "movingRectangle", 200, 15, "horizontal", 200)  --Left Elevator
+		Level({screenWidth/2 - 50, screenHeight/2}, "movingRectangle", 200, 15, "horizontal", 200)  --Left Elevator
 
 		local oily = Object({screenWidth/2, screenHeight/2 - 200}, "oil trap")
-		oily:setSpawnerAmmo(10)
-
-
+		oily:setSpawnRate(1)
+		oily:setSpawnerAmmo(60)		
 	elseif name == "Hot Footin' It" then
 		level = {}
 		level.name = name

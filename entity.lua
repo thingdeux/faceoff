@@ -5,17 +5,23 @@ Entity = Class{
 		--Player Specific Updates
 		if self.type == "player" then			
 			
+			if self.playerNumber == "One" then
+				debugger:keepUpdated("Oil Blobs", #active_traps)
+				debugger:keepUpdated("Blob Points", blobCount)
+				debugger:keepUpdated("Joints", jointCount)
+				if active_decals then			
+					debugger:keepUpdated("Slime", #active_decals)
+				end				
+			end
+
+
 			--Get the angle for the cursor, so it rotates			
 			self:determineThrowingAngle()
 			self.cursorAngle = math.angle(self.cursor.x,self.cursor.y , self.body:getX(), self.body:getY())
 			
 			--Pass the players x/y velocitdqy to a local variable for checking below		
 			local velocity_x,velocity_y = self.body:getLinearVelocity()			
-
-			if self.playerNumber == "One" then
-				--debugger:keepUpdated("Vely", velocity_y)
-			end
-
+			
 			if velocity_y >= -1 and velocity_y <= 1 and not self.isTouching.level and not self.isJumping then
 				self.isOnGround = true
 				self:stopJumping()
@@ -250,14 +256,21 @@ Entity = Class{
 							self.timer.spawnTimer = self.timer.spawnTimer + self.spawnRate
 						end										
 					end				
-				end
+				end			
+			end
+		end
+
+		if self.type == "decal" then
+
+			if self.isOil then
+				self.x = self.attachedBody:getX() + self.collisionOffset.x
+				self.y = self.attachedBody:getY() + self.collisionOffset.y
 			end
 		end
 
 		--If the gametype is hot foot, prepare to start changing platform colors
 		if level.gameType == "Hot Foot" and not level.timer.colorChange then			
-			level.timer.colorChange = love.timer.getTime() + 4			
-
+			level.timer.colorChange = love.timer.getTime() + 4				
 		elseif level.gameType == "Hot Foot" and level.timer.colorChange then
 			--If the colorChange timer has elapsed then change colors
 			if love.timer.getTime() > level.timer.colorChange then								

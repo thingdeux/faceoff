@@ -13,6 +13,7 @@ require("players")
 require("debugger")
 require("objects")
 require("timers")
+require("decals")
 
 build = "0.57"
 
@@ -22,7 +23,7 @@ function love.load()
 	--Create a timer instance (to queue events)
 	timer = Timer()	
 	--Set gamespeed
-	gameSpeed = .1
+	gameSpeed = 1
 	roundOver = false	
 
 	--Make the mouse go buh bye
@@ -150,8 +151,9 @@ function love.draw()
 	--love.graphics.scale(.9, .9)
 	drawBackground()
 	drawLevel()
+	drawDecals()
 	drawPlayers()	
-	drawObjects()	
+	drawObjects()
 	drawDebugInfo()	
 end
 

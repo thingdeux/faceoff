@@ -1,13 +1,13 @@
+--preSolve is called just before a frame is resolved for a current collision
 --beginContact gets called when two fixtures start overlapping (two objects collide). 
---endContact gets called when two fixtures stop overlapping (two objects disconnect). 
---preSolve is called just before a frame is resolved for a current collision 
+--endContact gets called when two fixtures stop overlapping (two objects disconnect).  
 --postSolve is called just after a frame is resolved for a current collision 
 
 
 function beginContact(a, b, coll)
 	--The collision function does not easily determine what two things are colliding
 	--This function will make it nice and easy to work with the colliders by giving them
-	--Local variable names by type	
+	--Local variable names by type			
 	local colliders = determineCollision(a,b)	
 	
 	------Player Collision Handlers START--------------------
@@ -86,8 +86,6 @@ function beginContact(a, b, coll)
 		end
 	end
 
-	
-
 	--Handler for when a player is colliding with a movingRectangle
 	if colliders.player and colliders.movingRectangle then
 		local playerObject = colliders.player:getUserData()			
@@ -140,11 +138,8 @@ function beginContact(a, b, coll)
 				playerObject:die()
 			end
 		end
-
 	end
 	-------Player Collision Handlers END--------------------
-
-
 
 	--Handler for when a moving rectangle hits the wall
 	if colliders.level and colliders.movingRectangle then
@@ -166,12 +161,30 @@ function beginContact(a, b, coll)
 		--The ball hit a level object or a movingRectangle, add to its walls hit count
 		ballObject.wallsHit = ballObject.wallsHit + 1
 	end
+
+
+	----Oil Handlers
+	if colliders.oil and colliders.level or 
+		colliders.oil and colliders. movingRectangle then
+
+		local oilObject = colliders.oil:getUserData()
+
+		--If an oil blob hits a level of movingRectangle run leaveOilTrail and leave an oil dot
+		--where it it
+		if colliders.level then
+			oilObject.pointerToSelf:leaveOilTrail(oilObject, colliders.level)
+		elseif colliders.movingRectangle then
+			oilObject.pointerToSelf:leaveOilTrail(oilObject, colliders.movingRectangle)
+		end
+
+	end
+	
 end
 
 function endContact(a, b, coll)	
 	-----------Player Collision Handlers START--------------------
 	local colliders = determineCollision(a,b)
-
+	
 	if colliders.movingRectangle and colliders.player then		
 		local playerObject = colliders.player:getUserData()		
 		playerObject.isTouching.movingRectangle = false
@@ -195,14 +208,13 @@ function endContact(a, b, coll)
 			playerObject.isTouching.level = false
 			playerObject.isTouching.levelLeft = false			
 			playerObject.isTouching.levelRight = false
-		end
-	
+		end	
 	end	
 
 	-----------Player Collision Handlers END--------------------
 end
 
-function preSolve(a, b, coll)
+function preSolve(a, b, coll)	
 end
 
 function postSolve(a, b, coll)
@@ -261,10 +273,10 @@ function determineCollision(collider1, collider2, passedLocalVariables)
 			else
 				returnedTable["player2"] = collider
 			end
-		elseif colliderName.type == "oil" then
-			if not returnedTable.player then
+		elseif colliderName.type == "oil" then			
+			if not returnedTable.oil then
 				returnedTable["oil"] = collider
-			else
+			else		
 				returnedTable["oil2"] = collider
 			end
 		end

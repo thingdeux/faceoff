@@ -91,7 +91,7 @@ function destroyAllBalls(active_balls, active_entities)
 	for i, entity in ipairs(active_entities) do
 		if entity.type == "ball" then
 			foundBall = true
-			ballReference = entity	
+			ballReference = entity
 		end		
 	end
 

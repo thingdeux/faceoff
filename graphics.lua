@@ -45,22 +45,27 @@ function drawObjects()
 	end
 
 	if active_traps then
-			
+		
+		love.graphics.setColor(color.oil)
+		love.graphics.setLine(8)
+		jointCount = 0
+		blobCount = 0
 		for __, trap in ipairs(active_traps) do
-			for __, joint in ipairs(trap.oilJoints) do
-				love.graphics.setColor(color.red)
-				--love.graphics.line(joint:getAnchors())
+			for __, joint in ipairs(trap.oilJoints) do								
+				love.graphics.line(joint:getAnchors())
+				jointCount = jointCount + 1
 			end
-
-			love.graphics.setColor(color.white)
-			for __, oilPoint in ipairs(trap.oilBlobPoints) do								
-				love.graphics.drawq(oil_sheet, no_squish, oilPoint.body:getX(), oilPoint.body:getY(), oilPoint.body:getAngle(), .65, .65, 10, 10)
-				--love.graphics.circle("fill", oilPoint.body:getX(), oilPoint.body:getY(), oilPoint.shape:getRadius())
-				--love.graphics.draw(oil_image, oilPoint.body:getX(), oilPoint.body:getY(), oilPoint.body:getAngle(), 20, 20, 0, 0)								
+						
+			for __, oilPoint in ipairs(trap.oilBlobPoints) do												
+				--love.graphics.drawq(oil_sheet, no_squish, oilPoint.body:getX(), oilPoint.body:getY(), oilPoint.body:getAngle(), .65, .65, 10, 10)
+				--love.graphics.drawq(oil_sheet, no_squish, oilPoint.body:getX(), oilPoint.body:getY(), 0, .65, .65, 10, 10)
+				love.graphics.circle("fill", oilPoint.body:getX(), oilPoint.body:getY(), oilPoint.shape:getRadius())				
+				blobCount = blobCount + 1
 			end
 			
 		end
 	end
+
 end
 
 function drawPlayers()
@@ -178,8 +183,17 @@ function drawLevel()
 
 		end
 	end
+end
 
-
+function drawDecals()
+	love.graphics.setColor(color.oil)
+	love.graphics.setPointStyle("smooth")
+	love.graphics.setPointSize(8)
+	if active_decals then
+		for __, decal in ipairs(active_decals) do			
+			love.graphics.point(decal.x, decal.y)
+		end
+	end
 end
 
 function drawBackground()	
@@ -201,7 +215,7 @@ function drawBackground()
 end
 
 function drawDebugInfo()
-	love.graphics.setFont(avengers_font_smaller)
+	love.graphics.setFont(debug_bold)
 	love.graphics.setColor(color.red)
 	local position = 10
 	for __, info in pairs(active_debugging_text) do
@@ -277,6 +291,7 @@ function load_colors()
 	color.white = {255,255,255,255}
 	color.orange = {255,97,3,255}
 	color.black = {0,0,0,255}
+	color.oil = {40,40,40,240}
 end
 
 
@@ -291,4 +306,6 @@ function load_fonts()
 	scoreboard_font = love.graphics.newFont("/assets/fonts/scoreboard.ttf", 40)
 	avengers_font = love.graphics.newFont("/assets/fonts/avengers.ttf", 25)
 	avengers_font_smaller = love.graphics.newFont("/assets/fonts/avengers.ttf", 15)
+	debug = love.graphics.newFont("/assets/fonts/debug.ttf", 10)
+	debug_bold = love.graphics.newFont("/assets/fonts/debug_bold.ttf", 10)
 end
